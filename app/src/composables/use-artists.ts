@@ -1,6 +1,6 @@
 import { reactive, computed } from 'vue';
 import { loadArtists } from '@/utils/api';
-import { Artist } from '@/ts/artist';
+import { Artist } from '@/interfaces/artist';
 
 interface State {
   list: Artist[];
