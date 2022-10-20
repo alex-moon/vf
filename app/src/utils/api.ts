@@ -1,4 +1,5 @@
-import {Artist} from '@/interfaces/artist';
+import { Artist } from '@/ts/artist';
+import { Track } from '@/ts/track';
 
 const mockArtist: Artist[] = [
   {
@@ -15,6 +16,28 @@ const mockArtist: Artist[] = [
   },
 ];
 
+const mocktracks: Track[] = [
+  {
+    name: 'Midnight Blue',
+    artistName: 'Kenny Burrell',
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273337b64d3c252d562a33e4d35',
+  },
+  {
+    name: 'Gimme Shelter',
+    artistName: 'The Rolling Stones',
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b2732af30c881bb23cfb82a8cf99',
+  },
+  {
+    name: 'Teen Town',
+    artistName: 'Weather Report',
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273dc676a8b0a1ad6284b6996f9',
+  },
+];
+
 export function loadArtists(): Promise<Artist[]> {
   return new Promise((resolve) => resolve(mockArtist));
+}
+
+export function loadTracks(): Promise<Track[]> {
+  return new Promise((resolve) => resolve(mocktracks));
 }

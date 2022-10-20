@@ -1,19 +1,19 @@
 import { reactive, computed } from 'vue';
-import { loadArtists } from '@/utils/api';
-import { Artist } from '@/ts/artist';
+import { Track } from '@/ts/track';
+import { loadTracks } from '@/utils/api';
 
 interface State {
-  list: Artist[];
+  list: Track[];
 }
 
-export function useArtists() {
+export function useTracks() {
   const state: State = reactive({
     list: [],
     listLength: computed(() => state.list.length),
   });
 
   async function get() {
-    state.list = await loadArtists();
+    state.list = await loadTracks();
   }
 
   return {
