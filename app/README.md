@@ -1,4 +1,4 @@
-# vf
+# vue3-class-component-composition-api-example
 
 ## Project setup
 ```
