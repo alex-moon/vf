@@ -4,7 +4,7 @@
 
 <script lang='ts'>
 import {Options, Vue} from 'vue-class-component';
-import Vf from "@/ts/vf";
+import {Vf} from "@/ts/vf";
 
 @Options({
   inject: ['vf'],
