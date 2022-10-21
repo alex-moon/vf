@@ -1,19 +1,19 @@
 import * as THREE from 'three';
 import Stats from 'three/addons/libs/stats.module.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 
 export default class Vf {
-  mixer ?: THREE.AnimationMixer;
+  mixer!: THREE.AnimationMixer;
+  camera!: THREE.PerspectiveCamera;
   clock: THREE.Clock;
   container: any;
   stats: Stats;
   renderer: THREE.WebGLRenderer;
   pmremGenerator: THREE.PMREMGenerator;
   scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
   controls: OrbitControls;
   loader: GLTFLoader;
   model: any;
@@ -38,6 +38,7 @@ export default class Vf {
   public init($element: any) {
     this.container = $element;
     this.stats = new Stats();
+    this.stats.domElement.style.position = 'absolute';
     this.container.appendChild(this.stats.dom);
     this.container.appendChild(this.renderer.domElement);
     this.renderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
