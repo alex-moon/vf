@@ -19,6 +19,8 @@ export class View {
   loader: GLTFLoader;
   entities: Entity[] = [];
   delta: any;
+  raycaster: THREE.Raycaster;
+  floor: THREE.Object3D;
 
   constructor() {
     this.clock = new THREE.Clock();
@@ -40,6 +42,12 @@ export class View {
 
     this.stats = new Stats();
     this.stats.domElement.style.position = 'absolute';
+
+    this.raycaster = new THREE.Raycaster();
+    const geometry = new THREE.BoxGeometry( 1000, 0, 1000);
+    const material = new THREE.MeshBasicMaterial( {color: 0x535c69} );
+    this.floor = new THREE.Mesh(geometry, material);
+    this.scene.add(this.floor);
   }
 
   public init($element: HTMLDivElement) {
@@ -63,10 +71,20 @@ export class View {
     this.controls.enableDamping = true;
 
     this.animate();
+
+    this.bindEvents();
+  }
+
+  private bindEvents() {
+    document.addEventListener("keydown", this.onKeyDown.bind(this), false);
+    document.addEventListener("keyup", this.onKeyUp.bind(this), false);
+    document.addEventListener("mousemove", this.onPointerMove.bind(this), false);
+    this.renderer.domElement.addEventListener('click', () => {
+      this.renderer.domElement.requestPointerLock();
+    });
   }
 
   public load(entity: Entity) {
-    this.entities.push(entity);
     this.loader.load(entity.getPath(), (gltf: any) => {
       entity.model = gltf;
       entity.model.scene.position.set(0, 0, 0);
@@ -76,6 +94,7 @@ export class View {
       this.mixers.push(mixer);
       const animation = entity.getAnimation();
       mixer.clipAction(entity.model.animations[animation]).play();
+      this.entities.push(entity);
     }, undefined, (e: any) => {
       console.error(e);
     });
@@ -88,6 +107,41 @@ export class View {
       entity.model.scene.position.y += intent.velocity.y;
       entity.model.scene.position.z += intent.velocity.z;
     });
+  }
+
+  private isLocked() {
+    return document.pointerLockElement === this.renderer.domElement;
+  }
+
+  private onKeyDown($event: KeyboardEvent) {
+    if (!this.isLocked()) {
+      return;
+    }
+    this.entities.forEach(entity => entity.onKeyDown($event));
+  }
+
+  private onKeyUp($event: KeyboardEvent) {
+    if (!this.isLocked()) {
+      return;
+    }
+    this.entities.forEach(entity => entity.onKeyUp($event));
+  }
+
+  private onPointerMove($event: MouseEvent) {
+    if (!this.isLocked()) {
+      return;
+    }
+    this.entities.forEach(entity => entity.onPointerMove($event));
+
+    // const pointer = new THREE.Vector2();
+    // pointer.x = ( $event.clientX / window.innerWidth ) * 2 - 1;
+    // pointer.y = - ( $event.clientY / window.innerHeight ) * 2 + 1;
+    // this.raycaster.setFromCamera(pointer, this.camera);
+    // const points = this.raycaster.intersectObject(this.floor);
+    // if (points.length > 0) {
+    //   const point = points[0].point;
+    //   this.entities.forEach(entity => entity.onPoint(point));
+    // }
   }
 
   private animate() {

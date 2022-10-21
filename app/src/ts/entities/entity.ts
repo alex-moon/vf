@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import {Intent} from "@/ts/entities/intent";
 
 export abstract class Entity {
@@ -6,10 +7,6 @@ export abstract class Entity {
   protected abstract path: string;
   protected abstract animations: string[];
   protected abstract intent: Intent;
-  protected constructor() {
-    this.bindEvents();
-  }
-  protected abstract bindEvents(): void;
   public getPath() {
     return this.path;
   }
@@ -22,4 +19,8 @@ export abstract class Entity {
   public getIntent() {
     return this.intent;
   }
+  public onKeyUp($event: KeyboardEvent): void {}
+  public onKeyDown($event: KeyboardEvent): void {}
+  public onPointerMove($event: MouseEvent): void {}
+  public onPoint(point: THREE.Vector3): void {}
 }
