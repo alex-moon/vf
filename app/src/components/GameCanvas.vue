@@ -18,11 +18,12 @@ export default class GameCanvas extends Vue {
 </script>
 
 <style scoped lang="scss">
-canvas {
+div {
   display: block;
   border: solid 1px red;
   margin: 24px auto;
   width: 800px;
   height: 600px;
+  position: relative;
 }
 </style>
