@@ -89,12 +89,11 @@ export class View {
       entity.model = gltf;
       entity.model.scene.position.set(0, 0, 0);
       entity.model.scene.scale.set(1, 1, 1);
-      this.scene.add(entity.model.scene);
-      const mixer = new THREE.AnimationMixer(entity.model.scene);
-      this.mixers.push(mixer);
-      const animation = entity.getAnimation();
-      mixer.clipAction(entity.model.animations[animation]).play();
+      entity.mixer = new THREE.AnimationMixer(entity.model.scene);
+      const animation = entity.model.animations[entity.getAnimation()];
+      entity.mixer.clipAction(animation).play();
       this.entities.push(entity);
+      this.scene.add(entity.model.scene);
     }, undefined, (e: any) => {
       console.error(e);
     });
@@ -106,6 +105,13 @@ export class View {
       entity.model.scene.position.x += intent.velocity.x;
       entity.model.scene.position.y += intent.velocity.y;
       entity.model.scene.position.z += intent.velocity.z;
+      if (intent.stateChanged) {
+        const animation = entity.model.animations[entity.getAnimation()];
+        entity.mixer.stopAllAction();
+        entity.mixer.clipAction(animation).play();
+        intent.stateChanged = false;
+      }
+      entity.mixer.update(this.delta);
     });
   }
 
@@ -146,8 +152,8 @@ export class View {
 
   private animate() {
     requestAnimationFrame(this.animate.bind(this));
+    this.delta = this.clock.getDelta();
     this.move();
-    this.mixers.forEach(mixer => mixer.update(this.delta));
     this.controls.update();
     this.stats.update();
     this.renderer.render(this.scene, this.camera);

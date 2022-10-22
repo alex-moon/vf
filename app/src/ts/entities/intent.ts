@@ -1,4 +1,5 @@
 export class Intent {
+  stateChanged = false;
   state: string;
   velocity = {
     x: 0,
@@ -7,5 +8,6 @@ export class Intent {
   };
   constructor(state: string) {
     this.state = state;
+    this.stateChanged = true;
   }
 }

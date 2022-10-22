@@ -55,6 +55,11 @@ export class Jack extends Entity {
     const distance = Math.sqrt(fb * fb + lr * lr);
     this.intent.velocity.x = distance * Math.sin(rotation);
     this.intent.velocity.z = distance * Math.cos(rotation);
+    if (this.intent.velocity.x > 0 || this.intent.velocity.z > 0) {
+      this.setState(JackState.RUNNING);
+    } else {
+      this.setState(JackState.IDLE);
+    }
   }
 
   public onKeyDown($event: KeyboardEvent) {
@@ -75,22 +80,12 @@ export class Jack extends Entity {
   }
 
   public onKeyUp($event: KeyboardEvent) {
-    switch ($event.key) {
-      case 'w':
-      case 's':
-        this.recalculateVelocity(0, 0);
-        break;
-      case 'a':
-      case 'd':
-        this.recalculateVelocity(0, 0);
-        break;
-    }
+    this.recalculateVelocity(0, 0);
   }
 
   public onPointerMove($event: MouseEvent) {
     this.model.scene.rotation.y -= $event.movementX * 0.01;
     this.model.scene.rotation.y %= (2 * Math.PI);
-    const rotation = this.model.scene.rotation.y;
   }
 
   public onPoint(point: THREE.Vector3) {

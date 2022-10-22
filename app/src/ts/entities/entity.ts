@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import {Intent} from "@/ts/entities/intent";
+import {AnimationMixer} from "three";
+import {Model} from "@/ts/interfaces/model";
 
 export abstract class Entity {
-  public model: any;
+  public model!: Model;
+  public mixer!: AnimationMixer;
 
   protected abstract path: string;
   protected abstract animations: string[];
@@ -18,6 +21,12 @@ export abstract class Entity {
   }
   public getIntent() {
     return this.intent;
+  }
+  protected setState(state: string) {
+    if (this.intent.state !== state) {
+      this.intent.state = state;
+      this.intent.stateChanged = true;
+    }
   }
   public onKeyUp($event: KeyboardEvent): void {}
   public onKeyDown($event: KeyboardEvent): void {}
