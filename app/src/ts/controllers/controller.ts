@@ -13,6 +13,8 @@ export abstract class Controller<E extends Entity> {
     return this.entity;
   }
 
+  public move(delta: number) {}
+
   public onKeysChanged($event: KeysChangedEvent): void {
     this.entity.onKeysChanged($event);
   }

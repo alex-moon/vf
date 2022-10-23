@@ -36,6 +36,7 @@ export class JackEntity extends ModelEntity {
     } else {
       this.intent.state = JackState.IDLE;
       this.intent.speed = this.speed[JackState.IDLE];
+      this.intent.direction = null;
     }
   }
 }

@@ -80,7 +80,7 @@ export class View {
       1,
       100
     );
-    this.camera.position.set(2, 2, 2);
+    this.camera.position.set(0, 2, -2);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0, 0.8, 0);
