@@ -2,7 +2,7 @@ import {JackEntity} from "@/ts/entities/jack.entity";
 import {ModelController} from "@/ts/controllers/model.controller";
 import {NumberHelper} from "@/ts/helpers/number.helper";
 import {Model} from "@/ts/interfaces/model";
-import {Object3D, Vector3} from "three";
+import {Object3D} from "three";
 
 export class JackController extends ModelController<JackEntity> {
   protected head ?: Object3D;

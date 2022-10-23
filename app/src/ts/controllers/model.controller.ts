@@ -2,6 +2,7 @@ import {Controller} from "@/ts/controllers/controller";
 import {ModelEntity} from "@/ts/entities/model.entity";
 import {AnimationMixer, Euler, Vector3} from "three";
 import {Model} from "@/ts/interfaces/model";
+import {NumberHelper} from "@/ts/helpers/number.helper";
 
 export abstract class ModelController<M extends ModelEntity> extends Controller<M> {
   protected model!: Model;
@@ -26,7 +27,7 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   public getVelocity() {
     const intent = this.entity.getIntent();
     const rotation = this.model.scene.rotation;
-    const y = (rotation.y + (intent.direction || 0)) % (Math.PI * 2);
+    const y = NumberHelper.addMod(rotation.y, intent.direction || 0, Math.PI * 2);
     const direction = new Euler(0, y, 0);
     const result = new Vector3(0, 0, intent.speed);
     result.applyEuler(direction);
