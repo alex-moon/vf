@@ -7,7 +7,6 @@ import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js';
 import {Entity} from "@/ts/entities/entity";
 
 export class View {
-  mixers: THREE.AnimationMixer[] = [];
   clock: THREE.Clock;
   stats: Stats;
   renderer!: THREE.WebGLRenderer;
@@ -18,6 +17,7 @@ export class View {
   dracoLoader: DRACOLoader;
   loader: GLTFLoader;
   entities: Entity[] = [];
+  follow: Entity|null = null;
   delta: any;
   raycaster: THREE.Raycaster;
   floor: THREE.Object3D;
@@ -44,10 +44,33 @@ export class View {
     this.stats.domElement.style.position = 'absolute';
 
     this.raycaster = new THREE.Raycaster();
+
+    // floor
     const geometry = new THREE.BoxGeometry( 1000, 0, 1000);
-    const material = new THREE.MeshBasicMaterial( {color: 0x535c69} );
+    const loader = new THREE.TextureLoader();
+    const map = loader.load("/floor.png");
+    map.wrapS = THREE.RepeatWrapping;
+    map.wrapT = THREE.RepeatWrapping;
+    map.repeat.set(1000, 1000);
+    map.minFilter = THREE.NearestFilter;
+    map.magFilter = THREE.NearestFilter;
+    const material = new THREE.MeshBasicMaterial({map});
     this.floor = new THREE.Mesh(geometry, material);
     this.scene.add(this.floor);
+
+    // sky
+    const texture = loader.load(
+      '/skybox.png',
+      () => {
+          const rt = new THREE.WebGLCubeRenderTarget(texture.image.height);
+          rt.fromEquirectangularTexture(this.renderer, texture);
+          this.scene.background = rt.texture;
+        });
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(1000, 1000);
+    texture.minFilter = THREE.NearestFilter;
+    texture.magFilter = THREE.NearestFilter;
   }
 
   public init($element: HTMLDivElement) {
@@ -62,7 +85,6 @@ export class View {
       100
     );
     this.camera.position.set(2, 2, 2);
-    this.camera.updateProjectionMatrix();
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0, 0.8, 0);
@@ -94,6 +116,9 @@ export class View {
       entity.mixer.clipAction(animation).play();
       this.entities.push(entity);
       this.scene.add(entity.model.scene);
+      if (!this.follow) {
+        this.follow = entity;
+      }
     }, undefined, (e: any) => {
       console.error(e);
     });
@@ -154,6 +179,10 @@ export class View {
     requestAnimationFrame(this.animate.bind(this));
     this.delta = this.clock.getDelta();
     this.move();
+    if (this.follow) {
+      const f = this.follow.model.scene.position;
+      this.controls.target.set(f.x, 1, f.z);
+    }
     this.controls.update();
     this.stats.update();
     this.renderer.render(this.scene, this.camera);

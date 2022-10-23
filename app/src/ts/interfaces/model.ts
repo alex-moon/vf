@@ -1,5 +1,7 @@
+import {Group} from "three";
+
 export interface Model {
-  scene: any,
+  scene: Group,
   scenes: any,
   animations: any,
   cameras: any,

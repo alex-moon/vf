@@ -11,7 +11,7 @@ enum JackState {
 export class Jack extends Entity {
   protected velocity = {
     [JackState.IDLE]: 0,
-    [JackState.RUNNING]: 0.1,
+    [JackState.RUNNING]: 0.05,
   }
 
   protected path = '/glb/jack.glb';
@@ -55,10 +55,10 @@ export class Jack extends Entity {
     const distance = Math.sqrt(fb * fb + lr * lr);
     this.intent.velocity.x = distance * Math.sin(rotation);
     this.intent.velocity.z = distance * Math.cos(rotation);
-    if (this.intent.velocity.x > 0 || this.intent.velocity.z > 0) {
-      this.setState(JackState.RUNNING);
-    } else {
+    if (this.intent.velocity.x === 0 && this.intent.velocity.z === 0) {
       this.setState(JackState.IDLE);
+    } else {
+      this.setState(JackState.RUNNING);
     }
   }
 

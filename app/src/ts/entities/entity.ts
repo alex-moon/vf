@@ -1,6 +1,6 @@
 import * as THREE from 'three';
+import {AnimationAction, AnimationMixer} from 'three';
 import {Intent} from "@/ts/entities/intent";
-import {AnimationMixer} from "three";
 import {Model} from "@/ts/interfaces/model";
 
 export abstract class Entity {
