@@ -20,7 +20,6 @@ export class View {
   follow: Entity|null = null;
   delta: any;
   raycaster: THREE.Raycaster;
-  floor: THREE.Object3D;
 
   constructor() {
     this.clock = new THREE.Clock();
@@ -46,16 +45,7 @@ export class View {
     this.raycaster = new THREE.Raycaster();
 
     // floor
-    const geometry = new THREE.BoxGeometry( 1000, 0, 1000);
-    const loader = new THREE.TextureLoader();
-    const map = loader.load("/floor.png");
-    map.wrapS = THREE.RepeatWrapping;
-    map.wrapT = THREE.RepeatWrapping;
-    map.repeat.set(1000, 1000);
-    map.minFilter = THREE.NearestFilter;
-    map.magFilter = THREE.NearestFilter;
-    const material = new THREE.MeshBasicMaterial({map});
-    this.floor = new THREE.Mesh(geometry, material);
+
     this.scene.add(this.floor);
 
     // sky
@@ -66,9 +56,6 @@ export class View {
           rt.fromEquirectangularTexture(this.renderer, texture);
           this.scene.background = rt.texture;
         });
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1000, 1000);
     texture.minFilter = THREE.NearestFilter;
     texture.magFilter = THREE.NearestFilter;
   }
