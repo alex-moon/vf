@@ -61,28 +61,7 @@ export class World {
 
   public move(delta: number) {
     this.controllers.forEach((controller) => {
-      if (controller instanceof ModelController) {
-        const model = controller.getModel();
-        const mixer = controller.getMixer();
-        if (!model || !mixer) {
-          return;
-        }
-
-        const velocity = controller.getVelocity();
-
-        model.scene.position.x += velocity.x;
-        model.scene.position.y += velocity.y;
-        model.scene.position.z += velocity.z;
-
-        const entity = controller.getEntity();
-        if (entity.intent.stateChanged) {
-          const animation = model.animations[entity.getAnimation()];
-          mixer.stopAllAction();
-          mixer.clipAction(animation).play();
-          entity.intent.stateChanged = false;
-        }
-        mixer.update(delta);
-      }
+      controller.move(delta);
     });
   }
 }
