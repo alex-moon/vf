@@ -1,17 +1,16 @@
 import {View} from "@/ts/view";
-import {Jack} from "@/ts/entities/jack";
+import {World} from "@/ts/world";
 
 export class Vf {
+  private world: World;
   private view: View;
-  private jack: Jack;
 
-  public constructor(view: View) {
-    this.view = view;
-    this.jack = new Jack();
+  public constructor() {
+    this.view = new View();
+    this.world = new World(this.view);
   }
 
   public init($element: HTMLDivElement) {
     this.view.init($element);
-    this.view.load(this.jack);
   }
 }

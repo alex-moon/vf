@@ -1,30 +1,34 @@
 import * as THREE from 'three';
+import {AxesHelper, TextureLoader} from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
-import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js';
-import {Entity} from "@/ts/entities/entity";
+import {World} from "@/ts/world";
+import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import {Controller} from "@/ts/controllers/controller";
+import {ModelController} from "@/ts/controllers/model.controller";
+import {BoxController} from "@/ts/controllers/box.controller";
+import {KeysHelper} from "@/ts/helpers/keys.helper";
+import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 
 export class View {
-  clock: THREE.Clock;
-  stats: Stats;
-  renderer!: THREE.WebGLRenderer;
-  pmremGenerator!: THREE.PMREMGenerator;
-  scene: THREE.Scene;
-  camera!: THREE.PerspectiveCamera;
-  controls!: OrbitControls;
-  dracoLoader: DRACOLoader;
-  loader: GLTFLoader;
-  entities: Entity[] = [];
-  follow: Entity|null = null;
-  delta: any;
-  raycaster: THREE.Raycaster;
-  floor: THREE.Object3D;
+  protected world!: World;
+  protected texture: TextureLoader;
+  protected draco: DRACOLoader;
+  protected gltf: GLTFLoader;
+  protected clock: THREE.Clock;
+  protected stats: any;
+  protected axes: AxesHelper;
+  protected renderer!: THREE.WebGLRenderer;
+  protected pmremGenerator!: THREE.PMREMGenerator;
+  protected scene: THREE.Scene;
+  protected camera!: THREE.PerspectiveCamera;
+  protected controls!: OrbitControls;
+  protected raycaster: THREE.Raycaster;
 
   constructor() {
     this.clock = new THREE.Clock();
-    this.delta = this.clock.getDelta();
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.outputEncoding = THREE.sRGBEncoding;
@@ -34,43 +38,35 @@ export class View {
     this.scene.background = new THREE.Color(0x0);
     this.scene.environment = this.pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
-    this.dracoLoader = new DRACOLoader();
-    this.dracoLoader.setDecoderPath('js/libs/draco/gltf/');
-
-    this.loader = new GLTFLoader();
-    this.loader.setDRACOLoader(this.dracoLoader);
-
+    // @ts-ignore
     this.stats = new Stats();
     this.stats.domElement.style.position = 'absolute';
 
+    this.axes = new THREE.AxesHelper( 5 );
+    this.scene.add(this.axes);
+
     this.raycaster = new THREE.Raycaster();
 
-    // floor
-    const geometry = new THREE.BoxGeometry( 1000, 0, 1000);
-    const loader = new THREE.TextureLoader();
-    const map = loader.load("/floor.png");
-    map.wrapS = THREE.RepeatWrapping;
-    map.wrapT = THREE.RepeatWrapping;
-    map.repeat.set(1000, 1000);
-    map.minFilter = THREE.NearestFilter;
-    map.magFilter = THREE.NearestFilter;
-    const material = new THREE.MeshBasicMaterial({map});
-    this.floor = new THREE.Mesh(geometry, material);
-    this.scene.add(this.floor);
-
     // sky
-    const texture = loader.load(
+    this.texture = new TextureLoader();
+    const texture = this.texture.load(
       '/skybox.png',
       () => {
           const rt = new THREE.WebGLCubeRenderTarget(texture.image.height);
           rt.fromEquirectangularTexture(this.renderer, texture);
           this.scene.background = rt.texture;
         });
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1000, 1000);
     texture.minFilter = THREE.NearestFilter;
     texture.magFilter = THREE.NearestFilter;
+
+    this.draco = new DRACOLoader();
+    this.draco.setDecoderPath('js/libs/draco/gltf/');
+    this.gltf = new GLTFLoader();
+    this.gltf.setDRACOLoader(this.draco);
+  }
+
+  public setWorld(world: World) {
+    this.world = world;
   }
 
   public init($element: HTMLDivElement) {
@@ -92,6 +88,8 @@ export class View {
     this.controls.enablePan = true;
     this.controls.enableDamping = true;
 
+    this.world.init();
+
     this.animate();
 
     this.bindEvents();
@@ -106,38 +104,48 @@ export class View {
     });
   }
 
-  public load(entity: Entity) {
-    this.loader.load(entity.getPath(), (gltf: any) => {
-      entity.model = gltf;
-      entity.model.scene.position.set(0, 0, 0);
-      entity.model.scene.scale.set(1, 1, 1);
-      entity.mixer = new THREE.AnimationMixer(entity.model.scene);
-      const animation = entity.model.animations[entity.getAnimation()];
-      entity.mixer.clipAction(animation).play();
-      this.entities.push(entity);
-      this.scene.add(entity.model.scene);
-      if (!this.follow) {
-        this.follow = entity;
-      }
+  public load(controller: Controller<any>) {
+    if (controller instanceof ModelController) {
+      this.loadModel(controller);
+    }
+    if (controller instanceof BoxController) {
+      this.loadBox(controller);
+    }
+  }
+
+  protected loadModel(controller: ModelController<any>) {
+    const entity = controller.getEntity();
+    this.gltf.load(entity.getPath(), (gltf: any) => {
+      const model = gltf;
+      model.scene.position.set(0, 0, 0);
+      model.scene.scale.set(1, 1, 1);
+
+      const mixer = new THREE.AnimationMixer(model.scene);
+      const animation = model.animations[entity.getAnimation()];
+      mixer.clipAction(animation).play();
+
+      controller.setModel(model);
+      controller.setMixer(mixer);
+      this.scene.add(model.scene);
     }, undefined, (e: any) => {
       console.error(e);
     });
   }
 
-  private move() {
-    this.entities.forEach((entity) => {
-      const intent = entity.getIntent();
-      entity.model.scene.position.x += intent.velocity.x;
-      entity.model.scene.position.y += intent.velocity.y;
-      entity.model.scene.position.z += intent.velocity.z;
-      if (intent.stateChanged) {
-        const animation = entity.model.animations[entity.getAnimation()];
-        entity.mixer.stopAllAction();
-        entity.mixer.clipAction(animation).play();
-        intent.stateChanged = false;
-      }
-      entity.mixer.update(this.delta);
-    });
+  protected loadBox(controller: BoxController) {
+    const entity = controller.getEntity();
+    const geometry = new THREE.BoxGeometry(entity.width, entity.height, entity.depth);
+    const map = this.texture.load(entity.texture);
+    map.wrapS = THREE.RepeatWrapping;
+    map.wrapT = THREE.RepeatWrapping;
+    const dimension = Math.max(entity.width, entity.height, entity.depth);
+    map.repeat.set(dimension, dimension);
+    map.minFilter = THREE.NearestFilter;
+    map.magFilter = THREE.NearestFilter;
+    const material = new THREE.MeshBasicMaterial({map});
+    const mesh = new THREE.Mesh(geometry, material);
+    controller.setMesh(mesh);
+    this.scene.add(mesh);
   }
 
   private isLocked() {
@@ -148,21 +156,25 @@ export class View {
     if (!this.isLocked()) {
       return;
     }
-    this.entities.forEach(entity => entity.onKeyDown($event));
+    if (KeysHelper.onKeyDown($event.key)) {
+      this.world.onKeysChanged(new KeysChangedEvent(KeysHelper.keys));
+    }
   }
 
   private onKeyUp($event: KeyboardEvent) {
     if (!this.isLocked()) {
       return;
     }
-    this.entities.forEach(entity => entity.onKeyUp($event));
+    if (KeysHelper.onKeyUp($event.key)) {
+      this.world.onKeysChanged(new KeysChangedEvent(KeysHelper.keys));
+    }
   }
 
   private onPointerMove($event: MouseEvent) {
     if (!this.isLocked()) {
       return;
     }
-    this.entities.forEach(entity => entity.onPointerMove($event));
+    this.world.onPointerMove($event);
 
     // const pointer = new THREE.Vector2();
     // pointer.x = ( $event.clientX / window.innerWidth ) * 2 - 1;
@@ -171,17 +183,17 @@ export class View {
     // const points = this.raycaster.intersectObject(this.floor);
     // if (points.length > 0) {
     //   const point = points[0].point;
-    //   this.entities.forEach(entity => entity.onPoint(point));
+    //   this.world.onPoint(point);
     // }
   }
 
   private animate() {
     requestAnimationFrame(this.animate.bind(this));
-    this.delta = this.clock.getDelta();
-    this.move();
-    if (this.follow) {
-      const f = this.follow.model.scene.position;
-      this.controls.target.set(f.x, 1, f.z);
+    this.world.move(this.clock.getDelta());
+    const target = this.world.getTarget();
+    if (target) {
+      this.controls.target.set(target.x, 1, target.z);
+      this.axes.position.copy(target);
     }
     this.controls.update();
     this.stats.update();
