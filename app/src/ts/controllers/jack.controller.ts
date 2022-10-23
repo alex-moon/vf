@@ -35,9 +35,9 @@ export class JackController extends ModelController<JackEntity> {
     if (this.root) {
       const intent = this.entity.getIntent();
       if (intent.direction !== null) {
-        this.root.rotation.y = intent.direction + (Math.PI / 2);
+        this.root.rotation.y = intent.direction;
         if (this.head) {
-          this.head.rotation.y = -this.root.rotation.y + (Math.PI / 2);
+          this.head.rotation.y = -this.root.rotation.y;
         }
       }
     }
