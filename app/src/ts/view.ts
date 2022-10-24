@@ -12,8 +12,6 @@ import {BoxController} from "@/ts/controllers/box.controller";
 import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraController} from "@/ts/controllers/camera.controller";
-import {PointEvent} from "@/ts/events/point.event";
-import {NumberHelper} from "@/ts/helpers/number.helper";
 
 export class View {
   protected world!: World;
@@ -28,7 +26,6 @@ export class View {
   protected scene: THREE.Scene;
   protected $element!: HTMLDivElement;
   protected controls!: OrbitControls;
-  protected raycaster: THREE.Raycaster;
 
   constructor() {
     this.clock = new THREE.Clock();
@@ -47,8 +44,6 @@ export class View {
 
     this.axes = new THREE.AxesHelper( 5 );
     this.scene.add(this.axes);
-
-    this.raycaster = new THREE.Raycaster();
 
     // sky
     this.texture = new TextureLoader();
@@ -174,42 +169,11 @@ export class View {
     }
   }
 
-  private pointer = new THREE.Vector2(0, 0);
-  private arrow = new THREE.ArrowHelper(undefined, undefined, 1, 'blue');
   private onPointerMove($event: MouseEvent) {
     if (!this.isLocked()) {
       return;
     }
     this.world.onPointerMove($event);
-    const camera = this.world.getCamera();
-    if (camera) {
-      this.pointer.x += $event.movementX;
-      this.pointer.y += $event.movementY;
-      console.log('pointer', this.pointer.x, this.pointer.y);
-      this.raycaster.setFromCamera(this.pointer, camera.getCamera());
-      const geometry = new THREE.SphereGeometry(10);
-      const material = new THREE.MeshBasicMaterial({
-        color: 'red',
-        side: BackSide,
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-      this.scene.add(mesh);
-      const target = camera.getTarget();
-      if (target) {
-        const model = target.getModel();
-        if (model) {
-          mesh.position.copy(model.scene.position);
-          const points = this.raycaster.intersectObject(mesh);
-          if (points.length > 0) {
-            const point = points[0].point;
-            this.arrow.setDirection(point);
-            this.arrow.position.copy(model.scene.position);
-            this.scene.add(this.arrow);
-            this.world.onPoint(new PointEvent(point));
-          }
-        }
-      }
-    }
   }
 
   private animate() {

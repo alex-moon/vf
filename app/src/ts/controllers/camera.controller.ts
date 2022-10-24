@@ -1,5 +1,5 @@
 import {Controller} from "@/ts/controllers/controller";
-import {Camera, Euler, Vector3} from "three";
+import {Camera, Vector3} from "three";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 
 export class CameraController extends Controller<CameraEntity> {
@@ -16,20 +16,14 @@ export class CameraController extends Controller<CameraEntity> {
   public move(delta: number) {
     const target = this.entity.getTarget();
     if (target) {
-      const model = target.getModel();
-      if (model) {
-        const scene = model.scene;
-        const direction = new Euler(0, scene.rotation.y, 0);
-        const result = new Vector3(0, 1.5, -5);
-        result.applyEuler(direction);
-        const target = new Vector3(
-          scene.position.x,
-          scene.position.y + 1,
-          scene.position.z
-        );
-        const position = target.clone();
-        this.camera.position.copy(position.add(result));
-        this.camera.lookAt(target);
+      const pov = target.getPov();
+      if (pov) {
+        const vector = new Vector3(0, 0, -5);
+        vector.applyQuaternion(pov.rotation);
+        const position = pov.position.clone();
+        position.add(vector);
+        this.camera.position.copy(position);
+        this.camera.lookAt(pov.position);
       }
     }
   }

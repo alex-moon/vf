@@ -1,6 +1,6 @@
 import {Controller} from "@/ts/controllers/controller";
 import {ModelEntity} from "@/ts/entities/model.entity";
-import {AnimationMixer, Euler, Vector3} from "three";
+import {AnimationMixer, Euler, Quaternion, Vector3} from "three";
 import {Model} from "@/ts/interfaces/model";
 import {NumberHelper} from "@/ts/helpers/number.helper";
 
@@ -22,6 +22,19 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
 
   public getMixer() {
     return this.mixer;
+  }
+
+  public getPov() {
+    if (this.model) {
+      const intent = this.entity.getIntent();
+      const position = this.model.scene.position.clone();
+      position.add(intent.pov.position);
+      const rotation = new Quaternion()
+        .setFromEuler(this.model.scene.rotation)
+        .multiply(intent.pov.rotation);
+      return {position, rotation};
+    }
+    return null;
   }
 
   public getVelocity() {

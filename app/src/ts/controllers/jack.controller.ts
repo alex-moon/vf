@@ -2,28 +2,11 @@ import {JackEntity} from "@/ts/entities/jack.entity";
 import {ModelController} from "@/ts/controllers/model.controller";
 import {NumberHelper} from "@/ts/helpers/number.helper";
 import {Model} from "@/ts/interfaces/model";
-import {Object3D} from "three";
-import {PointEvent} from "@/ts/events/point.event";
+import {Euler, Object3D, Quaternion} from "three";
 
 export class JackController extends ModelController<JackEntity> {
   protected head ?: Object3D;
   protected root ?: Object3D;
-
-  // public onPointerMove($event: MouseEvent) {
-  //   super.onPointerMove($event);
-  //   this.model.scene.rotation.y = NumberHelper.addMod(
-  //     this.model.scene.rotation.y,
-  //     -$event.movementX * 0.01,
-  //     2 * Math.PI
-  //   );
-  // }
-
-  public onPoint($event: PointEvent) {
-    super.onPoint($event);
-    if (this.head) {
-      this.head.lookAt($event.point);
-    }
-  }
 
   public setModel(model: Model) {
     super.setModel(model);
@@ -40,12 +23,31 @@ export class JackController extends ModelController<JackEntity> {
       return;
     }
 
+    const intent = this.entity.getIntent();
+
+    if (this.head) {
+      this.head.rotation.setFromQuaternion(intent.pov.rotation);
+    }
+
+    const euler = new Euler().setFromQuaternion(intent.pov.rotation);
+    this.model.scene.rotation.y = NumberHelper.addMod(
+      this.model.scene.rotation.y,
+      euler.y,
+      2 * Math.PI
+    );
+    euler.y = 0;
+    intent.pov.rotation.setFromEuler(euler);
+
     if (this.root) {
-      const intent = this.entity.getIntent();
       if (intent.direction !== null) {
         this.root.rotation.y = intent.direction;
+
         if (this.head) {
-          this.head.rotation.y = -this.root.rotation.y;
+          this.head.rotation.y = NumberHelper.addMod(
+            this.head.rotation.y,
+            -intent.direction,
+            2 * Math.PI
+          );
         }
       }
     }

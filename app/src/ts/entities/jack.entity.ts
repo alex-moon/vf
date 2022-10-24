@@ -3,6 +3,8 @@ import {ModelEntity} from "@/ts/entities/model.entity";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {DirectionKey} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
+import {NumberHelper} from "@/ts/helpers/number.helper";
+import {Euler, Quaternion} from "three";
 
 enum JackState {
   DEFAULT = 'default',
@@ -23,6 +25,10 @@ export class JackEntity extends ModelEntity {
     JackState.RUNNING,
   ];
   protected intent = new Intent(JackState.IDLE);
+  constructor() {
+    super();
+    this.intent.pov.position.y = 1.8;
+  }
 
   public onKeysChanged($event: KeysChangedEvent) {
     const zKeys = $event.keys.filter(key => [DirectionKey.N, DirectionKey.S].includes(key as DirectionKey));
@@ -38,5 +44,16 @@ export class JackEntity extends ModelEntity {
       this.intent.speed = this.speed[JackState.IDLE];
       this.intent.direction = null;
     }
+  }
+
+  public onPointerMove($event: MouseEvent) {
+    super.onPointerMove($event);
+    const euler = new Euler().setFromQuaternion(this.intent.pov.rotation);
+    const rotation = new Euler(
+      euler.x - $event.movementY * 0.01,
+      euler.y - $event.movementX * 0.01,
+      euler.z
+    );
+    this.intent.pov.rotation.setFromEuler(rotation);
   }
 }
