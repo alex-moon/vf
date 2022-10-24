@@ -7,6 +7,7 @@ import {Controller} from "@/ts/controllers/controller";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraController} from "@/ts/controllers/camera.controller";
 import {CameraEntity} from "@/ts/entities/camera.entity";
+import {PointEvent} from "@/ts/events/point.event";
 
 export class World {
   protected view: View;
@@ -27,15 +28,11 @@ export class World {
   }
 
   public getCamera() {
-    if (this.camera) {
-      return this.camera.getCamera();
-    }
+    return this.camera;
   }
 
   public getJack() {
-    if (this.jack) {
-      return this.jack.getModel();
-    }
+    return this.jack;
   }
 
   protected loadCamera() {
@@ -69,6 +66,10 @@ export class World {
 
   public onPointerMove($event: MouseEvent) {
     this.controllers.forEach(controller => controller.onPointerMove($event));
+  }
+
+  public onPoint($event: PointEvent) {
+    this.controllers.forEach(controller => controller.onPoint($event));
   }
 
   public move(delta: number) {

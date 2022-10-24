@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {AxesHelper, TextureLoader} from 'three';
+import {AxesHelper, BackSide, TextureLoader} from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
@@ -12,6 +12,8 @@ import {BoxController} from "@/ts/controllers/box.controller";
 import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraController} from "@/ts/controllers/camera.controller";
+import {PointEvent} from "@/ts/events/point.event";
+import {NumberHelper} from "@/ts/helpers/number.helper";
 
 export class View {
   protected world!: World;
@@ -172,34 +174,58 @@ export class View {
     }
   }
 
+  private pointer = new THREE.Vector2(0, 0);
+  private arrow = new THREE.ArrowHelper(undefined, undefined, 1, 'blue');
   private onPointerMove($event: MouseEvent) {
     if (!this.isLocked()) {
       return;
     }
     this.world.onPointerMove($event);
-
-    // const pointer = new THREE.Vector2();
-    // pointer.x = ( $event.clientX / window.innerWidth ) * 2 - 1;
-    // pointer.y = - ( $event.clientY / window.innerHeight ) * 2 + 1;
-    // this.raycaster.setFromCamera(pointer, this.camera);
-    // const points = this.raycaster.intersectObject(this.floor);
-    // if (points.length > 0) {
-    //   const point = points[0].point;
-    //   this.world.onPoint(point);
-    // }
+    const camera = this.world.getCamera();
+    if (camera) {
+      this.pointer.x += $event.movementX;
+      this.pointer.y += $event.movementY;
+      console.log('pointer', this.pointer.x, this.pointer.y);
+      this.raycaster.setFromCamera(this.pointer, camera.getCamera());
+      const geometry = new THREE.SphereGeometry(10);
+      const material = new THREE.MeshBasicMaterial({
+        color: 'red',
+        side: BackSide,
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      this.scene.add(mesh);
+      const target = camera.getTarget();
+      if (target) {
+        const model = target.getModel();
+        if (model) {
+          mesh.position.copy(model.scene.position);
+          const points = this.raycaster.intersectObject(mesh);
+          if (points.length > 0) {
+            const point = points[0].point;
+            this.arrow.setDirection(point);
+            this.arrow.position.copy(model.scene.position);
+            this.scene.add(this.arrow);
+            this.world.onPoint(new PointEvent(point));
+          }
+        }
+      }
+    }
   }
 
   private animate() {
     requestAnimationFrame(this.animate.bind(this));
     this.stats.update();
     this.world.move(this.clock.getDelta());
-    const jack = this.world.getJack();
-    if (jack) {
-      this.axes.position.copy(jack.scene.position);
-    }
     const camera = this.world.getCamera();
     if (camera) {
-      this.renderer.render(this.scene, camera);
+      this.renderer.render(this.scene, camera.getCamera());
+      const target = camera.getTarget();
+      if (target) {
+        const model = target.getModel();
+        if (model) {
+          this.axes.position.copy(model.scene.position);
+        }
+      }
     }
   }
 }

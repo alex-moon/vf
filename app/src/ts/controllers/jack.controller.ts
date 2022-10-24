@@ -3,18 +3,26 @@ import {ModelController} from "@/ts/controllers/model.controller";
 import {NumberHelper} from "@/ts/helpers/number.helper";
 import {Model} from "@/ts/interfaces/model";
 import {Object3D} from "three";
+import {PointEvent} from "@/ts/events/point.event";
 
 export class JackController extends ModelController<JackEntity> {
   protected head ?: Object3D;
   protected root ?: Object3D;
 
-  public onPointerMove($event: MouseEvent) {
-    super.onPointerMove($event);
-    this.model.scene.rotation.y = NumberHelper.addMod(
-      this.model.scene.rotation.y,
-      -$event.movementX * 0.01,
-      2 * Math.PI
-    );
+  // public onPointerMove($event: MouseEvent) {
+  //   super.onPointerMove($event);
+  //   this.model.scene.rotation.y = NumberHelper.addMod(
+  //     this.model.scene.rotation.y,
+  //     -$event.movementX * 0.01,
+  //     2 * Math.PI
+  //   );
+  // }
+
+  public onPoint($event: PointEvent) {
+    super.onPoint($event);
+    if (this.head) {
+      this.head.lookAt($event.point);
+    }
   }
 
   public setModel(model: Model) {

@@ -10,6 +10,9 @@ export class CameraController extends Controller<CameraEntity> {
   public getCamera() {
     return this.camera;
   }
+  public getTarget() {
+    return this.entity.getTarget();
+  }
   public move(delta: number) {
     const target = this.entity.getTarget();
     if (target) {

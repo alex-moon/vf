@@ -1,6 +1,7 @@
 import {Entity} from "@/ts/entities/entity";
 import * as THREE from "three";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
+import {PointEvent} from "@/ts/events/point.event";
 
 export abstract class Controller<E extends Entity> {
   protected entity: E;
@@ -23,7 +24,7 @@ export abstract class Controller<E extends Entity> {
     this.entity.onPointerMove($event);
   }
 
-  public onPoint(point: THREE.Vector3): void {
+  public onPoint(point: PointEvent): void {
     this.entity.onPoint(point);
   }
 }
