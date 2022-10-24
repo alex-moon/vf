@@ -4,7 +4,6 @@ import {BoxController} from "@/ts/controllers/box.controller";
 import {BoxEntity} from "@/ts/entities/box.entity";
 import {View} from "@/ts/view";
 import {Controller} from "@/ts/controllers/controller";
-import {Vector3} from "three";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraController} from "@/ts/controllers/camera.controller";
 import {CameraEntity} from "@/ts/entities/camera.entity";
@@ -30,6 +29,12 @@ export class World {
   public getCamera() {
     if (this.camera) {
       return this.camera.getCamera();
+    }
+  }
+
+  public getJack() {
+    if (this.jack) {
+      return this.jack.getModel();
     }
   }
 

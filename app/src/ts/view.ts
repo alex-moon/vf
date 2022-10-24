@@ -193,6 +193,10 @@ export class View {
     requestAnimationFrame(this.animate.bind(this));
     this.stats.update();
     this.world.move(this.clock.getDelta());
+    const jack = this.world.getJack();
+    if (jack) {
+      this.axes.position.copy(jack.scene.position);
+    }
     const camera = this.world.getCamera();
     if (camera) {
       this.renderer.render(this.scene, camera);
