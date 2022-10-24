@@ -19,7 +19,7 @@ export class Intent {
     this.stateChanged = true;
     this.pov = {
       position: new Vector3(0, 0, 0),
-      rotation: new Quaternion(0, 0, 0, 1),
+      rotation: new Quaternion().normalize(),
     };
   }
 
