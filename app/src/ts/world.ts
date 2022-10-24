@@ -4,15 +4,16 @@ import {BoxController} from "@/ts/controllers/box.controller";
 import {BoxEntity} from "@/ts/entities/box.entity";
 import {View} from "@/ts/view";
 import {Controller} from "@/ts/controllers/controller";
-import {ModelController} from "@/ts/controllers/model.controller";
-import {Vector3} from "three";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
+import {CameraController} from "@/ts/controllers/camera.controller";
+import {CameraEntity} from "@/ts/entities/camera.entity";
 
 export class World {
   protected view: View;
   protected controllers: Controller<any>[] = [];
   protected floor!: BoxController;
   protected jack!: JackController;
+  protected camera!: CameraController;
 
   constructor(view: View) {
     this.view = view;
@@ -22,16 +23,27 @@ export class World {
   public init() {
     this.loadFloor();
     this.loadJack();
+    this.loadCamera();
   }
 
-  public getTarget() {
-    if (this.jack) {
-      const model = this.jack.getModel();
-      if (model) {
-        return model.scene.position;
-      }
+  public getCamera() {
+    if (this.camera) {
+      return this.camera.getCamera();
     }
-    return new Vector3(0, 1, 0);
+  }
+
+  public getJack() {
+    if (this.jack) {
+      return this.jack.getModel();
+    }
+  }
+
+  protected loadCamera() {
+    const entity = new CameraEntity();
+    entity.setTarget(this.jack);
+    this.camera = new CameraController(entity);
+    this.controllers.push(this.camera);
+    this.view.load(this.camera);
   }
 
   protected loadJack() {

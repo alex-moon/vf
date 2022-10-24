@@ -11,6 +11,7 @@ import {ModelController} from "@/ts/controllers/model.controller";
 import {BoxController} from "@/ts/controllers/box.controller";
 import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
+import {CameraController} from "@/ts/controllers/camera.controller";
 
 export class View {
   protected world!: World;
@@ -23,7 +24,7 @@ export class View {
   protected renderer!: THREE.WebGLRenderer;
   protected pmremGenerator!: THREE.PMREMGenerator;
   protected scene: THREE.Scene;
-  protected camera!: THREE.PerspectiveCamera;
+  protected $element!: HTMLDivElement;
   protected controls!: OrbitControls;
   protected raycaster: THREE.Raycaster;
 
@@ -70,23 +71,10 @@ export class View {
   }
 
   public init($element: HTMLDivElement) {
-    $element.appendChild(this.stats.dom);
-    $element.appendChild(this.renderer.domElement);
-    this.renderer.setSize($element.offsetWidth, $element.offsetHeight);
-
-    this.camera = new THREE.PerspectiveCamera(
-      40,
-      $element.offsetWidth / $element.offsetHeight,
-      1,
-      100
-    );
-    this.camera.position.set(0, 2, -2);
-
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.target.set(0, 0.8, 0);
-    this.controls.update();
-    this.controls.enablePan = true;
-    this.controls.enableDamping = true;
+    this.$element = $element;
+    this.$element.appendChild(this.stats.dom);
+    this.$element.appendChild(this.renderer.domElement);
+    this.renderer.setSize(this.$element.offsetWidth, this.$element.offsetHeight);
 
     this.world.init();
 
@@ -110,6 +98,9 @@ export class View {
     }
     if (controller instanceof BoxController) {
       this.loadBox(controller);
+    }
+    if (controller instanceof CameraController) {
+      this.loadCamera(controller);
     }
   }
 
@@ -146,6 +137,17 @@ export class View {
     const mesh = new THREE.Mesh(geometry, material);
     controller.setMesh(mesh);
     this.scene.add(mesh);
+  }
+
+  protected loadCamera(controller: CameraController) {
+    const camera = new THREE.PerspectiveCamera(
+      40,
+      this.$element.offsetWidth / this.$element.offsetHeight,
+      1,
+      100
+    );
+    camera.position.set(0, 2, -2);
+    controller.setCamera(camera);
   }
 
   private isLocked() {
@@ -189,14 +191,15 @@ export class View {
 
   private animate() {
     requestAnimationFrame(this.animate.bind(this));
-    this.world.move(this.clock.getDelta());
-    const target = this.world.getTarget();
-    if (target) {
-      this.controls.target.set(target.x, 1, target.z);
-      this.axes.position.copy(target);
-    }
-    this.controls.update();
     this.stats.update();
-    this.renderer.render(this.scene, this.camera);
+    this.world.move(this.clock.getDelta());
+    const jack = this.world.getJack();
+    if (jack) {
+      this.axes.position.copy(jack.scene.position);
+    }
+    const camera = this.world.getCamera();
+    if (camera) {
+      this.renderer.render(this.scene, camera);
+    }
   }
 }
