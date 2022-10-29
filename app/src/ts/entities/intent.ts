@@ -6,8 +6,7 @@ export interface IntentPov {
 }
 
 export class Intent {
-  stateChanged = false;
-  _state: string;
+  state: string;
 
   speed: number = 0;
   // @todo replace with quaternion
@@ -16,22 +15,10 @@ export class Intent {
   pov: IntentPov;
 
   constructor(state: string) {
-    this._state = state;
-    this.stateChanged = true;
+    this.state = state;
     this.pov = {
       position: new Vector3(0, 0, 0),
       rotation: new Quaternion().normalize(),
     };
-  }
-
-  set state(value) {
-    if (this._state !== value) {
-      this.stateChanged = true;
-    }
-    this._state = value;
-  }
-
-  get state(): string {
-    return this._state;
   }
 }

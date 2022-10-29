@@ -109,7 +109,6 @@ export class World {
       const intersection = intersections[0];
       const distance = intersection.distance;
       if (distance - buffer < length) {
-        this.debugIntersection(intersection);
         const multiple = (distance - buffer) / length;
         const resultant = vector.clone();
         resultant.multiplyScalar(multiple);
@@ -118,10 +117,5 @@ export class World {
       }
     }
     return null;
-  }
-
-  protected debugIntersection(intersection: Intersection<any>) {
-    (window as any).cunt = intersection;
-    console.log('intersection on cunt');
   }
 }

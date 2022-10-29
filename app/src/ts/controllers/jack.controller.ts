@@ -4,6 +4,7 @@ import {NumberHelper} from "@/ts/helpers/number.helper";
 import {Model} from "@/ts/interfaces/model";
 import {Euler, Object3D} from "three";
 import {World} from "@/ts/world";
+import {Direction} from "@/ts/enums/direction";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -48,6 +49,16 @@ export class JackController extends ModelController<JackEntity> {
         -intent.direction,
         2 * Math.PI
       );
+      if (
+        intent.direction < Direction.E
+        && intent.direction > Direction.W
+      ) {
+        this.head.rotation.y = NumberHelper.addMod(
+          this.head.rotation.y,
+          -Math.PI,
+          2 * Math.PI
+        );
+      }
     }
 
     // @todo handle intersections! :) ideally in the handler

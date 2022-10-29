@@ -40,7 +40,6 @@ export class CameraController extends Controller<CameraEntity> {
     // sanity check
     const sanity = position.clone();
     if (sanity.y < 0) {
-      console.log('SHIT', intersection);
     }
 
     this.camera.position.copy(position);

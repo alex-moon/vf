@@ -8,6 +8,7 @@ import {World} from "@/ts/world";
 export abstract class ModelController<M extends ModelEntity> extends Controller<M> {
   protected model!: Model;
   protected mixer!: AnimationMixer;
+  protected animation = 0;
 
   public setModel(model: Model) {
     this.model = model;
@@ -60,12 +61,11 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
     model.scene.position.z += velocity.z;
 
     const entity = this.getEntity();
-    const intent = entity.getIntent();
-    if (intent.stateChanged) {
-      const animation = model.animations[entity.getAnimation()];
+    const animation = entity.getAnimation();
+    if (animation !== this.animation) {
+      this.animation = animation;
       mixer.stopAllAction();
-      mixer.clipAction(animation).play();
-      intent.stateChanged = false;
+      mixer.clipAction(model.animations[entity.getAnimation()]).play();
     }
     mixer.update(delta);
   }

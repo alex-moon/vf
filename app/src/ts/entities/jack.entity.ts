@@ -1,7 +1,7 @@
 import {Intent} from "@/ts/entities/intent";
 import {ModelEntity} from "@/ts/entities/model.entity";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
-import {DirectionKey} from "@/ts/enums/direction";
+import {Direction, DirectionKey} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {Euler} from "three";
 
@@ -22,11 +22,26 @@ export class JackEntity extends ModelEntity {
     JackState.DEFAULT,
     JackState.IDLE,
     JackState.RUNNING,
+    JackState.RUNNING + 'Backward',
   ];
   protected intent = new Intent(JackState.IDLE);
   constructor() {
     super();
     this.intent.pov.position.y = 1.8;
+  }
+
+  public getAnimation(key: string|null = null) {
+    if (key === null) {
+      key = this.intent.state;
+    }
+    if (
+      this.intent.direction
+      && this.intent.direction < Direction.E
+      && this.intent.direction > Direction.W
+    ) {
+      key = this.intent.state + 'Backward';
+    }
+    return this.animations.indexOf(key);
   }
 
   public onKeysChanged($event: KeysChangedEvent) {
