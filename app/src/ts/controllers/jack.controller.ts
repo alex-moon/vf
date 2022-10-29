@@ -16,6 +16,7 @@ export class JackController extends ModelController<JackEntity> {
       throw new Error('Could not get Head of Jack');
     }
     this.head = head;
+    this.head.rotation.order = 'YXZ'; // @todo this is a hack
     const root = model.scene.getObjectByName('Root');
     if (!root) {
       throw new Error('Could not get Root of Jack');
@@ -28,8 +29,6 @@ export class JackController extends ModelController<JackEntity> {
 
     const intent = this.entity.getIntent();
 
-    this.head.rotation.setFromQuaternion(intent.pov.rotation);
-
     const euler = new Euler().setFromQuaternion(intent.pov.rotation);
     this.model.scene.rotation.y = NumberHelper.addMod(
       this.model.scene.rotation.y,
@@ -39,11 +38,11 @@ export class JackController extends ModelController<JackEntity> {
     euler.y = 0;
     intent.pov.rotation.setFromEuler(euler);
 
-    // @todo intent direction should never be null
-    // we are using it to indicate no movement, but that's not correct
+    this.head.rotation.setFromQuaternion(intent.pov.rotation);
+
+    // @todo intent direction is only used for wasd movement - this is confusing
     if (intent.direction !== null) {
       this.root.rotation.y = intent.direction;
-      // @todo do with quaternion multiplication
       this.head.rotation.y = NumberHelper.addMod(
         this.head.rotation.y,
         -intent.direction,

@@ -48,11 +48,15 @@ export class JackEntity extends ModelEntity {
   public onPointerMove($event: MouseEvent) {
     super.onPointerMove($event);
     const euler = new Euler().setFromQuaternion(this.intent.pov.rotation);
-    const rotation = new Euler(
-      euler.x + $event.movementY * 0.001,
-      euler.y - $event.movementX * 0.01,
-      euler.z
-    );
+    const y = euler.y - $event.movementX * 0.01;
+    let x = euler.x + $event.movementY * 0.001;
+    if (x < -0.75) {
+      x = -0.75;
+    }
+    if (x > 0.9) {
+      x = 0.9;
+    }
+    const rotation = new Euler(x, y, euler.z);
     this.intent.pov.rotation.setFromEuler(rotation);
   }
 }

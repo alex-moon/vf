@@ -9,6 +9,7 @@ import {CameraController} from "@/ts/controllers/camera.controller";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {PointEvent} from "@/ts/events/point.event";
 import {Quaternion, Raycaster, Vector3} from "three";
+import {Intersection} from "three/src/core/Raycaster";
 
 export class World {
   protected view: View;
@@ -95,11 +96,12 @@ export class World {
     controller: Controller<any>,
     origin: Vector3,
     vector: Vector3,
-    buffer: number = 0
+    buffer: number = 0,
+    exclude: Controller<any>[] = []
   ): Vector3|null {
     const objects = this.controllers
-      .filter(candidate => candidate != controller)
-      .map(candidate => candidate.getObject());
+      .filter(candidate => candidate != controller && !exclude.includes(candidate))
+      .map(candidate => candidate.getIntersectable());
     const length = vector.length();
     this.raycaster.set(origin, vector);
     const intersections = this.raycaster.intersectObjects(objects);
@@ -107,6 +109,7 @@ export class World {
       const intersection = intersections[0];
       const distance = intersection.distance;
       if (distance - buffer < length) {
+        this.debugIntersection(intersection);
         const multiple = (distance - buffer) / length;
         const resultant = vector.clone();
         resultant.multiplyScalar(multiple);
@@ -115,5 +118,10 @@ export class World {
       }
     }
     return null;
+  }
+
+  protected debugIntersection(intersection: Intersection<any>) {
+    (window as any).cunt = intersection;
+    console.log('intersection on cunt');
   }
 }

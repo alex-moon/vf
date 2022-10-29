@@ -18,7 +18,7 @@ export abstract class Controller<E extends Entity> {
     return this.entity;
   }
 
-  public abstract getObject(): Object3D;
+  public abstract getIntersectable(): Object3D;
 
   public move(delta: number, world: World) {}
 

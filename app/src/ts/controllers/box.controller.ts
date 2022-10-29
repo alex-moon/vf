@@ -10,7 +10,7 @@ export class BoxController extends Controller<BoxEntity> {
   public getMesh() {
     return this.mesh;
   }
-  public getObject() {
+  public getIntersectable() {
     return this.getMesh();
   }
 }

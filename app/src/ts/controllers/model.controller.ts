@@ -25,7 +25,8 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
     return this.mixer;
   }
 
-  public getObject(): Object3D {
+  public getIntersectable(): Object3D {
+    // @todo this needs to be a collision box instead
     return this.model.scene;
   }
 

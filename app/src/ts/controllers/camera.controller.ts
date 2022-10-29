@@ -15,7 +15,7 @@ export class CameraController extends Controller<CameraEntity> {
     return this.camera;
   }
 
-  public getObject() {
+  public getIntersectable() {
     return this.camera;
   }
 
@@ -24,17 +24,25 @@ export class CameraController extends Controller<CameraEntity> {
   }
 
   public move(delta: number, world: World) {
-    const target = this.entity.getTarget();
+    const target = this.getTarget();
     const pov = target.getPov();
     const vector = new Vector3(0, 0, -this.calculateDistance());
     vector.applyQuaternion(pov.rotation);
     const position = pov.position.clone();
-    const intersection = world.intersects(this, position, vector, 0.5);
+
+    const intersection = world.intersects(this, position, vector, 0.5, [target]);
     if (intersection) {
       position.copy(intersection);
     } else {
       position.add(vector);
     }
+
+    // sanity check
+    const sanity = position.clone();
+    if (sanity.y < 0) {
+      console.log('SHIT', intersection);
+    }
+
     this.camera.position.copy(position);
     this.camera.lookAt(pov.position);
   }
