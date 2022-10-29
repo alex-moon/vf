@@ -15,6 +15,7 @@ export class World {
   protected floor!: BoxController;
   protected jack!: JackController;
   protected camera!: CameraController;
+  protected ready = false;
 
   constructor(view: View) {
     this.view = view;
@@ -22,9 +23,17 @@ export class World {
   }
 
   public init() {
-    this.loadFloor();
-    this.loadJack();
-    this.loadCamera();
+    Promise.all([
+      this.loadFloor(),
+      this.loadJack(),
+      this.loadCamera(),
+    ]).then(() => {
+      this.ready = true;
+    });
+  }
+
+  public isReady() {
+    return this.ready;
   }
 
   public getCamera() {
@@ -40,13 +49,13 @@ export class World {
     entity.setTarget(this.jack);
     this.camera = new CameraController(entity);
     this.controllers.push(this.camera);
-    this.view.load(this.camera);
+    return this.view.load(this.camera);
   }
 
   protected loadJack() {
     this.jack = new JackController(new JackEntity());
     this.controllers.push(this.jack);
-    this.view.load(this.jack);
+    return this.view.load(this.jack);
   }
 
   protected loadFloor() {
@@ -57,7 +66,7 @@ export class World {
       1000
     ));
     this.controllers.push(this.floor);
-    this.view.load(this.floor);
+    return this.view.load(this.floor);
   }
 
   public onKeysChanged($event: KeysChangedEvent) {

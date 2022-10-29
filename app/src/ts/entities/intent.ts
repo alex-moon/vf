@@ -10,6 +10,7 @@ export class Intent {
   _state: string;
 
   speed: number = 0;
+  // @todo replace with quaternion
   direction: number|null = 0;
 
   pov: IntentPov;

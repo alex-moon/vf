@@ -25,16 +25,13 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   }
 
   public getPov() {
-    if (this.model) {
-      const intent = this.entity.getIntent();
-      const position = this.model.scene.position.clone();
-      position.add(intent.pov.position);
-      const rotation = new Quaternion()
-        .setFromEuler(this.model.scene.rotation)
-        .multiply(intent.pov.rotation);
-      return {position, rotation};
-    }
-    return null;
+    const intent = this.entity.getIntent();
+    const position = this.model.scene.position.clone();
+    position.add(intent.pov.position);
+    const rotation = new Quaternion()
+      .setFromEuler(this.model.scene.rotation)
+      .multiply(intent.pov.rotation);
+    return {position, rotation};
   }
 
   public getVelocity() {
@@ -50,10 +47,6 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   public move(delta: number) {
     const model = this.getModel();
     const mixer = this.getMixer();
-    if (!model || !mixer) {
-      return;
-    }
-
     const velocity = this.getVelocity();
 
     model.scene.position.x += velocity.x;

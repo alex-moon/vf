@@ -3,8 +3,7 @@ import {ModelEntity} from "@/ts/entities/model.entity";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {DirectionKey} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {NumberHelper} from "@/ts/helpers/number.helper";
-import {Euler, Quaternion} from "three";
+import {Euler} from "three";
 
 enum JackState {
   DEFAULT = 'default',
@@ -15,7 +14,7 @@ enum JackState {
 export class JackEntity extends ModelEntity {
   protected speed = {
     [JackState.IDLE]: 0,
-    [JackState.RUNNING]: 0.05,
+    [JackState.RUNNING]: 0.08,
   }
 
   protected path = '/glb/jack.glb';
@@ -50,7 +49,7 @@ export class JackEntity extends ModelEntity {
     super.onPointerMove($event);
     const euler = new Euler().setFromQuaternion(this.intent.pov.rotation);
     const rotation = new Euler(
-      euler.x - $event.movementY * 0.01,
+      euler.x + $event.movementY * 0.001,
       euler.y - $event.movementX * 0.01,
       euler.z
     );
