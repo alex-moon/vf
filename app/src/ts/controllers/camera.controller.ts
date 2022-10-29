@@ -1,6 +1,7 @@
 import {Controller} from "@/ts/controllers/controller";
 import {Camera, Vector3} from "three";
 import {CameraEntity} from "@/ts/entities/camera.entity";
+import {World} from "@/ts/world";
 
 export class CameraController extends Controller<CameraEntity> {
   SCALE_MULTIPLE = 4;
@@ -14,17 +15,26 @@ export class CameraController extends Controller<CameraEntity> {
     return this.camera;
   }
 
+  public getObject() {
+    return this.camera;
+  }
+
   public getTarget() {
     return this.entity.getTarget();
   }
 
-  public move(delta: number) {
+  public move(delta: number, world: World) {
     const target = this.entity.getTarget();
     const pov = target.getPov();
     const vector = new Vector3(0, 0, -this.calculateDistance());
     vector.applyQuaternion(pov.rotation);
     const position = pov.position.clone();
-    position.add(vector);
+    const intersection = world.intersects(this, position, vector, 0.5);
+    if (intersection) {
+      position.copy(intersection);
+    } else {
+      position.add(vector);
+    }
     this.camera.position.copy(position);
     this.camera.lookAt(pov.position);
   }

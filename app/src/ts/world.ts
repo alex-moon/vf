@@ -8,6 +8,7 @@ import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraController} from "@/ts/controllers/camera.controller";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {PointEvent} from "@/ts/events/point.event";
+import {Quaternion, Raycaster, Vector3} from "three";
 
 export class World {
   protected view: View;
@@ -16,6 +17,8 @@ export class World {
   protected jack!: JackController;
   protected camera!: CameraController;
   protected ready = false;
+
+  protected raycaster = new Raycaster();
 
   constructor(view: View) {
     this.view = view;
@@ -83,7 +86,34 @@ export class World {
 
   public move(delta: number) {
     this.controllers.forEach((controller) => {
-      controller.move(delta);
+      controller.move(delta, this);
     });
+  }
+
+  // @todo this is something you'd handle in the handler?
+  public intersects(
+    controller: Controller<any>,
+    origin: Vector3,
+    vector: Vector3,
+    buffer: number = 0
+  ): Vector3|null {
+    const objects = this.controllers
+      .filter(candidate => candidate != controller)
+      .map(candidate => candidate.getObject());
+    const length = vector.length();
+    this.raycaster.set(origin, vector);
+    const intersections = this.raycaster.intersectObjects(objects);
+    if (intersections.length > 0) {
+      const intersection = intersections[0];
+      const distance = intersection.distance;
+      if (distance - buffer < length) {
+        const multiple = (distance - buffer) / length;
+        const resultant = vector.clone();
+        resultant.multiplyScalar(multiple);
+        const target = origin.clone();
+        return target.add(resultant);
+      }
+    }
+    return null;
   }
 }

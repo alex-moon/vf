@@ -3,6 +3,7 @@ import {ModelController} from "@/ts/controllers/model.controller";
 import {NumberHelper} from "@/ts/helpers/number.helper";
 import {Model} from "@/ts/interfaces/model";
 import {Euler, Object3D} from "three";
+import {World} from "@/ts/world";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -22,8 +23,8 @@ export class JackController extends ModelController<JackEntity> {
     this.root = root;
   }
 
-  public move(delta: number) {
-    super.move(delta);
+  public move(delta: number, world: World) {
+    super.move(delta, world);
 
     const intent = this.entity.getIntent();
 
@@ -49,5 +50,7 @@ export class JackController extends ModelController<JackEntity> {
         2 * Math.PI
       );
     }
+
+    // @todo handle intersections! :) ideally in the handler
   }
 }
