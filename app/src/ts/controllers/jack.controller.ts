@@ -5,6 +5,7 @@ import {Model} from "@/ts/interfaces/model";
 import {Euler, Object3D} from "three";
 import {World} from "@/ts/world";
 import {Direction} from "@/ts/enums/direction";
+import {RotationHelper} from "@/ts/helpers/rotation.helper";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -31,11 +32,7 @@ export class JackController extends ModelController<JackEntity> {
     const intent = this.entity.getIntent();
 
     const euler = new Euler().setFromQuaternion(intent.pov.rotation);
-    this.model.scene.rotation.y = NumberHelper.addMod(
-      this.model.scene.rotation.y,
-      euler.y,
-      2 * Math.PI
-    );
+    RotationHelper.ye(this.model.scene.rotation, euler.y);
     euler.y = 0;
     intent.pov.rotation.setFromEuler(euler);
 
@@ -44,20 +41,21 @@ export class JackController extends ModelController<JackEntity> {
     // @todo intent direction is only used for wasd movement - this is confusing
     if (intent.direction !== null) {
       this.root.rotation.y = intent.direction;
-      this.head.rotation.y = NumberHelper.addMod(
-        this.head.rotation.y,
-        -intent.direction,
-        2 * Math.PI
-      );
+
       if (
         intent.direction < Direction.E
         && intent.direction > Direction.W
       ) {
-        this.head.rotation.y = NumberHelper.addMod(
-          this.head.rotation.y,
-          -Math.PI,
-          2 * Math.PI
-        );
+        RotationHelper.ye(this.root.rotation, Math.PI);
+      }
+
+      RotationHelper.ye(this.head.rotation, -intent.direction);
+
+      if (
+        intent.direction < Direction.E
+        && intent.direction > Direction.W
+      ) {
+        RotationHelper.ye(this.head.rotation, -Math.PI);
       }
     }
 

@@ -22,7 +22,7 @@ export class JackEntity extends ModelEntity {
     JackState.DEFAULT,
     JackState.IDLE,
     JackState.RUNNING,
-    JackState.RUNNING + 'Backward',
+    JackState.RUNNING + '.S',
   ];
   protected intent = new Intent(JackState.IDLE);
   constructor() {
@@ -39,7 +39,7 @@ export class JackEntity extends ModelEntity {
       && this.intent.direction < Direction.E
       && this.intent.direction > Direction.W
     ) {
-      key = this.intent.state + 'Backward';
+      key = this.intent.state + '.S';
     }
     return this.animations.indexOf(key);
   }
