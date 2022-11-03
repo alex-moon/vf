@@ -1,38 +1,47 @@
 import {JackEntity} from "@/ts/entities/jack.entity";
-import {JackController} from "@/ts/controllers/jack.controller";
-import {BoxController} from "@/ts/controllers/box.controller";
-import {BoxEntity} from "@/ts/entities/box.entity";
+import {JackHandler} from "@/ts/handlers/jack.handler";
 import {View} from "@/ts/view";
-import {Controller} from "@/ts/controllers/controller";
+import {Handler} from "@/ts/handlers/handler";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {CameraController} from "@/ts/controllers/camera.controller";
+import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {PointEvent} from "@/ts/events/point.event";
-import {Quaternion, Raycaster, Vector3} from "three";
-import {Intersection} from "three/src/core/Raycaster";
+import {Clock, Raycaster, Vector3} from "three";
+import {SphereHandler} from "@/ts/handlers/sphere.handler";
+import {SphereEntity} from "@/ts/entities/sphere.entity";
+import {Physics} from "@/ts/physics";
+import {KeysHelper} from "@/ts/helpers/keys.helper";
+import {JackController} from "@/ts/controllers/jack.controller";
+import {SphereController} from "@/ts/controllers/sphere.controller";
+import {CameraController} from "@/ts/controllers/camera.controller";
 
 export class World {
   protected view: View;
-  protected controllers: Controller<any>[] = [];
-  protected floor!: BoxController;
-  protected jack!: JackController;
-  protected camera!: CameraController;
+  protected physics: Physics;
+  protected clock: Clock;
+  protected handlers: Handler<any>[] = [];
+  protected floor!: SphereHandler;
+  protected jack!: JackHandler;
+  protected camera!: CameraHandler;
   protected ready = false;
 
   protected raycaster = new Raycaster();
 
-  constructor(view: View) {
+  constructor(view: View, physics: Physics) {
+    this.clock = new Clock;
     this.view = view;
-    this.view.setWorld(this);
+    this.physics = physics;
   }
 
-  public init() {
+  public init($element: HTMLDivElement) {
+    this.view.init($element);
     Promise.all([
       this.loadFloor(),
       this.loadJack(),
       this.loadCamera(),
     ]).then(() => {
-      this.ready = true;
+      this.bindEvents();
+      this.animate();
     });
   }
 
@@ -40,68 +49,97 @@ export class World {
     return this.ready;
   }
 
-  public getCamera() {
-    return this.camera;
-  }
-
   public getJack() {
     return this.jack;
   }
 
   protected loadCamera() {
-    const entity = new CameraEntity();
-    entity.setTarget(this.jack);
-    this.camera = new CameraController(entity);
-    this.controllers.push(this.camera);
-    return this.view.load(this.camera);
+    this.camera = new CameraHandler(new CameraController(new CameraEntity()));
+    this.camera.setTarget(this.jack);
+    this.handlers.push(this.camera);
+    return Promise.all([
+      this.physics.load(this.camera),
+      this.view.load(this.camera),
+    ]);
   }
 
   protected loadJack() {
-    this.jack = new JackController(new JackEntity());
-    this.controllers.push(this.jack);
-    return this.view.load(this.jack);
+    this.jack = new JackHandler(new JackController(new JackEntity()));
+    this.handlers.push(this.jack);
+    return Promise.all([
+      this.physics.load(this.jack),
+      this.view.load(this.jack),
+    ]);
   }
 
   protected loadFloor() {
-    this.floor = new BoxController(new BoxEntity(
+    this.floor = new SphereHandler(new SphereController(new SphereEntity(
       '/floor.png',
-      1000,
-      0,
       1000
-    ));
-    this.controllers.push(this.floor);
-    return this.view.load(this.floor);
+    )));
+    this.handlers.push(this.floor);
+    return Promise.all([
+      this.physics.load(this.floor),
+      this.view.load(this.floor),
+    ]);
+  }
+
+  private bindEvents() {
+    document.addEventListener("keydown", this.onKeyDown.bind(this), false);
+    document.addEventListener("keyup", this.onKeyUp.bind(this), false);
+    document.addEventListener("mousemove", this.onPointerMove.bind(this), false);
+  }
+
+  private onKeyDown($event: KeyboardEvent) {
+    if (!this.view.isLocked()) {
+      return;
+    }
+    if (KeysHelper.onKeyDown($event.key)) {
+      this.onKeysChanged(new KeysChangedEvent(KeysHelper.keys));
+    }
+  }
+
+  private onKeyUp($event: KeyboardEvent) {
+    if (!this.view.isLocked()) {
+      return;
+    }
+    if (KeysHelper.onKeyUp($event.key)) {
+      this.onKeysChanged(new KeysChangedEvent(KeysHelper.keys));
+    }
+  }
+
+  private onPointerMove($event: MouseEvent) {
+    if (!this.view.isLocked()) {
+      return;
+    }
+    this.handlers.forEach(handler => handler.onPointerMove($event));
   }
 
   public onKeysChanged($event: KeysChangedEvent) {
-    this.controllers.forEach(controller => controller.onKeysChanged($event));
-  }
-
-  public onPointerMove($event: MouseEvent) {
-    this.controllers.forEach(controller => controller.onPointerMove($event));
+    this.handlers.forEach(handler => handler.onKeysChanged($event));
   }
 
   public onPoint($event: PointEvent) {
-    this.controllers.forEach(controller => controller.onPoint($event));
+    this.handlers.forEach(handler => handler.onPoint($event));
   }
 
   public move(delta: number) {
-    this.controllers.forEach((controller) => {
-      controller.move(delta, this);
+    this.handlers.forEach((handler) => {
+      handler.move(delta, this);
     });
   }
 
   // @todo this is something you'd handle in the handler?
   public intersects(
-    controller: Controller<any>,
+    handler: Handler<any>,
     origin: Vector3,
     vector: Vector3,
     buffer: number = 0,
-    exclude: Controller<any>[] = []
+    exclude: Handler<any>[] = []
   ): Vector3|null {
-    const objects = this.controllers
-      .filter(candidate => candidate != controller && !exclude.includes(candidate))
-      .map(candidate => candidate.getIntersectable());
+    const objects = this.handlers
+      .filter(candidate => candidate != handler && !exclude.includes(candidate))
+      .map(candidate => candidate.getObject());
     const length = vector.length();
     this.raycaster.set(origin, vector);
     const intersections = this.raycaster.intersectObjects(objects);
@@ -117,5 +155,11 @@ export class World {
       }
     }
     return null;
+  }
+
+  private animate() {
+    requestAnimationFrame(this.animate.bind(this));
+    this.move(this.clock.getDelta());
+    this.view.animate(this.camera);
   }
 }

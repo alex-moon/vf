@@ -4,6 +4,7 @@ import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {Direction, DirectionKey} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {Euler} from "three";
+import {CollisionBox} from "@/ts/entities/collision-box";
 
 enum JackState {
   DEFAULT = 'default',
@@ -25,6 +26,12 @@ export class JackEntity extends ModelEntity {
     JackState.RUNNING + '.S',
   ];
   protected intent = new Intent(JackState.IDLE);
+  protected box = {
+    width: 0.5,
+    height: 1,
+    depth: 0.4,
+  } as CollisionBox;
+
   constructor() {
     super();
     this.intent.pov.position.y = 1.8;

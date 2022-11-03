@@ -11,6 +11,7 @@
   "dependencies": {
     "@mdi/font": "5.9.55",
     "@vue/composition-api": "^1.0.0-beta.15",
+    "cannon-es": "^0.20.0",
     "roboto-fontface": "*",
     "three": "^0.145.0",
     "vue": ">=3.2.25",

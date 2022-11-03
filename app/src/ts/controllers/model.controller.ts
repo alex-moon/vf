@@ -3,7 +3,6 @@ import {ModelEntity} from "@/ts/entities/model.entity";
 import {AnimationMixer, Euler, Object3D, Quaternion, Vector3} from "three";
 import {Model} from "@/ts/interfaces/model";
 import {NumberHelper} from "@/ts/helpers/number.helper";
-import {World} from "@/ts/world";
 
 export abstract class ModelController<M extends ModelEntity> extends Controller<M> {
   protected model!: Model;
@@ -12,6 +11,7 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
 
   public setModel(model: Model) {
     this.model = model;
+    this.object = model.scene;
   }
 
   public getModel() {
@@ -26,8 +26,7 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
     return this.mixer;
   }
 
-  public getIntersectable(): Object3D {
-    // @todo this needs to be a collision box instead
+  public getObject(): Object3D {
     return this.model.scene;
   }
 
@@ -51,7 +50,7 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
     return result;
   }
 
-  public move(delta: number, world: World) {
+  public move(delta: number) {
     const model = this.getModel();
     const mixer = this.getMixer();
     const velocity = this.getVelocity();

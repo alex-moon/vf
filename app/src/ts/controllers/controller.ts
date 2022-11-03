@@ -2,13 +2,15 @@ import {Entity} from "@/ts/entities/entity";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {PointEvent} from "@/ts/events/point.event";
 import {Object3D} from "three";
-import {World} from "@/ts/world";
+import {Body} from "cannon-es";
 
 /**
  * Rationale: an entity controls things like movement at the scale of global space
  */
 export abstract class Controller<E extends Entity> {
   protected entity: E;
+  protected body!: Body;
+  protected object!: Object3D;
 
   constructor(entity: E) {
     this.entity = entity;
@@ -18,9 +20,23 @@ export abstract class Controller<E extends Entity> {
     return this.entity;
   }
 
-  public abstract getIntersectable(): Object3D;
+  public setObject(object: Object3D) {
+    this.object = object;
+  }
 
-  public move(delta: number, world: World) {}
+  public getObject() {
+    return this.object;
+  }
+
+  public setBody(body: Body) {
+    this.body = body;
+  }
+
+  public getBody() {
+    return this.body;
+  }
+
+  public move(delta: number) {}
 
   public onKeysChanged($event: KeysChangedEvent): void {
     this.entity.onKeysChanged($event);

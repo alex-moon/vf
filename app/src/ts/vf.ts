@@ -1,16 +1,19 @@
 import {View} from "@/ts/view";
 import {World} from "@/ts/world";
+import {Physics} from "@/ts/physics";
 
 export class Vf {
-  private world: World;
+  private repository: World;
   private view: View;
+  private physics: Physics;
 
   public constructor() {
     this.view = new View();
-    this.world = new World(this.view);
+    this.physics = new Physics();
+    this.repository = new World(this.view, this.physics);
   }
 
   public init($element: HTMLDivElement) {
-    this.view.init($element);
+    this.repository.init($element);
   }
 }

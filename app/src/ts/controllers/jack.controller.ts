@@ -1,9 +1,7 @@
 import {JackEntity} from "@/ts/entities/jack.entity";
 import {ModelController} from "@/ts/controllers/model.controller";
-import {NumberHelper} from "@/ts/helpers/number.helper";
 import {Model} from "@/ts/interfaces/model";
 import {Euler, Object3D} from "three";
-import {World} from "@/ts/world";
 import {Direction} from "@/ts/enums/direction";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
 
@@ -26,8 +24,8 @@ export class JackController extends ModelController<JackEntity> {
     this.root = root;
   }
 
-  public move(delta: number, world: World) {
-    super.move(delta, world);
+  public move(delta: number) {
+    super.move(delta);
 
     const intent = this.entity.getIntent();
 
