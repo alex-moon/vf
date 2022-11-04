@@ -1,7 +1,7 @@
 import {JackEntity} from "@/ts/entities/jack.entity";
 import {ModelController} from "@/ts/controllers/model.controller";
 import {Model} from "@/ts/interfaces/model";
-import {Euler, Object3D} from "three";
+import {Euler, Object3D, Quaternion} from "three";
 import {Direction} from "@/ts/enums/direction";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
 
@@ -29,8 +29,11 @@ export class JackController extends ModelController<JackEntity> {
 
     const intent = this.entity.getIntent();
 
+    // @todo this is horse shit
     const euler = new Euler().setFromQuaternion(intent.pov.rotation);
-    RotationHelper.ye(this.model.scene.rotation, euler.y);
+    const rotation = new Quaternion(this.body.quaternion.x, this.body.quaternion.y, this.body.quaternion.z, this.body.quaternion.w);
+    RotationHelper.y(rotation, euler.y);
+    this.body.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
     euler.y = 0;
     intent.pov.rotation.setFromEuler(euler);
 

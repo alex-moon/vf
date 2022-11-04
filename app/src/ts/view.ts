@@ -168,10 +168,10 @@ export class View {
   }
 
   public animate(camera: CameraHandler) {
-    if (!this.controls) {
-      this.controls = new OrbitControls(camera.getObject(), this.renderer.domElement);
-    }
-    this.controls.update();
+    // if (!this.controls) {
+    //   this.controls = new OrbitControls(camera.getObject(), this.renderer.domElement);
+    // }
+    // this.controls.update();
     this.stats.update();
     this.renderer.render(this.scene, camera.getObject() as Camera);
     const target = camera.getTarget();

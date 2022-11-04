@@ -1,6 +1,6 @@
 import {Quaternion, Vector3} from "three";
 
-export interface IntentPov {
+export interface EntityPov {
   position: Vector3;
   rotation: Quaternion;
 }
@@ -12,7 +12,7 @@ export class Intent {
   // @todo replace with quaternion
   direction: number|null = 0;
 
-  pov: IntentPov;
+  pov: EntityPov;
 
   constructor(state: string) {
     this.state = state;
@@ -21,4 +21,10 @@ export class Intent {
       rotation: new Quaternion().normalize(),
     };
   }
+}
+
+export class ControllerIntent {
+  position ?: Vector3;
+  velocity ?: Vector3;
+  force ?: Vector3;
 }
