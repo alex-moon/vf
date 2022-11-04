@@ -51,20 +51,20 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   }
 
   public move(delta: number) {
-    const model = this.getModel();
+    const body = this.getBody();
     const mixer = this.getMixer();
     const velocity = this.getVelocity();
 
-    model.scene.position.x += velocity.x;
-    model.scene.position.y += velocity.y;
-    model.scene.position.z += velocity.z;
+    body.position.x += velocity.x;
+    body.position.y += velocity.y;
+    body.position.z += velocity.z;
 
     const entity = this.getEntity();
     const animation = entity.getAnimation();
     if (animation !== this.animation) {
       this.animation = animation;
       mixer.stopAllAction();
-      mixer.clipAction(model.animations[entity.getAnimation()]).play();
+      mixer.clipAction(this.getModel().animations[entity.getAnimation()]).play();
     }
     mixer.update(delta);
   }

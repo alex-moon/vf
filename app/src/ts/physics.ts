@@ -41,6 +41,7 @@ export class Physics {
           entity.box.depth / 2
         )),
       });
+      body.position.set(0, 0, 0);
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
@@ -57,6 +58,7 @@ export class Physics {
           entity.depth / 2
         )),
       });
+      body.position.set(0, 0, 0);
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
@@ -69,6 +71,8 @@ export class Physics {
       const body = new CANNON.Body({
         shape: new CANNON.Sphere(entity.radius),
       });
+      body.position.set(0, -entity.radius, 0);
+      body.quaternion.set(-1, 0, 0, 1).normalize();
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
@@ -80,6 +84,8 @@ export class Physics {
       const body = new CANNON.Body({
         shape: new CANNON.Box(new CANNON.Vec3(0.1, 0.1, 0.1)),
       });
+      body.position.set(0, 5, -20);
+      body.quaternion.set(-0.2, 0, 0, 1).normalize();
       this.world.addBody(body);
       handler.setBody(body);
       resolve();

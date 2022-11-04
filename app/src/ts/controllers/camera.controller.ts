@@ -2,6 +2,7 @@ import {Controller} from "@/ts/controllers/controller";
 import {Camera, Vector3} from "three";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {ModelHandler} from "@/ts/handlers/model.handler";
+import {Vec3} from "cannon-es";
 
 export class CameraController extends Controller<CameraEntity> {
   SCALE_MULTIPLE = 4;
@@ -39,7 +40,7 @@ export class CameraController extends Controller<CameraEntity> {
     // if (intersection) {
     //   position.copy(intersection);
     // } else {
-    //   position.add(vector);
+       position.add(vector);
     // }
     //
     // // sanity check
@@ -47,8 +48,9 @@ export class CameraController extends Controller<CameraEntity> {
     // if (sanity.y < 0) {
     // }
 
-    this.object.position.copy(position);
-    this.object.lookAt(pov.position);
+    const body = this.getBody();
+    body.position.set(position.x, position.y, position.z);
+    body.quaternion.set(pov.rotation.x, pov.rotation.y, pov.rotation.z, pov.rotation.w);
   }
 
   protected calculateDistance() {
