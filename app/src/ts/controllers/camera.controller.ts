@@ -1,8 +1,8 @@
 import {Controller} from "@/ts/controllers/controller";
-import {Camera, Quaternion, Vector3} from "three";
+import {Camera} from "three";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {ModelHandler} from "@/ts/handlers/model.handler";
-import {Vec3} from "cannon-es";
+import {Quaternion, Vec3} from "cannon-es";
 
 export class CameraController extends Controller<CameraEntity> {
   SCALE_MULTIPLE = 4;
@@ -28,27 +28,23 @@ export class CameraController extends Controller<CameraEntity> {
 
   public move(delta: number) {
     super.move(delta);
+    this.getBody().quaternion.setFromAxisAngle(new Vec3(0, 1, 0), Math.PI);
 
     const target = this.getTarget();
     const pov = target.getPov();
-    const vector = new Vector3(0, 0, -this.calculateDistance());
-    vector.applyQuaternion(pov.rotation);
-    const position = pov.position.clone();
-    position.add(vector);
-
     const rotation = pov.rotation.clone();
-    rotation.multiply(new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI));
-
+    const vector = rotation.vmult(new Vec3(0, 0, -this.calculateDistance()));
+    const position = pov.position.clone();
+    position.addScaledVector(1, vector);
+    rotation.mult(new Quaternion().setFromAxisAngle(new Vec3(0, 1, 0), Math.PI));
     const body = this.getBody();
     body.position.set(position.x, position.y, position.z);
-    body.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
+    body.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w).normalize();
   }
 
   protected calculateDistance() {
     const target = this.getTarget();
-    const object = target.getObject();
-    const dimensions = new Vector3();
-    object.getWorldScale(dimensions);
-    return dimensions.length() * this.SCALE_MULTIPLE;
+    const body = target.getBody();
+    return body.boundingRadius * this.SCALE_MULTIPLE;
   }
 }

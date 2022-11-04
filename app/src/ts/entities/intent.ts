@@ -1,7 +1,7 @@
-import {Quaternion, Vector3} from "three";
+import {Quaternion, Vec3} from "cannon-es";
 
 export interface EntityPov {
-  position: Vector3;
+  position: Vec3;
   rotation: Quaternion;
 }
 
@@ -17,14 +17,14 @@ export class Intent {
   constructor(state: string) {
     this.state = state;
     this.pov = {
-      position: new Vector3(0, 0, 0),
+      position: new Vec3(0, 0, 0),
       rotation: new Quaternion().normalize(),
     };
   }
 }
 
 export class ControllerIntent {
-  position ?: Vector3;
-  velocity ?: Vector3;
-  force ?: Vector3;
+  position ?: Vec3;
+  velocity ?: Vec3;
+  force ?: Vec3;
 }

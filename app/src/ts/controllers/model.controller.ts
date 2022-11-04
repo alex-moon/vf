@@ -1,8 +1,8 @@
 import {Controller} from "@/ts/controllers/controller";
 import {ModelEntity} from "@/ts/entities/model.entity";
-import {AnimationMixer, Euler, Object3D, Quaternion, Vector3} from "three";
+import {AnimationMixer, Object3D} from "three";
 import {Model} from "@/ts/interfaces/model";
-import {NumberHelper} from "@/ts/helpers/number.helper";
+import {Quaternion, Vec3} from "cannon-es";
 
 export abstract class ModelController<M extends ModelEntity> extends Controller<M> {
   protected model!: Model;
@@ -32,22 +32,20 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
 
   public getPov() {
     const intent = this.entity.getIntent();
-    const position = this.model.scene.position.clone();
-    position.add(intent.pov.position);
-    const rotation = new Quaternion()
-      .setFromEuler(this.model.scene.rotation)
-      .multiply(intent.pov.rotation);
+    const position = this.body.position.addScaledVector(1, intent.pov.position);
+    const rotation = this.body.quaternion.clone().mult(intent.pov.rotation);
     return {position, rotation};
   }
 
   public getVelocity() {
     const intent = this.entity.getIntent();
-    const rotation = this.model.scene.rotation;
-    const y = NumberHelper.addMod(rotation.y, intent.direction || 0, Math.PI * 2);
-    const direction = new Euler(0, y, 0);
-    const result = new Vector3(0, 0, intent.speed);
-    result.applyEuler(direction);
-    return result;
+    const rotation = this.body.quaternion.clone();
+    rotation.mult(new Quaternion().setFromAxisAngle(
+      new Vec3(0, 1, 0),
+      intent.direction || 0
+    ));
+    const speed = new Vec3(0, 0, intent.speed);
+    return rotation.vmult(speed);
   }
 
   public move(delta: number) {

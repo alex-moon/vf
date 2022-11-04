@@ -4,6 +4,7 @@ import {Model} from "@/ts/interfaces/model";
 import {Euler, Object3D, Quaternion} from "three";
 import {Direction} from "@/ts/enums/direction";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
+import {Vec3} from "cannon-es";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -29,33 +30,23 @@ export class JackController extends ModelController<JackEntity> {
 
     const intent = this.entity.getIntent();
 
-    // @todo this is horse shit
-    const euler = new Euler().setFromQuaternion(intent.pov.rotation);
-    const rotation = new Quaternion(this.body.quaternion.x, this.body.quaternion.y, this.body.quaternion.z, this.body.quaternion.w);
-    RotationHelper.y(rotation, euler.y);
-    this.body.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
+    this.body.quaternion.mult(intent.pov.rotation);
+    const euler = new Vec3();
+    intent.pov.rotation.toEuler(euler);
     euler.y = 0;
-    intent.pov.rotation.setFromEuler(euler);
-
-    this.head.rotation.setFromQuaternion(intent.pov.rotation);
+    intent.pov.rotation.setFromEuler(euler.x, euler.y, euler.z);
+    this.head.quaternion.set(intent.pov.rotation.x, intent.pov.rotation.y, intent.pov.rotation.z, intent.pov.rotation.w).normalize();
 
     // @todo intent direction is only used for wasd movement - this is confusing
     if (intent.direction !== null) {
       this.root.rotation.y = intent.direction;
-
-      if (
-        intent.direction < Direction.E
-        && intent.direction > Direction.W
-      ) {
-        RotationHelper.ye(this.root.rotation, Math.PI);
-      }
-
       RotationHelper.ye(this.head.rotation, -intent.direction);
 
       if (
         intent.direction < Direction.E
         && intent.direction > Direction.W
       ) {
+        RotationHelper.ye(this.root.rotation, Math.PI);
         RotationHelper.ye(this.head.rotation, -Math.PI);
       }
     }

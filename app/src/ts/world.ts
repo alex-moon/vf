@@ -129,7 +129,7 @@ export class World {
     });
   }
 
-  // @todo this is something you'd handle in the handler?
+  // // @todo this is something you'd handle in the handler?
   public intersects(
     handler: Handler<any>,
     origin: Vector3,

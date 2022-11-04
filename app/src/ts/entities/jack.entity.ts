@@ -5,6 +5,7 @@ import {Direction, DirectionKey} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {Euler} from "three";
 import {CollisionBox} from "@/ts/entities/collision-box";
+import {Vec3} from "cannon-es";
 
 enum JackState {
   DEFAULT = 'default',
@@ -69,7 +70,8 @@ export class JackEntity extends ModelEntity {
 
   public onPointerMove($event: MouseEvent) {
     super.onPointerMove($event);
-    const euler = new Euler().setFromQuaternion(this.intent.pov.rotation);
+    const euler = new Vec3();
+    this.intent.pov.rotation.toEuler(euler);
     const y = euler.y - $event.movementX * 0.01;
     let x = euler.x + $event.movementY * 0.001;
     if (x < -0.75) {
@@ -78,7 +80,6 @@ export class JackEntity extends ModelEntity {
     if (x > 0.9) {
       x = 0.9;
     }
-    const rotation = new Euler(x, y, euler.z);
-    this.intent.pov.rotation.setFromEuler(rotation);
+    this.intent.pov.rotation.setFromEuler(x, y, euler.z);
   }
 }
