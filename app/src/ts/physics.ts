@@ -1,17 +1,18 @@
 import * as CANNON from 'cannon-es';
+import {Vec3} from 'cannon-es';
 import {Handler} from "@/ts/handlers/handler";
 import {ModelHandler} from "@/ts/handlers/model.handler";
 import {BoxHandler} from "@/ts/handlers/box.handler";
 import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {SphereHandler} from "@/ts/handlers/sphere.handler";
-import {Body, Vec3} from "cannon-es";
 
 export class Physics {
   protected world: CANNON.World;
 
   constructor() {
     this.world = new CANNON.World({
-      gravity: new Vec3(0, -9.8, 0)
+      // gravity: new Vec3(0, -500, 0),
+      // frictionGravity: new Vec3(0, -5, 0),
     });
   }
 
@@ -49,6 +50,8 @@ export class Physics {
         )),
         mass: 45, // @todo take from entity
       });
+      body.linearDamping = 0;
+      body.angularDamping = 1;
       body.position.set(0, entity.box.height, 0);
       body.fixedRotation = true;
       body.updateMassProperties();
@@ -82,7 +85,7 @@ export class Physics {
         shape: new CANNON.Sphere(entity.radius),
       });
       body.position.set(0, -entity.radius, 0);
-      body.quaternion.set(-1, 0, 0, 1).normalize();
+      // body.quaternion.set(-1, 0, 0, 1).normalize();
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
@@ -103,6 +106,6 @@ export class Physics {
   }
 
   public animate(delta: number) {
-    this.world.step(delta < 0.1 ? 0.1 : delta);
+    this.world.step(delta);
   }
 }

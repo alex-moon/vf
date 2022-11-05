@@ -137,7 +137,7 @@ export class View {
   protected loadSphere(handler: SphereHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const geometry = new THREE.SphereGeometry(entity.radius);
+      const geometry = new THREE.SphereGeometry(entity.radius, 50, 50);
       const map = this.texture.load(entity.texture);
       map.wrapS = THREE.RepeatWrapping;
       map.wrapT = THREE.RepeatWrapping;
@@ -171,6 +171,7 @@ export class View {
     return document.pointerLockElement === this.renderer.domElement;
   }
 
+  private debug = true;
   public animate(camera: CameraHandler) {
     // if (!this.controls) {
     //   this.controls = new OrbitControls(camera.getObject(), this.renderer.domElement);
@@ -181,6 +182,13 @@ export class View {
     const target = camera.getTarget();
     const object = target.getObject();
     this.axes.position.set(object.position.x, object.position.y, object.position.z);
+
+    // debugging
+    if (this.debug) {
+      cam.position.set(-20, 0, 0);
+      cam.lookAt(this.axes.position);
+    }
+
     this.renderer.render(this.scene, cam);
   }
 }

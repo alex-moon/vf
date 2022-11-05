@@ -64,6 +64,10 @@ export class World {
     return this.jack;
   }
 
+  public getFloor() {
+    return this.floor;
+  }
+
   protected loadCamera() {
     this.camera = new CameraHandler(new CameraController(new CameraEntity()));
     this.camera.setTarget(this.jack);
@@ -87,7 +91,7 @@ export class World {
     this.floor = new SphereHandler(new SphereController(new SphereEntity(
     // this.floor = new BoxHandler(new BoxController(new BoxEntity(
       '/floor.png',
-      1000
+      10
     )));
     this.handlers.push(this.floor);
     return Promise.all([

@@ -3,6 +3,7 @@ import {ModelEntity} from "@/ts/entities/model.entity";
 import {AnimationMixer, Object3D} from "three";
 import {Model} from "@/ts/interfaces/model";
 import {Quaternion, Vec3} from "cannon-es";
+import {EntityPov} from "@/ts/entities/intent";
 
 export abstract class ModelController<M extends ModelEntity> extends Controller<M> {
   protected model!: Model;
@@ -32,11 +33,11 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
 
   public getPov() {
     const intent = this.entity.getIntent();
-    const position = new Vec3();
-    this.body.position.addScaledVector(1, intent.pov.position, position);
-    const rotation = new Quaternion();
-    this.body.quaternion.mult(intent.pov.quaternion, rotation);
-    return {position, rotation};
+    const position = this.body.position.clone();
+    position.addScaledVector(1, intent.pov.position, position);
+    const quaternion = new Quaternion();
+    this.body.quaternion.mult(intent.pov.quaternion, quaternion);
+    return {position, quaternion} as EntityPov;
   }
 
   public getVelocity() {
@@ -46,9 +47,12 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
       new Vec3(0, 1, 0),
       intent.direction || 0
     ), rotation);
-    const speed = new Vec3(0, 0, intent.speed);
-    rotation.vmult(speed, speed);
-    return speed;
+    const velocity = new Vec3(0, 0, intent.speed);
+    rotation.vmult(velocity, velocity);
+    if (intent.speed > 0) {
+      console.log('velocity', velocity.x, velocity.y, velocity.z);
+    }
+    return velocity;
   }
 
   public move(delta: number) {
