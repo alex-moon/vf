@@ -50,7 +50,6 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
     const velocity = new Vec3(0, 0, intent.speed);
     rotation.vmult(velocity, velocity);
     if (intent.speed > 0) {
-      console.log('velocity', velocity.x, velocity.y, velocity.z);
     }
     return velocity;
   }
