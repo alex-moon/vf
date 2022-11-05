@@ -16,7 +16,7 @@ enum JackState {
 export class JackEntity extends ModelEntity {
   protected speed = {
     [JackState.IDLE]: 0,
-    [JackState.RUNNING]: 0.08,
+    [JackState.RUNNING]: 8,
   }
 
   protected path = '/glb/jack.glb';
@@ -35,7 +35,7 @@ export class JackEntity extends ModelEntity {
 
   constructor() {
     super();
-    this.intent.pov.position.y = 1.8;
+    this.intent.pov.position.y = 1;
   }
 
   public getAnimation(key: string|null = null) {
@@ -72,7 +72,7 @@ export class JackEntity extends ModelEntity {
     super.onPointerMove($event);
     const previous = new Vec3();
     this.intent.pov.quaternion.toEuler(previous);
-    const x = MathHelper.clamp(previous.x + $event.movementY * 0.01, -0.75, 0.9);
+    const x = MathHelper.clamp(previous.x + $event.movementY * 0.001, -0.75, 0.9);
 
     this.intent.pov.quaternion.setFromEuler(
       x,

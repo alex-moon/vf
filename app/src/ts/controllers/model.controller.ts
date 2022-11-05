@@ -31,33 +31,34 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   }
 
   public getPov() {
-    // const intent = this.entity.getIntent();
-    // const position = new Vec3();
-    // this.body.position.addScaledVector(1, intent.pov.position, position);
-    // const rotation = new Quaternion();
-    // this.body.quaternion.mult(intent.pov.rotation, rotation);
-    // return {position, rotation};
+    const intent = this.entity.getIntent();
+    const position = new Vec3();
+    this.body.position.addScaledVector(1, intent.pov.position, position);
+    const rotation = new Quaternion();
+    this.body.quaternion.mult(intent.pov.quaternion, rotation);
+    return {position, rotation};
   }
 
   public getVelocity() {
-    // const intent = this.entity.getIntent();
-    // const rotation = this.body.quaternion.clone();
-    // rotation.mult(new Quaternion().setFromAxisAngle(
-    //   new Vec3(0, 1, 0),
-    //   intent.direction || 0
-    // ), rotation);
-    // const speed = new Vec3(0, 0, intent.speed);
-    // return rotation.vmult(speed);
+    const intent = this.entity.getIntent();
+    const rotation = this.body.quaternion.clone();
+    rotation.mult(new Quaternion().setFromAxisAngle(
+      new Vec3(0, 1, 0),
+      intent.direction || 0
+    ), rotation);
+    const speed = new Vec3(0, 0, intent.speed);
+    rotation.vmult(speed, speed);
+    return speed;
   }
 
   public move(delta: number) {
     const body = this.getBody();
     const mixer = this.getMixer();
-    // const velocity = this.getVelocity();
+    const velocity = this.getVelocity();
 
-    // body.velocity.x = velocity.x;
-    // body.velocity.y = velocity.y;
-    // body.velocity.z = velocity.z;
+    body.velocity.x = velocity.x;
+    body.velocity.y = velocity.y;
+    body.velocity.z = velocity.z;
 
     const entity = this.getEntity();
     const animation = entity.getAnimation();

@@ -47,11 +47,9 @@ export class Physics {
           entity.box.height / 2,
           entity.box.depth / 2
         )),
-        mass: 1, // @todo take from entity
+        mass: 45, // @todo take from entity
       });
       body.position.set(0, entity.box.height, 0);
-      body.linearDamping = 0.5;
-      body.angularDamping = 0.5;
       body.fixedRotation = true;
       body.updateMassProperties();
       this.world.addBody(body);
@@ -105,6 +103,6 @@ export class Physics {
   }
 
   public animate(delta: number) {
-    this.world.step(delta);
+    this.world.step(delta < 0.1 ? 0.1 : delta);
   }
 }

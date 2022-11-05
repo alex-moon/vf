@@ -24,7 +24,7 @@ export class World {
   protected physics: Physics;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
-  protected floor!: BoxHandler;
+  protected floor!: SphereHandler;
   protected jack!: JackHandler;
   protected camera!: CameraHandler;
   protected ready = false;
@@ -84,11 +84,9 @@ export class World {
   }
 
   protected loadFloor() {
-    // this.floor = new SphereHandler(new SphereController(new SphereEntity(
-    this.floor = new BoxHandler(new BoxController(new BoxEntity(
+    this.floor = new SphereHandler(new SphereController(new SphereEntity(
+    // this.floor = new BoxHandler(new BoxController(new BoxEntity(
       '/floor.png',
-      1000,
-      1,
       1000
     )));
     this.handlers.push(this.floor);

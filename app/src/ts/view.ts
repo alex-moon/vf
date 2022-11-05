@@ -178,14 +178,9 @@ export class View {
     // this.controls.update();
     this.stats.update();
     const cam = camera.getObject();
-
-    // debugging purposes only
-    cam.position.set(-15, 3, 0);
-    cam.lookAt(new Vector3(0, 0, 0));
-
-    this.renderer.render(this.scene, cam);
     const target = camera.getTarget();
-    const model = target.getModel();
-    this.axes.position.copy(model.scene.position);
+    const object = target.getObject();
+    this.axes.position.set(object.position.x, object.position.y, object.position.z);
+    this.renderer.render(this.scene, cam);
   }
 }
