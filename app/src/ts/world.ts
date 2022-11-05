@@ -14,17 +14,22 @@ import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {JackController} from "@/ts/controllers/jack.controller";
 import {SphereController} from "@/ts/controllers/sphere.controller";
 import {CameraController} from "@/ts/controllers/camera.controller";
+import CannonDebugger from 'cannon-es-debugger';
+import {BoxHandler} from "@/ts/handlers/box.handler";
+import {BoxEntity} from "@/ts/entities/box.entity";
+import {BoxController} from "@/ts/controllers/box.controller";
 
 export class World {
   protected view: View;
   protected physics: Physics;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
-  protected floor!: SphereHandler;
+  protected floor!: BoxHandler;
   protected jack!: JackHandler;
   protected camera!: CameraHandler;
   protected ready = false;
 
+  protected debugger ?: {update: () => void;};
   protected raycaster = new Raycaster();
 
   constructor(view: View, physics: Physics) {
@@ -40,6 +45,12 @@ export class World {
       this.loadJack(),
       this.loadCamera(),
     ]).then(() => {
+      // @ts-ignore
+      this.debugger = new CannonDebugger(
+        this.view.getScene(),
+        this.physics.getWorld(),
+        {}
+      );
       this.bindEvents();
       this.animate();
     });
@@ -73,8 +84,11 @@ export class World {
   }
 
   protected loadFloor() {
-    this.floor = new SphereHandler(new SphereController(new SphereEntity(
+    // this.floor = new SphereHandler(new SphereController(new SphereEntity(
+    this.floor = new BoxHandler(new BoxController(new BoxEntity(
       '/floor.png',
+      1000,
+      1,
       1000
     )));
     this.handlers.push(this.floor);
@@ -159,7 +173,10 @@ export class World {
 
   private animate() {
     requestAnimationFrame(this.animate.bind(this));
-    this.move(this.clock.getDelta());
+    const delta = this.clock.getDelta();
+    this.move(delta);
     this.view.animate(this.camera);
+    this.physics.animate(delta);
+    this.debugger?.update();
   }
 }

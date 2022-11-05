@@ -2,7 +2,7 @@ import {Quaternion, Vec3} from "cannon-es";
 
 export interface EntityPov {
   position: Vec3;
-  rotation: Quaternion;
+  quaternion: Quaternion;
 }
 
 export class Intent {
@@ -18,7 +18,7 @@ export class Intent {
     this.state = state;
     this.pov = {
       position: new Vec3(0, 0, 0),
-      rotation: new Quaternion().normalize(),
+      quaternion: new Quaternion().normalize(),
     };
   }
 }

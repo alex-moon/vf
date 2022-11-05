@@ -1,10 +1,10 @@
 import {JackEntity} from "@/ts/entities/jack.entity";
 import {ModelController} from "@/ts/controllers/model.controller";
 import {Model} from "@/ts/interfaces/model";
-import {Euler, Object3D, Quaternion} from "three";
+import {Object3D} from "three";
 import {Direction} from "@/ts/enums/direction";
+import {Quaternion, Vec3} from "cannon-es";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
-import {Vec3} from "cannon-es";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -17,7 +17,7 @@ export class JackController extends ModelController<JackEntity> {
       throw new Error('Could not get Head of Jack');
     }
     this.head = head;
-    this.head.rotation.order = 'YXZ'; // @todo this is a hack
+    this.head.rotation.order = 'YXZ';
     const root = model.scene.getObjectByName('Root');
     if (!root) {
       throw new Error('Could not get Root of Jack');
@@ -30,27 +30,34 @@ export class JackController extends ModelController<JackEntity> {
 
     const intent = this.entity.getIntent();
 
-    this.body.quaternion.mult(intent.pov.rotation);
+    // split the intended rotation into x and y components
     const euler = new Vec3();
-    intent.pov.rotation.toEuler(euler);
-    euler.y = 0;
-    intent.pov.rotation.setFromEuler(euler.x, euler.y, euler.z);
-    this.head.quaternion.set(intent.pov.rotation.x, intent.pov.rotation.y, intent.pov.rotation.z, intent.pov.rotation.w).normalize();
+    intent.pov.quaternion.toEuler(euler);
+    const y = new Quaternion().setFromEuler(0, euler.y, 0).normalize();
+    const x = new Quaternion().setFromEuler(euler.x, 0, 0).normalize();
 
-    // @todo intent direction is only used for wasd movement - this is confusing
+    // rotate the body
+    this.body.quaternion.mult(y, this.body.quaternion);
+
+    // rotate the head
+    this.head.quaternion.set(x.x, x.y, x.z, x.w);
+
+    // handle wasd movement @todo this is confusing
     if (intent.direction !== null) {
       this.root.rotation.y = intent.direction;
-      RotationHelper.ye(this.head.rotation, -intent.direction);
+      // @todo head rotation is fucked
+      // this.head.rotation.y = -intent.direction;
 
       if (
         intent.direction < Direction.E
         && intent.direction > Direction.W
       ) {
-        RotationHelper.ye(this.root.rotation, Math.PI);
-        RotationHelper.ye(this.head.rotation, -Math.PI);
+        RotationHelper.y(this.root.quaternion, Math.PI);
+        // RotationHelper.y(this.head.quaternion, -Math.PI);
       }
     }
 
-    // @todo handle intersections! :) ideally in the handler
+    // reset intent pov quaternion @todo not this class' responsibility
+    intent.pov.quaternion.copy(x);
   }
 }

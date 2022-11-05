@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {AxesHelper, Camera, TextureLoader} from 'three';
+import {AxesHelper, Camera, TextureLoader, Vector3} from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
@@ -70,6 +70,10 @@ export class View {
     this.renderer.domElement.addEventListener('click', () => {
       this.renderer.domElement.requestPointerLock();
     });
+  }
+
+  public getScene() {
+    return this.scene;
   }
 
   public load(handler: Handler<any>): Promise<void> {
@@ -173,7 +177,13 @@ export class View {
     // }
     // this.controls.update();
     this.stats.update();
-    this.renderer.render(this.scene, camera.getObject() as Camera);
+    const cam = camera.getObject();
+
+    // debugging purposes only
+    cam.position.set(-15, 3, 0);
+    cam.lookAt(new Vector3(0, 0, 0));
+
+    this.renderer.render(this.scene, cam);
     const target = camera.getTarget();
     const model = target.getModel();
     this.axes.position.copy(model.scene.position);

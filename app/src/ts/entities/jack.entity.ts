@@ -3,9 +3,9 @@ import {ModelEntity} from "@/ts/entities/model.entity";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {Direction, DirectionKey} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {Euler} from "three";
 import {CollisionBox} from "@/ts/entities/collision-box";
 import {Vec3} from "cannon-es";
+import {MathHelper} from "@/ts/helpers/math.helper";
 
 enum JackState {
   DEFAULT = 'default',
@@ -70,16 +70,14 @@ export class JackEntity extends ModelEntity {
 
   public onPointerMove($event: MouseEvent) {
     super.onPointerMove($event);
-    const euler = new Vec3();
-    this.intent.pov.rotation.toEuler(euler);
-    const y = euler.y - $event.movementX * 0.01;
-    let x = euler.x + $event.movementY * 0.001;
-    if (x < -0.75) {
-      x = -0.75;
-    }
-    if (x > 0.9) {
-      x = 0.9;
-    }
-    this.intent.pov.rotation.setFromEuler(x, y, euler.z);
+    const previous = new Vec3();
+    this.intent.pov.quaternion.toEuler(previous);
+    const x = MathHelper.clamp(previous.x + $event.movementY * 0.01, -0.75, 0.9);
+
+    this.intent.pov.quaternion.setFromEuler(
+      x,
+      -$event.movementX * 0.01,
+      0
+    );
   }
 }

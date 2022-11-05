@@ -8,7 +8,7 @@
  */
 import {World} from "@/ts/world";
 import {Controller} from "@/ts/controllers/controller";
-import {Body} from "cannon-es";
+import {Body, Vec3} from "cannon-es";
 import {Object3D} from "three";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {PointEvent} from "@/ts/events/point.event";
@@ -24,8 +24,17 @@ export abstract class Handler<C extends Controller<any>> {
     this.controller.move(delta);
     const object = this.controller.getObject();
     const body = this.controller.getBody();
-    object.position.set(body.position.x, body.position.y, body.position.z);
+    const offset = this.getOffset();
+    object.position.set(
+      body.position.x + offset.x,
+      body.position.y + offset.y,
+      body.position.z + offset.z
+    );
     object.quaternion.set(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w);
+  }
+
+  protected getOffset() {
+    return new Vec3(0, 0, 0);
   }
 
   public getEntity() {

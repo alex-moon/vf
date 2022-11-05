@@ -27,19 +27,20 @@ export class CameraController extends Controller<CameraEntity> {
   }
 
   public move(delta: number) {
-    super.move(delta);
-    this.getBody().quaternion.setFromAxisAngle(new Vec3(0, 1, 0), Math.PI);
-
-    const target = this.getTarget();
-    const pov = target.getPov();
-    const rotation = pov.rotation.clone();
-    const vector = rotation.vmult(new Vec3(0, 0, -this.calculateDistance()));
-    const position = pov.position.clone();
-    position.addScaledVector(1, vector);
-    rotation.mult(new Quaternion().setFromAxisAngle(new Vec3(0, 1, 0), Math.PI));
-    const body = this.getBody();
-    body.position.set(position.x, position.y, position.z);
-    body.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w).normalize();
+    // super.move(delta);
+    // const body = this.getBody();
+    //
+    // body.quaternion.setFromAxisAngle(new Vec3(0, 1, 0), Math.PI);
+    //
+    // const target = this.getTarget();
+    // const pov = target.getPov();
+    // const rotation = pov.rotation.clone();
+    // const vector = rotation.vmult(new Vec3(0, 0, -this.calculateDistance()));
+    // const position = pov.position.clone();
+    // position.addScaledVector(1, vector);
+    // rotation.mult(new Quaternion().setFromAxisAngle(new Vec3(0, 1, 0), Math.PI));
+    // body.position.set(position.x, position.y, position.z);
+    // body.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w).normalize();
   }
 
   protected calculateDistance() {
