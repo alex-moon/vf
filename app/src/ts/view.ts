@@ -171,7 +171,7 @@ export class View {
     return document.pointerLockElement === this.renderer.domElement;
   }
 
-  private debug = true;
+  private debug = false;
   public animate(camera: CameraHandler) {
     // if (!this.controls) {
     //   this.controls = new OrbitControls(camera.getObject(), this.renderer.domElement);

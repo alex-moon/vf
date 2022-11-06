@@ -30,6 +30,8 @@ export class ModelHandler<C extends ModelController<any>> extends Handler<C> {
     const body = this.controller.getBody();
     const shape = body.shapes[0] as Box;
     const halfHeight = shape.halfExtents.y;
-    return new Vec3(0, -halfHeight, 0);
+    const offset = new Vec3(0, -halfHeight, 0);
+    body.quaternion.vmult(offset, offset);
+    return offset;
   }
 }
