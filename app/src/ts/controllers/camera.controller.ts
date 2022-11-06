@@ -42,7 +42,9 @@ export class CameraController extends Controller<CameraEntity> {
     position.addScaledVector(1, vector, position);
     body.position.copy(position);
 
-    CannonHelper.lookAt(body, pov.position);
+    // @todo this is the bit that's struggling - how to do this differently?
+    // CannonHelper.lookAt(body, pov.position);
+    body.quaternion.copy(pov.quaternion);
     body.quaternion.mult(
       new Quaternion().setFromAxisAngle(new Vec3(0, 1, 0), Math.PI),
       body.quaternion
