@@ -19,21 +19,10 @@ export class JackHandler extends ModelHandler<JackController> {
     body.applyForce(force);
 
     // second rotate body
-    // @todo this is the bit that's glitching out...
-    const down = new Vec3(0, -200, 0);
-    body.quaternion.vmult(down, down);
-    const downN = down.clone();
-    downN.unit(downN);
+    const downN = new Vec3(0, -1, 0);
     const forceN = force.clone();
     forceN.unit(forceN);
-    // @todo the problem is that setFromVectors is giving us a quaternion
-    // whose euler has a y component - but we need one restricted to two degrees
-    // of freedom, i.e. x and z - there should never be a y component.
-    // the following is what setFromVectors does (i.e. has same problem)
-    // const axis = new Vec3();
-    // downN.cross(forceN, axis);
-    // const angle = Math.acos(downN.dot(forceN));
-    // const rotation = new Quaternion().setFromAxisAngle(axis, angle);
+    body.quaternion.conjugate().vmult(forceN, forceN);
     const rotation = new Quaternion().setFromVectors(downN, forceN);
     body.quaternion.mult(rotation, body.quaternion);
   }
