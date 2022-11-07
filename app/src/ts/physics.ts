@@ -76,12 +76,12 @@ export class Physics {
           material,
           other,
           {
-            friction: 0.4,
+            friction: 1e3,
             restitution: 0.3,
-            contactEquationStiffness: 1e8,
-            contactEquationRelaxation: 3,
-            frictionEquationStiffness: 1e8,
-            frictionEquationRelaxation: 3,
+            contactEquationStiffness: 1e3,
+            contactEquationRelaxation: 0.3,
+            frictionEquationStiffness: 1e3,
+            frictionEquationRelaxation: 0.3,
           }
         );
         this.world.addContactMaterial(contactMaterial);
@@ -132,7 +132,7 @@ export class Physics {
   protected loadConvex(handler: ConvexHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const material = new Material('sphere');
+      const material = new Material('convex');
       this.materials.push(material);
       const body = new Body({
         shape: new ConvexPolyhedron({

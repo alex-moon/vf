@@ -1,23 +1,32 @@
 import qh from 'quickhull3d';
+import {Euler, Vector3} from 'three';
 
 export class AsteroidHelper {
-  public static get(width: number, height: number, depth: number, numPoints = 30) {
-    const halfX = width / 2;
-    const halfY = height / 2;
-    const halfZ = depth / 2;
+  public static get(radius: number, numPoints = 30) {
     const vertices = [];
     for (let i = 0; i < numPoints; i ++) {
+      const euler = new Euler(
+        AsteroidHelper.angle(),
+        AsteroidHelper.angle(),
+        AsteroidHelper.angle(),
+      );
+      const vector = new Vector3(0, 0, AsteroidHelper.distance(radius));
+      vector.applyEuler(euler);
       vertices.push([
-        AsteroidHelper.random(halfX),
-        AsteroidHelper.random(halfY),
-        AsteroidHelper.random(halfZ),
+        vector.x,
+        vector.y,
+        vector.z,
       ]);
     }
     const faces = qh(vertices);
     return {vertices, faces};
   }
 
-  private static random(extent: number) {
-    return ((Math.random() - 0.5) * 2) * extent;
+  private static angle() {
+    return Math.random() * Math.PI * 2;
+  }
+
+  private static distance(max: number, smoothness = 0.9) {
+    return max * (Math.random() * (1 - smoothness) + smoothness);
   }
 }
