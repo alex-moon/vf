@@ -15,7 +15,7 @@ export class JackHandler extends ModelHandler<JackController> {
     const force = target.clone();
     force.vsub(origin, force);
     force.normalize();
-    force.scale(200, force);
+    force.scale(50, force);
     body.applyForce(force);
 
     // second rotate body
