@@ -15,16 +15,17 @@ import {JackController} from "@/ts/controllers/jack.controller";
 import {SphereController} from "@/ts/controllers/sphere.controller";
 import {CameraController} from "@/ts/controllers/camera.controller";
 import CannonDebugger from 'cannon-es-debugger';
-import {BoxHandler} from "@/ts/handlers/box.handler";
-import {BoxEntity} from "@/ts/entities/box.entity";
-import {BoxController} from "@/ts/controllers/box.controller";
+import {ConvexHandler} from "@/ts/handlers/convex.handler";
+import {ConvexEntity} from "@/ts/entities/convex.entity";
+import {ConvexController} from "@/ts/controllers/convex.controller";
+import {Vec3} from "cannon-es";
 
 export class World {
   protected view: View;
   protected physics: Physics;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
-  protected floor!: SphereHandler;
+  protected floor!: ConvexHandler;
   protected jack!: JackHandler;
   protected camera!: CameraHandler;
   protected ready = false;
@@ -88,10 +89,38 @@ export class World {
   }
 
   protected loadFloor() {
-    this.floor = new SphereHandler(new SphereController(new SphereEntity(
-    // this.floor = new BoxHandler(new BoxController(new BoxEntity(
+    this.floor = new ConvexHandler(new ConvexController(new ConvexEntity(
       '/floor.png',
-      10
+      [
+        [1, 1, 1], // 0 top right front
+        [1, 1, -1], // 1 top right back
+        [-1, 1, -1], // 2 top left back
+        [-1, 1, 1], // 3 top left front
+        [1, -1, 1], // 4 bottom right front
+        [1, -1, -1], // 5 bottom right back
+        [-1, -1, -1], // 6 bottom left back
+        [-1, -1, 1], // 7 bottom left front
+      ],
+      [
+        // top
+        [0, 1, 2],
+        [0, 2, 3],
+        // right
+        [0, 1, 5],
+        [0, 5, 4],
+        // bottom
+        [4, 5, 6],
+        [4, 6, 7],
+        // left
+        [2, 3, 6],
+        [2, 6, 7],
+        // front
+        [0, 7, 3],
+        [0, 4, 7],
+        // back
+        [1, 2, 6],
+        [1, 6, 5],
+      ]
     )));
     this.handlers.push(this.floor);
     return Promise.all([

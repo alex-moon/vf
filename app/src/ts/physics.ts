@@ -3,7 +3,17 @@ import {ModelHandler} from "@/ts/handlers/model.handler";
 import {BoxHandler} from "@/ts/handlers/box.handler";
 import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {SphereHandler} from "@/ts/handlers/sphere.handler";
-import {World, ContactMaterial, Material, Body, Box, Vec3, Sphere} from "cannon-es";
+import {
+  World,
+  ContactMaterial,
+  Material,
+  Body,
+  Box,
+  Vec3,
+  Sphere,
+  ConvexPolyhedron
+} from "cannon-es";
+import {ConvexHandler} from "@/ts/handlers/convex.handler";
 
 export class Physics {
   protected world: World;
@@ -32,6 +42,9 @@ export class Physics {
     }
     if (handler instanceof SphereHandler) {
       return this.loadSphere(handler);
+    }
+    if (handler instanceof ConvexHandler) {
+      return this.loadConvex(handler);
     }
     if (handler instanceof CameraHandler) {
       return this.loadCamera(handler);
@@ -109,6 +122,28 @@ export class Physics {
         material,
       });
       body.position.set(0, -entity.radius, 0);
+      // body.quaternion.set(-1, 0, 0, 1).normalize();
+      this.world.addBody(body);
+      handler.setBody(body);
+      resolve();
+    });
+  }
+
+  protected loadConvex(handler: ConvexHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const entity = handler.getEntity();
+      const material = new Material('sphere');
+      this.materials.push(material);
+      const body = new Body({
+        shape: new ConvexPolyhedron({
+          vertices: entity.vertices.map((x: [number, number, number]) => {
+            return new Vec3(x[0], x[1], x[2]);
+          }),
+          faces: entity.faces,
+        }),
+        material,
+      });
+      body.position.set(0, -1, 0);
       // body.quaternion.set(-1, 0, 0, 1).normalize();
       this.world.addBody(body);
       handler.setBody(body);

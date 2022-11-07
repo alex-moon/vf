@@ -1,5 +1,20 @@
-import * as THREE from 'three';
-import {AxesHelper, Camera, TextureLoader, Vector3} from 'three';
+import {
+  AxesHelper,
+  Color,
+  PMREMGenerator,
+  Scene,
+  sRGBEncoding,
+  TextureLoader,
+  WebGLCubeRenderTarget,
+  WebGLRenderer,
+  NearestFilter,
+  AnimationMixer,
+  BoxGeometry,
+  RepeatWrapping,
+  MeshBasicMaterial,
+  SphereGeometry, Mesh, PerspectiveCamera, Vector3,
+
+} from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
@@ -10,6 +25,8 @@ import {ModelHandler} from "@/ts/handlers/model.handler";
 import {BoxHandler} from "@/ts/handlers/box.handler";
 import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {SphereHandler} from "@/ts/handlers/sphere.handler";
+import {ConvexHandler} from "@/ts/handlers/convex.handler";
+import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
 
 export class View {
   protected texture: TextureLoader;
@@ -17,27 +34,27 @@ export class View {
   protected gltf: GLTFLoader;
   protected stats: any;
   protected axes: AxesHelper;
-  protected renderer!: THREE.WebGLRenderer;
-  protected pmremGenerator!: THREE.PMREMGenerator;
-  protected scene: THREE.Scene;
+  protected renderer!: WebGLRenderer;
+  protected pmremGenerator!: PMREMGenerator;
+  protected scene: Scene;
   protected $element!: HTMLDivElement;
   protected controls!: OrbitControls;
 
   constructor() {
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.outputEncoding = THREE.sRGBEncoding;
-    this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+    this.renderer.outputEncoding = sRGBEncoding;
+    this.pmremGenerator = new PMREMGenerator(this.renderer);
 
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0);
+    this.scene = new Scene();
+    this.scene.background = new Color(0x0);
     this.scene.environment = this.pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
     // @ts-ignore
     this.stats = new Stats();
     this.stats.domElement.style.position = 'absolute';
 
-    this.axes = new THREE.AxesHelper( 5 );
+    this.axes = new AxesHelper( 5 );
     this.scene.add(this.axes);
 
     // sky
@@ -45,12 +62,12 @@ export class View {
     const texture = this.texture.load(
       '/skybox.png',
       () => {
-          const rt = new THREE.WebGLCubeRenderTarget(texture.image.height);
+          const rt = new WebGLCubeRenderTarget(texture.image.height);
           rt.fromEquirectangularTexture(this.renderer, texture);
           this.scene.background = rt.texture;
         });
-    texture.minFilter = THREE.NearestFilter;
-    texture.magFilter = THREE.NearestFilter;
+    texture.minFilter = NearestFilter;
+    texture.magFilter = NearestFilter;
 
     this.draco = new DRACOLoader();
     this.draco.setDecoderPath('js/libs/draco/gltf/');
@@ -86,6 +103,9 @@ export class View {
     if (handler instanceof SphereHandler) {
       return this.loadSphere(handler);
     }
+    if (handler instanceof ConvexHandler) {
+      return this.loadConvex(handler);
+    }
     if (handler instanceof CameraHandler) {
       return this.loadCamera(handler);
     }
@@ -100,7 +120,7 @@ export class View {
         model.scene.position.set(0, 0, 0);
         model.scene.scale.set(1, 1, 1);
 
-        const mixer = new THREE.AnimationMixer(model.scene);
+        const mixer = new AnimationMixer(model.scene);
         const animation = model.animations[entity.getAnimation()];
         mixer.clipAction(animation).play();
 
@@ -118,16 +138,16 @@ export class View {
   protected loadBox(handler: BoxHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const geometry = new THREE.BoxGeometry(entity.width, entity.height, entity.depth);
+      const geometry = new BoxGeometry(entity.width, entity.height, entity.depth);
       const map = this.texture.load(entity.texture);
-      map.wrapS = THREE.RepeatWrapping;
-      map.wrapT = THREE.RepeatWrapping;
+      map.wrapS = RepeatWrapping;
+      map.wrapT = RepeatWrapping;
       const dimension = Math.max(entity.width, entity.height, entity.depth);
       map.repeat.set(dimension, dimension);
-      map.minFilter = THREE.NearestFilter;
-      map.magFilter = THREE.NearestFilter;
-      const material = new THREE.MeshBasicMaterial({map});
-      const mesh = new THREE.Mesh(geometry, material);
+      map.minFilter = NearestFilter;
+      map.magFilter = NearestFilter;
+      const material = new MeshBasicMaterial({map});
+      const mesh = new Mesh(geometry, material);
       handler.setObject(mesh);
       this.scene.add(mesh);
       resolve();
@@ -137,15 +157,36 @@ export class View {
   protected loadSphere(handler: SphereHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const geometry = new THREE.SphereGeometry(entity.radius, 50, 50);
+      const geometry = new SphereGeometry(entity.radius, 50, 50);
       const map = this.texture.load(entity.texture);
-      map.wrapS = THREE.RepeatWrapping;
-      map.wrapT = THREE.RepeatWrapping;
+      map.wrapS = RepeatWrapping;
+      map.wrapT = RepeatWrapping;
       map.repeat.set(entity.radius, entity.radius);
-      map.minFilter = THREE.NearestFilter;
-      map.magFilter = THREE.NearestFilter;
-      const material = new THREE.MeshBasicMaterial({map});
-      const mesh = new THREE.Mesh(geometry, material);
+      map.minFilter = NearestFilter;
+      map.magFilter = NearestFilter;
+      const material = new MeshBasicMaterial({map});
+      const mesh = new Mesh(geometry, material);
+      mesh.position.set(0, -entity.radius, 0);
+      handler.setObject(mesh);
+      this.scene.add(mesh);
+      resolve();
+    });
+  }
+
+  protected loadConvex(handler: ConvexHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const entity = handler.getEntity();
+      const geometry = new ConvexGeometry(entity.vertices.map((x: [number, number, number]) => {
+        return new Vector3(x[0], x[1], x[2]);
+      }));
+      const map = this.texture.load(entity.texture);
+      map.wrapS = RepeatWrapping;
+      map.wrapT = RepeatWrapping;
+      map.repeat.set(entity.radius, entity.radius);
+      map.minFilter = NearestFilter;
+      map.magFilter = NearestFilter;
+      const material = new MeshBasicMaterial({map});
+      const mesh = new Mesh(geometry, material);
       mesh.position.set(0, -entity.radius, 0);
       handler.setObject(mesh);
       this.scene.add(mesh);
@@ -155,7 +196,7 @@ export class View {
 
   protected loadCamera(handler: CameraHandler): Promise<void> {
     return new Promise((resolve, reject) => {
-      const camera = new THREE.PerspectiveCamera(
+      const camera = new PerspectiveCamera(
         40,
         this.$element.offsetWidth / this.$element.offsetHeight,
         1,
