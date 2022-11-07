@@ -19,6 +19,7 @@ import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {ConvexEntity} from "@/ts/entities/convex.entity";
 import {ConvexController} from "@/ts/controllers/convex.controller";
 import {Vec3} from "cannon-es";
+import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
 
 export class World {
   protected view: View;
@@ -89,32 +90,11 @@ export class World {
   }
 
   protected loadFloor() {
+    const asteroid = AsteroidHelper.get(10, 10, 10);
     this.floor = new ConvexHandler(new ConvexController(new ConvexEntity(
       '/floor.png',
-      [
-        [1, 1, 1], // 0 top right front
-        [1, 1, -1], // 1 top right back
-        [-1, 1, -1], // 2 top left back
-        [-1, 1, 1], // 3 top left front
-        [1, -1, 1], // 4 bottom right front
-        [1, -1, -1], // 5 bottom right back
-        [-1, -1, -1], // 6 bottom left back
-        [-1, -1, 1], // 7 bottom left front
-      ],
-      [
-        // top
-        [0, 1, 2, 3],
-        // right
-        [0, 4, 5, 1],
-        // bottom
-        [6, 5, 4, 7],
-        // left
-        [3, 2, 6, 7],
-        // front
-        [0, 3, 7, 4],
-        // back
-        [2, 1, 5, 6],
-      ]
+      asteroid.vertices,
+      asteroid.faces,
     )));
     this.handlers.push(this.floor);
     return Promise.all([

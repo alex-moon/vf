@@ -1,19 +1,22 @@
 import {
+  AnimationMixer,
   AxesHelper,
+  BoxGeometry,
   Color,
+  Mesh,
+  MeshBasicMaterial,
+  NearestFilter,
+  PerspectiveCamera,
   PMREMGenerator,
+  RepeatWrapping,
   Scene,
+  SphereGeometry,
   sRGBEncoding,
   TextureLoader,
+  Vector2,
+  Vector3,
   WebGLCubeRenderTarget,
   WebGLRenderer,
-  NearestFilter,
-  AnimationMixer,
-  BoxGeometry,
-  RepeatWrapping,
-  MeshBasicMaterial,
-  SphereGeometry, Mesh, PerspectiveCamera, Vector3,
-
 } from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
@@ -27,6 +30,7 @@ import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {SphereHandler} from "@/ts/handlers/sphere.handler";
 import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
+import {ConvexHelper} from "@/ts/helpers/convex.helper";
 
 export class View {
   protected texture: TextureLoader;
@@ -179,15 +183,16 @@ export class View {
       const geometry = new ConvexGeometry(entity.vertices.map((x: [number, number, number]) => {
         return new Vector3(x[0], x[1], x[2]);
       }));
+      ConvexHelper.assignUVs(geometry);
       const map = this.texture.load(entity.texture);
       map.wrapS = RepeatWrapping;
       map.wrapT = RepeatWrapping;
-      map.repeat.set(entity.radius, entity.radius);
+      map.repeat.set(5, 5);
       map.minFilter = NearestFilter;
       map.magFilter = NearestFilter;
       const material = new MeshBasicMaterial({map});
       const mesh = new Mesh(geometry, material);
-      mesh.position.set(0, -entity.radius, 0);
+      mesh.position.set(0, -5, 0);
       handler.setObject(mesh);
       this.scene.add(mesh);
       resolve();

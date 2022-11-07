@@ -2383,7 +2383,7 @@ debug@^4.0.1, debug@^4.1.0, debug@^4.1.1:
   dependencies:
     ms "2.1.2"
 
-debug@^4.3.3:
+debug@^4.3.3, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -3727,6 +3727,13 @@ get-caller-file@^2.0.1:
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"
   integrity sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==
 
+get-plane-normal@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/get-plane-normal/-/get-plane-normal-1.0.0.tgz#b19930bf2f5ecb105218d291a9814309ecbdc853"
+  integrity sha512-MUtCvFQCerkHvH97PyZ6IzUzxrJbkie7CA8oB/065l6Ui7UUq3JwiEMzXRasY0AotKmlj8/RieDDwvs9jLr+Sw==
+  dependencies:
+    gl-vec3 "^1.0.3"
+
 get-stream@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-3.0.0.tgz#8e943d1358dc37555054ecbe2edb05aa174ede14"
@@ -3757,6 +3764,11 @@ getpass@^0.1.1:
   integrity sha1-Xv+OPmhNVprkyysSgmBOi6YhSfo=
   dependencies:
     assert-plus "^1.0.0"
+
+gl-vec3@^1.0.3, gl-vec3@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/gl-vec3/-/gl-vec3-1.1.3.tgz#a47c62f918774a06cbed1b65bcd0288ecbb03826"
+  integrity sha512-jduKUqT0SGH02l8Yl+mV1yVsDfYgQAJyXGxkJQGyxPLHRiW25DwVIRPt6uvhrEMHftJfqhqKthRcyZqNEl9Xdw==
 
 glob-parent@^3.1.0:
   version "3.1.0"
@@ -6023,6 +6035,13 @@ pnp-webpack-plugin@^1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
+point-line-distance@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/point-line-distance/-/point-line-distance-1.0.0.tgz#5f22515f31fd1d17f9a7da5ccf81928a2bf367d1"
+  integrity sha512-v8ikKuyqcs6nv776u6ygBzQoYg+FylS+JZDNmG/IsHpQ9ifUpshd20clVr0jI9J8WFKSOHIz/FlT3CnYVQg38A==
+  dependencies:
+    gl-vec3 "^1.0.3"
+
 portfinder@^1.0.26:
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.28.tgz#67c4622852bd5374dd1dd900f779f53462fac778"
@@ -6552,6 +6571,16 @@ querystringify@^2.1.1:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
   integrity sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==
+
+quickhull3d@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/quickhull3d/-/quickhull3d-2.1.0.tgz#4a7b6d42ab8076d9da9e4bec75be6a4d3bba62be"
+  integrity sha512-R5X1cTScwn0Eo3MVD7On6WGmEc28xttkaU2dwY7vdTjn7sixvc3rhl4G8uQNCZ6w4zE9LMlY8gHO7zC6/UoSDA==
+  dependencies:
+    debug "^4.3.4"
+    get-plane-normal "^1.0.0"
+    gl-vec3 "^1.1.3"
+    point-line-distance "^1.0.0"
 
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"

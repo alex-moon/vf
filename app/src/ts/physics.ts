@@ -143,7 +143,7 @@ export class Physics {
         }),
         material,
       });
-      body.position.set(0, -1, 0);
+      body.position.set(0, -5, 0);
       // body.quaternion.set(-1, 0, 0, 1).normalize();
       this.world.addBody(body);
       handler.setBody(body);
