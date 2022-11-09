@@ -1,24 +1,25 @@
 import {
+  AdditiveBlending,
   AnimationMixer,
   AxesHelper,
   BoxGeometry,
   Color,
   Mesh,
-  MeshBasicMaterial,
+  MeshPhongMaterial,
   NearestFilter,
   PerspectiveCamera,
-  PMREMGenerator,
+  PMREMGenerator, PointLight,
   RepeatWrapping,
   Scene,
   SphereGeometry,
   sRGBEncoding,
   TextureLoader,
-  Vector2,
   Vector3,
   WebGLCubeRenderTarget,
   WebGLRenderer,
 } from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import {Lensflare, LensflareElement} from "three/examples/jsm/objects/Lensflare";
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
@@ -52,7 +53,10 @@ export class View {
 
     this.scene = new Scene();
     this.scene.background = new Color(0x0);
-    this.scene.environment = this.pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+    // this.scene.environment = this.pmremGenerator.fromScene(
+    //   new RoomEnvironment(),
+    //   0.04
+    // ).texture;
 
     // @ts-ignore
     this.stats = new Stats();
@@ -63,15 +67,30 @@ export class View {
 
     // sky
     this.texture = new TextureLoader();
-    const texture = this.texture.load(
+    const skyboxTexture = this.texture.load(
       '/skybox.png',
       () => {
-          const rt = new WebGLCubeRenderTarget(texture.image.height);
-          rt.fromEquirectangularTexture(this.renderer, texture);
+          const rt = new WebGLCubeRenderTarget(skyboxTexture.image.height);
+          rt.fromEquirectangularTexture(this.renderer, skyboxTexture);
           this.scene.background = rt.texture;
         });
-    texture.minFilter = NearestFilter;
-    texture.magFilter = NearestFilter;
+    skyboxTexture.minFilter = NearestFilter;
+    skyboxTexture.magFilter = NearestFilter;
+
+    // sun
+    const sun = new PointLight(0xffffff, 1, 10000);
+    sun.castShadow = true;
+    sun.position.set(2000, 0, 0);
+    this.scene.add(sun);
+    const lensflareTexture = this.texture.load('/lensflare.png');
+    const lensflare = new Lensflare();
+    lensflare.addElement(new LensflareElement(
+      lensflareTexture,
+      1024,
+      0.0,
+      new Color(0xffffff)
+    ));
+    sun.add(lensflare);
 
     this.draco = new DRACOLoader();
     this.draco.setDecoderPath('js/libs/draco/gltf/');
@@ -150,8 +169,9 @@ export class View {
       map.repeat.set(dimension, dimension);
       map.minFilter = NearestFilter;
       map.magFilter = NearestFilter;
-      const material = new MeshBasicMaterial({map});
+      const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
+      mesh.castShadow = mesh.receiveShadow = true;
       handler.setObject(mesh);
       this.scene.add(mesh);
       resolve();
@@ -168,8 +188,9 @@ export class View {
       map.repeat.set(entity.radius, entity.radius);
       map.minFilter = NearestFilter;
       map.magFilter = NearestFilter;
-      const material = new MeshBasicMaterial({map});
+      const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
+      mesh.castShadow = mesh.receiveShadow = true;
       mesh.position.set(0, -entity.radius, 0);
       handler.setObject(mesh);
       this.scene.add(mesh);
@@ -190,8 +211,9 @@ export class View {
       map.repeat.set(5, 5);
       map.minFilter = NearestFilter;
       map.magFilter = NearestFilter;
-      const material = new MeshBasicMaterial({map});
+      const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
+      mesh.castShadow = mesh.receiveShadow = true;
       mesh.position.set(0, -5, 0);
       handler.setObject(mesh);
       this.scene.add(mesh);
@@ -205,7 +227,7 @@ export class View {
         40,
         this.$element.offsetWidth / this.$element.offsetHeight,
         1,
-        100
+        10000
       );
       camera.position.set(0, 2, -2);
       handler.setObject(camera);

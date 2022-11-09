@@ -90,7 +90,7 @@ export class World {
   }
 
   protected loadFloor() {
-    const asteroid = AsteroidHelper.get(5);
+    const asteroid = AsteroidHelper.get(10);
     this.floor = new ConvexHandler(new ConvexController(new ConvexEntity(
       '/floor.png',
       asteroid.vertices,

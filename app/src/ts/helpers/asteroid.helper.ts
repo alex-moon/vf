@@ -2,7 +2,10 @@ import qh from 'quickhull3d';
 import {Euler, Vector3} from 'three';
 
 export class AsteroidHelper {
-  public static get(radius: number, numPoints = 30) {
+  public static get(radius: number, numPoints?: number) {
+    if (numPoints === undefined) {
+      numPoints = radius * 6;
+    }
     const vertices = [];
     for (let i = 0; i < numPoints; i ++) {
       const euler = new Euler(

@@ -141,9 +141,11 @@ export class Physics {
           }),
           faces: entity.faces,
         }),
+        mass: 1e8, // @todo take from entity (make asteroid entity with radius)
         material,
       });
-      body.position.set(0, -5, 0);
+      body.position.set(0, -10, 0);
+      body.angularVelocity.set(0, 1e-3, 0);
       // body.quaternion.set(-1, 0, 0, 1).normalize();
       this.world.addBody(body);
       handler.setBody(body);
