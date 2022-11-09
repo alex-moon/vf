@@ -11,9 +11,11 @@ import {
   Box,
   Vec3,
   Sphere,
-  ConvexPolyhedron
+  ConvexPolyhedron,
+  NaiveBroadphase
 } from "cannon-es";
 import {ConvexHandler} from "@/ts/handlers/convex.handler";
+import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 
 export class Physics {
   protected world: World;
@@ -21,6 +23,7 @@ export class Physics {
 
   constructor() {
     this.world = new World({
+      broadphase: new NaiveBroadphase(),
       // gravity: new Vec3(0, -500, 0),
       // frictionGravity: new Vec3(0, -5, 0),
     });
@@ -37,6 +40,12 @@ export class Physics {
     if (handler instanceof ModelHandler) {
       return this.loadModel(handler);
     }
+    if (handler instanceof AsteroidHandler) {
+      return this.loadAsteroid(handler);
+    }
+    if (handler instanceof CameraHandler) {
+      return this.loadCamera(handler);
+    }
     if (handler instanceof BoxHandler) {
       return this.loadBox(handler);
     }
@@ -45,9 +54,6 @@ export class Physics {
     }
     if (handler instanceof ConvexHandler) {
       return this.loadConvex(handler);
-    }
-    if (handler instanceof CameraHandler) {
-      return this.loadCamera(handler);
     }
     return new Promise((resolve, reject) => reject());
   }
@@ -147,6 +153,29 @@ export class Physics {
       body.position.set(0, -10, 0);
       body.angularVelocity.set(0, 1e-3, 0);
       // body.quaternion.set(-1, 0, 0, 1).normalize();
+      this.world.addBody(body);
+      handler.setBody(body);
+      resolve();
+    });
+  }
+
+  protected loadAsteroid(handler: AsteroidHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const entity = handler.getEntity();
+      const material = new Material('convex');
+      this.materials.push(material);
+      const body = new Body({
+        shape: new ConvexPolyhedron({
+          vertices: entity.vertices.map((x: [number, number, number]) => {
+            return new Vec3(x[0], x[1], x[2]);
+          }),
+          faces: entity.faces,
+        }),
+        mass: 1e5 * Math.PI * entity.radius * entity.radius * entity.radius,
+        material,
+      });
+      body.position.set(0, -entity.radius, 0);
+      body.angularVelocity.set(0, 1e-3, 0);
       this.world.addBody(body);
       handler.setBody(body);
       resolve();

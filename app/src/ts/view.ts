@@ -32,6 +32,7 @@ import {SphereHandler} from "@/ts/handlers/sphere.handler";
 import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
 import {ConvexHelper} from "@/ts/helpers/convex.helper";
+import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 
 export class View {
   protected texture: TextureLoader;
@@ -120,6 +121,13 @@ export class View {
     if (handler instanceof ModelHandler) {
       return this.loadModel(handler);
     }
+    if (handler instanceof AsteroidHandler) {
+      return this.loadAsteroid(handler);
+    }
+    if (handler instanceof CameraHandler) {
+      return this.loadCamera(handler);
+    }
+
     if (handler instanceof BoxHandler) {
       return this.loadBox(handler);
     }
@@ -128,9 +136,6 @@ export class View {
     }
     if (handler instanceof ConvexHandler) {
       return this.loadConvex(handler);
-    }
-    if (handler instanceof CameraHandler) {
-      return this.loadCamera(handler);
     }
     return new Promise((resolve, reject) => reject());
   }
@@ -215,6 +220,29 @@ export class View {
       const mesh = new Mesh(geometry, material);
       mesh.castShadow = mesh.receiveShadow = true;
       mesh.position.set(0, -5, 0);
+      handler.setObject(mesh);
+      this.scene.add(mesh);
+      resolve();
+    });
+  }
+
+  protected loadAsteroid(handler: AsteroidHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const entity = handler.getEntity();
+      const geometry = new ConvexGeometry(entity.vertices.map((x: [number, number, number]) => {
+        return new Vector3(x[0], x[1], x[2]);
+      }));
+      ConvexHelper.assignUVs(geometry);
+      const map = this.texture.load(entity.texture);
+      map.wrapS = RepeatWrapping;
+      map.wrapT = RepeatWrapping;
+      map.repeat.set(entity.radius, entity.radius);
+      map.minFilter = NearestFilter;
+      map.magFilter = NearestFilter;
+      const material = new MeshPhongMaterial({map});
+      const mesh = new Mesh(geometry, material);
+      mesh.castShadow = mesh.receiveShadow = true;
+      mesh.position.set(0, -entity.radius, 0);
       handler.setObject(mesh);
       this.scene.add(mesh);
       resolve();

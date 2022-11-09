@@ -4,7 +4,8 @@ import {Euler, Vector3} from 'three';
 export class AsteroidHelper {
   public static get(radius: number, numPoints?: number) {
     if (numPoints === undefined) {
-      numPoints = radius * 6;
+      numPoints = Math.floor(0.1 * Math.PI * radius * radius);
+      console.log('num points', numPoints);
     }
     const vertices = [];
     for (let i = 0; i < numPoints; i ++) {

@@ -7,18 +7,14 @@ import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {PointEvent} from "@/ts/events/point.event";
 import {Clock, Raycaster, Vector3} from "three";
-import {SphereHandler} from "@/ts/handlers/sphere.handler";
-import {SphereEntity} from "@/ts/entities/sphere.entity";
 import {Physics} from "@/ts/physics";
 import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {JackController} from "@/ts/controllers/jack.controller";
-import {SphereController} from "@/ts/controllers/sphere.controller";
 import {CameraController} from "@/ts/controllers/camera.controller";
 import CannonDebugger from 'cannon-es-debugger';
-import {ConvexHandler} from "@/ts/handlers/convex.handler";
-import {ConvexEntity} from "@/ts/entities/convex.entity";
-import {ConvexController} from "@/ts/controllers/convex.controller";
-import {Vec3} from "cannon-es";
+import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
+import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
+import {AsteroidController} from "@/ts/controllers/asteroid.controller";
 import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
 
 export class World {
@@ -26,7 +22,7 @@ export class World {
   protected physics: Physics;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
-  protected floor!: ConvexHandler;
+  protected asteroid!: AsteroidHandler;
   protected jack!: JackHandler;
   protected camera!: CameraHandler;
   protected ready = false;
@@ -43,7 +39,7 @@ export class World {
   public init($element: HTMLDivElement) {
     this.view.init($element);
     Promise.all([
-      this.loadFloor(),
+      this.loadAsteroid(),
       this.loadJack(),
       this.loadCamera(),
     ]).then(() => {
@@ -67,7 +63,7 @@ export class World {
   }
 
   public getFloor() {
-    return this.floor;
+    return this.asteroid;
   }
 
   protected loadCamera() {
@@ -89,17 +85,15 @@ export class World {
     ]);
   }
 
-  protected loadFloor() {
-    const asteroid = AsteroidHelper.get(10);
-    this.floor = new ConvexHandler(new ConvexController(new ConvexEntity(
-      '/floor.png',
-      asteroid.vertices,
-      asteroid.faces,
+  protected loadAsteroid() {
+    this.asteroid = new AsteroidHandler(new AsteroidController(new AsteroidEntity(
+      '/asteroid.png',
+      20
     )));
-    this.handlers.push(this.floor);
+    this.handlers.push(this.asteroid);
     return Promise.all([
-      this.physics.load(this.floor),
-      this.view.load(this.floor),
+      this.physics.load(this.asteroid),
+      this.view.load(this.asteroid),
     ]);
   }
 
