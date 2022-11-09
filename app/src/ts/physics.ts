@@ -3,23 +3,12 @@ import {ModelHandler} from "@/ts/handlers/model.handler";
 import {BoxHandler} from "@/ts/handlers/box.handler";
 import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {SphereHandler} from "@/ts/handlers/sphere.handler";
-import {
-  World,
-  ContactMaterial,
-  Material,
-  Body,
-  Box,
-  Vec3,
-  Sphere,
-  ConvexPolyhedron,
-  NaiveBroadphase
-} from "cannon-es";
+import {Body, Box, ConvexPolyhedron, NaiveBroadphase, Sphere, Vec3, World} from "cannon-es";
 import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 
 export class Physics {
   protected world: World;
-  protected materials: Material[] = [];
 
   constructor() {
     this.world = new World({
@@ -27,6 +16,12 @@ export class Physics {
       // gravity: new Vec3(0, -500, 0),
       // frictionGravity: new Vec3(0, -5, 0),
     });
+    this.world.defaultContactMaterial.friction = Infinity;
+    this.world.defaultContactMaterial.restitution = 0;
+    this.world.defaultContactMaterial.contactEquationStiffness = 1e3;
+    this.world.defaultContactMaterial.contactEquationRelaxation = 0;
+    this.world.defaultContactMaterial.frictionEquationStiffness = Infinity;
+    this.world.defaultContactMaterial.frictionEquationRelaxation = 0;
   }
 
   public init() {
@@ -61,15 +56,12 @@ export class Physics {
   protected loadModel(handler: ModelHandler<any>): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const material = new Material('jack');
-      this.materials.push(material);
       const body = new Body({
         shape: new Box(new Vec3(
           entity.box.width / 2,
           entity.box.height / 2,
           entity.box.depth / 2
         )),
-        material,
         mass: 1, // @todo take from entity
       });
       body.linearDamping = 0;
@@ -77,21 +69,6 @@ export class Physics {
       body.position.set(0, entity.box.height, 0);
       body.fixedRotation = true;
       body.updateMassProperties();
-      this.materials.forEach((other) => {
-        const contactMaterial = new ContactMaterial(
-          material,
-          other,
-          {
-            friction: 1e3,
-            restitution: 0.3,
-            contactEquationStiffness: 1e3,
-            contactEquationRelaxation: 0.3,
-            frictionEquationStiffness: 1e3,
-            frictionEquationRelaxation: 0.3,
-          }
-        );
-        this.world.addContactMaterial(contactMaterial);
-      });
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
@@ -101,15 +78,12 @@ export class Physics {
   protected loadBox(handler: BoxHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const material = new Material('box');
-      this.materials.push(material);
       const body = new Body({
         shape: new Box(new Vec3(
           entity.width / 2,
           entity.height / 2,
           entity.depth / 2
         )),
-        material,
       });
       body.position.set(0, -entity.height, 0);
       this.world.addBody(body);
@@ -121,14 +95,10 @@ export class Physics {
   protected loadSphere(handler: SphereHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const material = new Material('sphere');
-      this.materials.push(material);
       const body = new Body({
         shape: new Sphere(entity.radius),
-        material,
       });
       body.position.set(0, -entity.radius, 0);
-      // body.quaternion.set(-1, 0, 0, 1).normalize();
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
@@ -138,8 +108,6 @@ export class Physics {
   protected loadConvex(handler: ConvexHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const material = new Material('convex');
-      this.materials.push(material);
       const body = new Body({
         shape: new ConvexPolyhedron({
           vertices: entity.vertices.map((x: [number, number, number]) => {
@@ -147,8 +115,7 @@ export class Physics {
           }),
           faces: entity.faces,
         }),
-        mass: 1e8, // @todo take from entity (make asteroid entity with radius)
-        material,
+        mass: 1e8,
       });
       body.position.set(0, -10, 0);
       body.angularVelocity.set(0, 1e-3, 0);
@@ -162,8 +129,6 @@ export class Physics {
   protected loadAsteroid(handler: AsteroidHandler): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
-      const material = new Material('convex');
-      this.materials.push(material);
       const body = new Body({
         shape: new ConvexPolyhedron({
           vertices: entity.vertices.map((x: [number, number, number]) => {
@@ -172,7 +137,6 @@ export class Physics {
           faces: entity.faces,
         }),
         mass: 1e5 * Math.PI * entity.radius * entity.radius * entity.radius,
-        material,
       });
       body.position.set(0, -entity.radius, 0);
       body.angularVelocity.set(0, 1e-3, 0);

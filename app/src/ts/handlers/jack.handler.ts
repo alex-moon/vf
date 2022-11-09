@@ -9,8 +9,8 @@ export class JackHandler extends ModelHandler<JackController> {
     const body = this.getBody();
 
     // first apply force
-    const floor = world.getFloor();
-    const target = floor.getBody().position;
+    const asteroid = world.getAsteroid();
+    const target = asteroid.getBody().position;
     const origin = body.position;
     const force = target.clone();
     force.vsub(origin, force);

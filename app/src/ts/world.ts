@@ -62,7 +62,7 @@ export class World {
     return this.jack;
   }
 
-  public getFloor() {
+  public getAsteroid() {
     return this.asteroid;
   }
 
