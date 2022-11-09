@@ -62,7 +62,7 @@ export class Physics {
           entity.box.height / 2,
           entity.box.depth / 2
         )),
-        mass: 1, // @todo take from entity
+        mass: Math.PI * entity.box.width * entity.box.height * entity.box.depth,
       });
       body.linearDamping = 0;
       body.angularDamping = 0.75;

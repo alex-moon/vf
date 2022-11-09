@@ -9,13 +9,18 @@ export class JackHandler extends ModelHandler<JackController> {
     const body = this.getBody();
 
     // first apply force
-    const asteroid = world.getAsteroid();
-    const target = asteroid.getBody().position;
+    const asteroid = world.getAsteroid().getBody();
+    const target = asteroid.position;
     const origin = body.position;
     const force = target.clone();
     force.vsub(origin, force);
     force.normalize();
-    force.scale(100, force);
+    const gravity = this.gravity(
+      body.mass,
+      asteroid.mass,
+      body.position.distanceTo(asteroid.position)
+    );
+    force.scale(gravity, force);
     body.applyForce(force);
 
     // second rotate body
@@ -25,5 +30,9 @@ export class JackHandler extends ModelHandler<JackController> {
     body.quaternion.conjugate().vmult(forceN, forceN);
     const rotation = new Quaternion().setFromVectors(downN, forceN);
     body.quaternion.mult(rotation, body.quaternion);
+  }
+
+  private gravity(m1: number, m2: number, r: number) {
+    return (6.674e-6 * m1 * m2) / (r * r);
   }
 }
