@@ -1,4 +1,5 @@
-import {ConvexController} from "@/ts/controllers/convex.controller";
+import {Controller} from "@/ts/controllers/controller";
+import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 
-export class AsteroidController extends ConvexController {
+export class AsteroidController extends Controller<AsteroidEntity> {
 }

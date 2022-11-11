@@ -10,22 +10,20 @@ export class AsteroidHelper {
     }
     const steps = Math.floor(Math.sqrt(numPoints));
     const angle = Math.PI / steps;
-
+    console.log('steps', steps, 'angle', angle);
 
     // first build the 2D array
     const vertices: [number, number, number][][] = [];
     for (let x = 0; x < steps; x++) {
       for (let y = 0; y < steps * 2; y++) {
+        console.log('x', x * angle, 'y', y * angle);
         const euler = new Euler(
           x * angle,
           y * angle,
           0
         );
-        const vector = new Vector3(
-          0,
-          0,
-          AsteroidHelper.distance(radius)
-        );
+        const distance = (x === 0 || y === 0) ? radius : AsteroidHelper.distance(radius);
+        const vector = new Vector3(0, 0, distance);
         vector.applyEuler(euler);
         if (!vertices[x]) {
           vertices[x] = [];
@@ -51,10 +49,12 @@ export class AsteroidHelper {
           vertices[xni][yni],
           [0, 0, 0],
         ] as [number, number, number][];
-        hulls.push({
-          vertices: points,
-          faces: qh(points),
-        });
+        // if (x !== 0 && y !== 0 && xni !== 0 && yni !== 0) {
+          hulls.push({
+            vertices: points,
+            faces: qh(points),
+          });
+        // }
       }
     }
     return hulls;

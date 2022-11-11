@@ -101,7 +101,7 @@ export class World {
   protected loadAsteroid() {
     this.asteroid = new AsteroidHandler(new AsteroidController(new AsteroidEntity(
       '/asteroid.png',
-      100
+      10
     )));
     this.handlers.push(this.asteroid);
     return Promise.all([
