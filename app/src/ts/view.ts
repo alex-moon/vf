@@ -3,7 +3,7 @@ import {
   AnimationMixer,
   AxesHelper,
   BoxGeometry,
-  Color,
+  Color, Group,
   Mesh,
   MeshPhongMaterial,
   NearestFilter,
@@ -33,6 +33,7 @@ import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
 import {ConvexHelper} from "@/ts/helpers/convex.helper";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
+import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 
 export class View {
   protected texture: TextureLoader;
@@ -227,11 +228,8 @@ export class View {
 
   protected loadAsteroid(handler: AsteroidHandler): Promise<void> {
     return new Promise((resolve, reject) => {
-      const entity = handler.getEntity();
-      const geometry = new ConvexGeometry(entity.vertices.map((x: [number, number, number]) => {
-        return new Vector3(x[0], x[1], x[2]);
-      }));
-      ConvexHelper.assignUVs(geometry);
+      const entity = handler.getEntity() as AsteroidEntity;
+
       const map = this.texture.load(entity.texture);
       map.wrapS = RepeatWrapping;
       map.wrapT = RepeatWrapping;
@@ -239,11 +237,20 @@ export class View {
       map.minFilter = NearestFilter;
       map.magFilter = NearestFilter;
       const material = new MeshPhongMaterial({map});
-      const mesh = new Mesh(geometry, material);
-      mesh.castShadow = mesh.receiveShadow = true;
-      mesh.position.set(0, -entity.radius, 0);
-      handler.setObject(mesh);
-      this.scene.add(mesh);
+
+      const group = new Group();
+      for (const hull of entity.hulls) {
+        const geometry = new ConvexGeometry(hull.vertices.map((x: [number, number, number]) => {
+          return new Vector3(x[0], x[1], x[2]);
+        }));
+        ConvexHelper.assignUVs(geometry);
+        group.add(new Mesh(geometry, material));
+      }
+
+      group.castShadow = group.receiveShadow = true;
+      group.position.set(0, -entity.radius, 0);
+      handler.setObject(group);
+      this.scene.add(group);
       resolve();
     });
   }

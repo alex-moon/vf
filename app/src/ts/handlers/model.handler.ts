@@ -65,6 +65,7 @@ export class ModelHandler<C extends ModelController<any>> extends Handler<C> {
   }
 
   private gravity(m1: number, m2: number, r: number) {
-    return (6.674e-6 * m1 * m2) / (r * r);
+    const G = 6.674e-6;
+    return (G * m1 * m2) / (r * r);
   }
 }

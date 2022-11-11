@@ -6,6 +6,7 @@ import {SphereHandler} from "@/ts/handlers/sphere.handler";
 import {Body, Box, ConvexPolyhedron, NaiveBroadphase, Sphere, Vec3, World} from "cannon-es";
 import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
+import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 
 export class Physics {
   protected world: World;
@@ -66,7 +67,11 @@ export class Physics {
       });
       body.linearDamping = 0;
       body.angularDamping = 0.75;
-      body.position.set(0, entity.box.height, 0);
+      body.position.set(
+        Math.sign(Math.random() - 0.5) * entity.box.width,
+        entity.box.height,
+        Math.sign(Math.random() - 0.5) * entity.box.depth
+      );
       body.fixedRotation = true;
       body.updateMassProperties();
       this.world.addBody(body);
@@ -128,16 +133,18 @@ export class Physics {
 
   protected loadAsteroid(handler: AsteroidHandler): Promise<void> {
     return new Promise((resolve, reject) => {
-      const entity = handler.getEntity();
+      const entity = handler.getEntity() as AsteroidEntity;
       const body = new Body({
-        shape: new ConvexPolyhedron({
-          vertices: entity.vertices.map((x: [number, number, number]) => {
-            return new Vec3(x[0], x[1], x[2]);
-          }),
-          faces: entity.faces,
-        }),
         mass: 1e5 * Math.PI * entity.radius * entity.radius * entity.radius,
       });
+      for (const hull of entity.hulls) {
+        body.addShape(new ConvexPolyhedron({
+          vertices: hull.vertices.map((x: [number, number, number]) => {
+            return new Vec3(x[0], x[1], x[2]);
+          }),
+          faces: hull.faces,
+        }));
+      }
       body.position.set(0, -entity.radius, 0);
       body.angularVelocity.set(0, 1e-3, 0);
       this.world.addBody(body);
