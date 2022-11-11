@@ -15,7 +15,9 @@ import CannonDebugger from 'cannon-es-debugger';
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 import {AsteroidController} from "@/ts/controllers/asteroid.controller";
-import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
+import {ShipHandler} from "@/ts/handlers/ship.handler";
+import {ShipController} from "@/ts/controllers/ship.controller";
+import {ShipEntity} from "@/ts/entities/ship.entity";
 
 export class World {
   protected view: View;
@@ -24,6 +26,7 @@ export class World {
   protected handlers: Handler<any>[] = [];
   protected asteroid!: AsteroidHandler;
   protected jack!: JackHandler;
+  protected ship!: ShipHandler;
   protected camera!: CameraHandler;
   protected ready = false;
 
@@ -41,6 +44,7 @@ export class World {
     Promise.all([
       this.loadAsteroid(),
       this.loadJack(),
+      this.loadShip(),
       this.loadCamera(),
     ]).then(() => {
       // @ts-ignore
@@ -82,6 +86,15 @@ export class World {
     return Promise.all([
       this.physics.load(this.jack),
       this.view.load(this.jack),
+    ]);
+  }
+
+  protected loadShip() {
+    this.ship = new ShipHandler(new ShipController(new ShipEntity()));
+    this.handlers.push(this.ship);
+    return Promise.all([
+      this.physics.load(this.ship),
+      this.view.load(this.ship),
     ]);
   }
 

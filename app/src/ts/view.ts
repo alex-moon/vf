@@ -81,7 +81,7 @@ export class View {
     // sun
     const sun = new PointLight(0xffffff, 1, 10000);
     sun.castShadow = true;
-    sun.position.set(2000, 0, 0);
+    sun.position.set(2000, 0, 2000);
     this.scene.add(sun);
     const lensflareTexture = this.texture.load('/lensflare.png');
     const lensflare = new Lensflare();
@@ -145,7 +145,6 @@ export class View {
       const entity = handler.getEntity();
       this.gltf.load(entity.getPath(), (gltf: any) => {
         const model = gltf;
-        model.scene.position.set(0, 0, 0);
         model.scene.scale.set(1, 1, 1);
 
         const mixer = new AnimationMixer(model.scene);
@@ -281,7 +280,7 @@ export class View {
 
     // debugging
     if (this.debug) {
-      cam.position.set(-20, 0, 0);
+      cam.position.set(20, 0, 20);
       cam.lookAt(this.axes.position);
     }
 
