@@ -34,6 +34,7 @@ import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
 import {ConvexHelper} from "@/ts/helpers/convex.helper";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
+import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
 
 export class View {
   protected texture: TextureLoader;
@@ -82,7 +83,7 @@ export class View {
     // sun
     const sun = new PointLight(0xffffff, 1, 10000);
     sun.castShadow = true;
-    sun.position.set(2000, 0, 2000);
+    sun.position.set(2000, 2000, 2000);
     this.scene.add(sun);
     const lensflareTexture = this.texture.load('/lensflare.png');
     const lensflare = new Lensflare();
@@ -233,7 +234,7 @@ export class View {
       const map = this.texture.load(entity.texture);
       map.wrapS = RepeatWrapping;
       map.wrapT = RepeatWrapping;
-      map.repeat.set(entity.radius, entity.radius);
+      map.repeat.set(AsteroidHelper.RESOLUTION, AsteroidHelper.RESOLUTION);
       map.minFilter = NearestFilter;
       map.magFilter = NearestFilter;
       const material = new MeshPhongMaterial({map});

@@ -145,7 +145,8 @@ export class Physics {
           faces: hull.faces,
         }));
       }
-      body.position.set(0, -entity.radius, 0);
+      body.quaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2);
+      body.position.set(0, -1.1 * entity.radius, 0);
       body.angularVelocity.set(0, 1e-3, 0);
       this.world.addBody(body);
       handler.setBody(body);

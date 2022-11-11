@@ -2,7 +2,8 @@ import qh from 'quickhull3d';
 import {Euler, Vector3} from 'three';
 
 export class AsteroidHelper {
-  static RESOLUTION = 5;
+  static RESOLUTION = 10;
+  static SMOOTHNESS = 0.9;
 
   public static get(radius: number, numPoints?: number) {
     if (numPoints === undefined) {
@@ -10,19 +11,25 @@ export class AsteroidHelper {
     }
     const steps = Math.floor(Math.sqrt(numPoints));
     const angle = Math.PI / steps;
-    console.log('steps', steps, 'angle', angle);
 
     // first build the 2D array
     const vertices: [number, number, number][][] = [];
-    for (let x = 0; x < steps; x++) {
-      for (let y = 0; y < steps * 2; y++) {
-        console.log('x', x * angle, 'y', y * angle);
+    for (let x = 0; x <= steps; x++) {
+      for (let y = 0; y <= steps * 2; y++) {
+        const southPole = Math.PI / 2;
+        const northPole = -southPole;
         const euler = new Euler(
-          x * angle,
+          northPole + x * angle,
           y * angle,
-          0
+          0,
+          'YXZ'
         );
-        const distance = (x === 0 || y === 0) ? radius : AsteroidHelper.distance(radius);
+        const distance = (
+          x === 0
+          || y === 0
+          || x === steps
+          || y === steps * 2
+        ) ? radius : AsteroidHelper.distance(radius);
         const vector = new Vector3(0, 0, distance);
         vector.applyEuler(euler);
         if (!vertices[x]) {
@@ -38,10 +45,10 @@ export class AsteroidHelper {
 
     // next build the hulls
     const hulls: {vertices: [number, number, number][], faces: number[][]}[] = [];
-    for (let x = 0; x < steps; x++) {
-      for (let y = 0; y < steps * 2; y++) {
-        const xni = (x === steps - 1) ? 0 : (x + 1);
-        const yni = (y === steps * 2 - 1) ? 0 : (y + 1);
+    for (let x = 0; x <= steps; x++) {
+      for (let y = 0; y <= steps * 2; y++) {
+        const xni = (x === steps) ? 0 : (x + 1);
+        const yni = (y === steps * 2) ? 0 : (y + 1);
         const points = [
           vertices[x][y],
           vertices[xni][y],
@@ -49,12 +56,10 @@ export class AsteroidHelper {
           vertices[xni][yni],
           [0, 0, 0],
         ] as [number, number, number][];
-        // if (x !== 0 && y !== 0 && xni !== 0 && yni !== 0) {
-          hulls.push({
-            vertices: points,
-            faces: qh(points),
-          });
-        // }
+        hulls.push({
+          vertices: points,
+          faces: qh(points),
+        });
       }
     }
     return hulls;
@@ -64,7 +69,7 @@ export class AsteroidHelper {
     return Math.random() * Math.PI * 2;
   }
 
-  private static distance(max: number, smoothness = 0.8) {
+  private static distance(max: number, smoothness = AsteroidHelper.SMOOTHNESS) {
     return max * (Math.random() * (1 - smoothness) + smoothness);
   }
 }
