@@ -19,9 +19,9 @@ export class Physics {
     });
     this.world.defaultContactMaterial.friction = Infinity;
     this.world.defaultContactMaterial.restitution = 0;
-    this.world.defaultContactMaterial.contactEquationStiffness = 1e3;
+    this.world.defaultContactMaterial.contactEquationStiffness = 1;
     this.world.defaultContactMaterial.contactEquationRelaxation = 1e8;
-    this.world.defaultContactMaterial.frictionEquationStiffness = Infinity;
+    this.world.defaultContactMaterial.frictionEquationStiffness = 1e8;
     this.world.defaultContactMaterial.frictionEquationRelaxation = 0;
   }
 
