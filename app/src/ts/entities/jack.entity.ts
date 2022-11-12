@@ -38,6 +38,14 @@ export class JackEntity extends ModelEntity {
     this.intent.pov.position.y = 1;
   }
 
+  public isOnFoot() {
+    return [JackState.IDLE, JackState.RUNNING].includes(this.intent.state as JackState);
+  }
+
+  public enterVehicle() {
+    this.intent.state = JackState.VEHICLE;
+  }
+
   public getAnimation(key: string|null = null) {
     if (key === null) {
       key = this.intent.state;
@@ -49,6 +57,7 @@ export class JackEntity extends ModelEntity {
     ) {
       key = this.intent.state + '.S';
     }
+    console.log('animation', key);
     return this.animations.indexOf(key);
   }
 

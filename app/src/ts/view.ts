@@ -2,18 +2,18 @@ import {
   AdditiveBlending,
   AnimationMixer,
   AxesHelper,
-  BoxGeometry,
+  BoxGeometry, Camera,
   Color, Group,
   Mesh,
   MeshPhongMaterial,
-  NearestFilter,
+  NearestFilter, Object3D,
   PerspectiveCamera,
   PMREMGenerator, PointLight,
   RepeatWrapping,
   Scene,
   SphereGeometry,
   sRGBEncoding,
-  TextureLoader,
+  TextureLoader, Vector2,
   Vector3,
   WebGLCubeRenderTarget,
   WebGLRenderer,
@@ -35,6 +35,9 @@ import {ConvexHelper} from "@/ts/helpers/convex.helper";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
+import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
+import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
+import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
 
 export class View {
   protected texture: TextureLoader;
@@ -47,6 +50,8 @@ export class View {
   protected scene: Scene;
   protected $element!: HTMLDivElement;
   protected controls!: OrbitControls;
+  protected composer!: EffectComposer;
+  protected outlinePass!: OutlinePass;
 
   constructor() {
     this.renderer = new WebGLRenderer({ antialias: true });
@@ -274,12 +279,33 @@ export class View {
     return document.pointerLockElement === this.renderer.domElement;
   }
 
+  public setSelected(object: Object3D) {
+    // @todo shouldn't need this check
+    if (!this.outlinePass) {
+      return;
+    }
+    this.outlinePass.selectedObjects = [object];
+  }
+
+  public clearSelected() {
+    // @todo shouldn't need this check
+    if (!this.outlinePass) {
+      return;
+    }
+    this.outlinePass.selectedObjects = [];
+  }
+
   private debug = false;
-  public animate(camera: CameraHandler) {
+  public animate(delta: number, camera: CameraHandler) {
     // if (!this.controls) {
     //   this.controls = new OrbitControls(camera.getObject(), this.renderer.domElement);
     // }
     // this.controls.update();
+
+    if (!this.composer) {
+      this.initComposer(camera.getObject());
+    }
+
     this.stats.update();
     const cam = camera.getObject();
     const target = camera.getTarget();
@@ -292,6 +318,23 @@ export class View {
       cam.lookAt(this.axes.position);
     }
 
-    this.renderer.render(this.scene, cam);
+    // this.renderer.render(this.scene, cam);
+    this.composer.render();
+  }
+
+  private initComposer(camera: Camera) {
+    this.composer = new EffectComposer(this.renderer);
+
+    const renderPass = new RenderPass(this.scene, camera);
+    this.composer.addPass(renderPass);
+
+    const viewport = new Vector2(this.$element.offsetWidth, this.$element.offsetHeight);
+    this.outlinePass = new OutlinePass(viewport, this.scene, camera);
+    this.outlinePass.visibleEdgeColor.set('#ffffff');
+    this.outlinePass.hiddenEdgeColor.set('#190a05');
+    this.outlinePass.edgeStrength = 3;
+    this.outlinePass.edgeGlow = 1;
+    this.outlinePass.edgeThickness = 1;
+    this.composer.addPass(this.outlinePass);
   }
 }

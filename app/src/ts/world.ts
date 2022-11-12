@@ -6,7 +6,7 @@ import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {PointEvent} from "@/ts/events/point.event";
-import {Clock, Raycaster, Vector3} from "three";
+import {Clock, Object3D, Raycaster, Vector3} from "three";
 import {Physics} from "@/ts/physics";
 import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {JackController} from "@/ts/controllers/jack.controller";
@@ -18,6 +18,7 @@ import {AsteroidController} from "@/ts/controllers/asteroid.controller";
 import {ShipHandler} from "@/ts/handlers/ship.handler";
 import {ShipController} from "@/ts/controllers/ship.controller";
 import {ShipEntity} from "@/ts/entities/ship.entity";
+import {MouseHelper} from "@/ts/helpers/mouse.helper";
 
 export class World {
   protected view: View;
@@ -29,6 +30,7 @@ export class World {
   protected ship!: ShipHandler;
   protected camera!: CameraHandler;
   protected ready = false;
+  protected selected: Handler<any>|null = null;
 
   protected debugger ?: {update: () => void;};
   protected raycaster = new Raycaster();
@@ -114,6 +116,7 @@ export class World {
     document.addEventListener("keydown", this.onKeyDown.bind(this), false);
     document.addEventListener("keyup", this.onKeyUp.bind(this), false);
     document.addEventListener("mousemove", this.onPointerMove.bind(this), false);
+    document.addEventListener("mousedown", this.onMouseDown.bind(this), false);
   }
 
   private onKeyDown($event: KeyboardEvent) {
@@ -141,21 +144,30 @@ export class World {
     this.handlers.forEach(handler => handler.onPointerMove($event));
   }
 
-  public onKeysChanged($event: KeysChangedEvent) {
+  private onMouseDown($event: MouseEvent) {
+    if (!this.view.isLocked()) {
+      return;
+    }
+    if (this.selected && $event.button === MouseHelper.RIGHT) {
+      this.use();
+    }
+  }
+
+  private onKeysChanged($event: KeysChangedEvent) {
     this.handlers.forEach(handler => handler.onKeysChanged($event));
   }
 
-  public onPoint($event: PointEvent) {
+  private onPoint($event: PointEvent) {
     this.handlers.forEach(handler => handler.onPoint($event));
   }
 
-  public move(delta: number) {
+  private move(delta: number) {
     this.handlers.forEach((handler) => {
       handler.move(delta, this);
     });
   }
 
-  // // @todo this is something you'd handle in the handler?
+  // @todo this is something you'd handle in the handler?
   public intersects(
     handler: Handler<any>,
     origin: Vector3,
@@ -187,8 +199,51 @@ export class World {
     requestAnimationFrame(this.animate.bind(this));
     const delta = this.clock.getDelta();
     this.move(delta);
-    this.view.animate(this.camera);
+    this.view.animate(delta, this.camera);
     this.physics.animate(delta);
     this.debugger?.update();
+    this.updateSelected();
+  }
+
+  private updateSelected() {
+    this.raycaster.setFromCamera({x: 0, y: 0}, this.camera.getObject());
+    const objects = this.handlers.map(candidate => candidate.getObject());
+    const intersections = this.raycaster.intersectObjects(objects);
+    for (const intersection of intersections) {
+      const handler = this.handlerForObject(intersection.object);
+      if (handler && this.isSelectable(handler)) {
+        this.selected = handler;
+        this.view.setSelected(intersection.object);
+        return;
+      }
+    }
+    this.selected = null;
+    this.view.clearSelected();
+  }
+
+  private handlerForObject(object: Object3D) {
+    for (const handler of this.handlers) {
+      if (handler.hasObject(object)) {
+        return handler;
+      }
+    }
+    return null;
+  }
+
+  private isSelectable(handler: Handler<any>) {
+    if (handler === this.ship) {
+      return !this.ship.isFlying();
+    }
+    return false;
+  }
+
+  private use() {
+    if (this.selected === this.ship) {
+      if (this.jack.isOnFoot()) {
+        this.jack.enterVehicle(this.ship);
+        this.ship.startFlying();
+        this.camera.setTarget(this.ship);
+      }
+    }
   }
 }

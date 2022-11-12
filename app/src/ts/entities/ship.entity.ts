@@ -44,7 +44,21 @@ export class ShipEntity extends ModelEntity {
 
   constructor() {
     super();
-    this.intent.pov.position.y = 5;
+    this.intent.pov.position.y = 1;
+    // this.intent.pov.quaternion = new Quaternion().setFromEuler(
+    //   - Math.PI / 2,
+    //   Math.PI,
+    //   0,
+    //   'YXZ'
+    // );
+  }
+
+  public isFlying() {
+    return this.intent.state === ShipState.FLYING;
+  }
+
+  public startFlying() {
+    this.intent.state = ShipState.FLYING;
   }
 
   public getAnimation(key: ShipState|null = null) {
@@ -64,7 +78,7 @@ export class ShipEntity extends ModelEntity {
     const xKey = DirectionHelper.xKey($event.keys);
     if (zKey) {
       const sign = zKey === DirectionKey.N ? 1 : -1;
-      this.intent.acceleration.set(0, 0, sign * this.acceleration[ShipState.FLYING]);
+      this.intent.acceleration.set(0, sign * this.acceleration[ShipState.FLYING], 0);
     } else {
       this.intent.acceleration.set(0, 0, 0);
     }
@@ -72,7 +86,7 @@ export class ShipEntity extends ModelEntity {
     if (xKey) {
       const sign = xKey === DirectionKey.W ? -1 : 1;
       this.intent.quaternion.mult(new Quaternion().setFromAxisAngle(
-        new Vec3(0, 0, 1),
+        new Vec3(0, 1, 0),
         sign * this.roll[ShipState.FLYING]
       ), this.intent.quaternion);
     }
@@ -87,11 +101,9 @@ export class ShipEntity extends ModelEntity {
 
     const previous = new Vec3();
     this.intent.quaternion.toEuler(previous);
-    const x = MathHelper.clamp(previous.x + $event.movementY * 0.001, -0.75, 0.9);
-
     this.intent.quaternion.setFromEuler(
-      x,
-      -$event.movementX * 0.01,
+      previous.x + $event.movementY * 0.01,
+      previous.y - $event.movementX * 0.01,
       0
     );
   }

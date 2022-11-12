@@ -55,7 +55,7 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   public getAcceleration() {
     const intent = this.entity.getIntent();
     const rotation = this.body.quaternion.clone();
-    const acceleration = intent.acceleration;
+    const acceleration = intent.acceleration.clone();
     rotation.vmult(acceleration, acceleration);
     return acceleration;
   }
@@ -66,9 +66,14 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
     const entity = this.getEntity();
     const animation = entity.getAnimation();
     if (animation !== this.animation) {
-      this.animation = animation;
       mixer.stopAllAction();
-      mixer.clipAction(this.getModel().animations[entity.getAnimation()]).play();
+      this.animation = animation;
+      if (animation) {
+        const animations = this.getModel().animations;
+        if (animations.includes(animation)) {
+          mixer.clipAction(animations[animation]).play();
+        }
+      }
     }
     mixer.update(delta);
   }

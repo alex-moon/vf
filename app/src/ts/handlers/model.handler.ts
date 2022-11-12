@@ -62,6 +62,9 @@ export class ModelHandler<C extends ModelController<any>> extends Handler<C> {
     body.quaternion.conjugate().vmult(forceN, forceN);
     const rotation = new Quaternion().setFromVectors(downN, forceN);
     body.quaternion.mult(rotation, body.quaternion);
+    // const to = new Quaternion().normalize();
+    // to.mult(rotation, to);
+    // body.quaternion.slerp(to, 0.1, body.quaternion);
   }
 
   private gravity(m1: number, m2: number, r: number) {

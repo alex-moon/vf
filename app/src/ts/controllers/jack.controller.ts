@@ -3,12 +3,14 @@ import {ModelController} from "@/ts/controllers/model.controller";
 import {Model} from "@/ts/interfaces/model";
 import {Object3D} from "three";
 import {Direction} from "@/ts/enums/direction";
-import {Quaternion, Vec3} from "cannon-es";
+import {Body, Quaternion, Vec3} from "cannon-es";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
+import {ModelHandler} from "@/ts/handlers/model.handler";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
   protected root!: Object3D;
+  protected vehicle: ModelHandler<any>|null = null;
 
   public setModel(model: Model) {
     super.setModel(model);
@@ -25,8 +27,20 @@ export class JackController extends ModelController<JackEntity> {
     this.root = root;
   }
 
+  public enterVehicle(vehicle: ModelHandler<any>) {
+    this.entity.enterVehicle();
+    this.vehicle = vehicle;
+    this.body.type = Body.KINEMATIC;
+    this.object.visible = false;
+  }
+
   public move(delta: number) {
     super.move(delta);
+
+    if (this.vehicle) {
+      this.body.position = this.vehicle.getPov().position;
+      return;
+    }
 
     const velocity = this.getVelocity();
     this.body.velocity.x = velocity.x;

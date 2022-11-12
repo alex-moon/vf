@@ -41,6 +41,21 @@ export abstract class Handler<C extends Controller<any>> {
     return this.controller.getEntity();
   }
 
+  public hasObject(object: Object3D, parent ?: Object3D) {
+    if (!parent) {
+      parent = this.getObject();
+    }
+    if (parent === object) {
+      return true;
+    }
+    for (const child of parent.children) {
+      if (this.hasObject(object, child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public setObject(object: Object3D) {
     this.controller.setObject(object);
   }

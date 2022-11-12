@@ -4,12 +4,11 @@ import {Model} from "@/ts/interfaces/model";
 import {Quaternion} from "cannon-es";
 import {
   EquirectangularReflectionMapping,
-  MeshPhongMaterial,
   MeshPhysicalMaterial,
   Object3D,
-  SkinnedMesh
+  SkinnedMesh,
+  TextureLoader
 } from "three";
-import {RGBELoader} from "three/examples/jsm/loaders/RGBELoader";
 
 export class ShipController extends ModelController<ShipEntity> {
   protected windshield!: Object3D;
@@ -26,8 +25,8 @@ export class ShipController extends ModelController<ShipEntity> {
 
     // @todo I think we want to move toward each entity has a view
     // it's not clear to me where we access the physics, maybe in the controller
-    const envMap = new RGBELoader().load(
-      '/skybox.png',
+    const envMap = new TextureLoader().load(
+      '/reflection.png',
       () => {
         envMap.mapping = EquirectangularReflectionMapping;
       }
