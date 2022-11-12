@@ -49,19 +49,19 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
     ), rotation);
     const velocity = new Vec3(0, 0, intent.speed);
     rotation.vmult(velocity, velocity);
-    if (intent.speed > 0) {
-    }
     return velocity;
   }
 
-  public move(delta: number) {
-    const body = this.getBody();
-    const mixer = this.getMixer();
-    const velocity = this.getVelocity();
+  public getAcceleration() {
+    const intent = this.entity.getIntent();
+    const rotation = this.body.quaternion.clone();
+    const acceleration = intent.acceleration;
+    rotation.vmult(acceleration, acceleration);
+    return acceleration;
+  }
 
-    body.velocity.x = velocity.x;
-    body.velocity.y = velocity.y;
-    body.velocity.z = velocity.z;
+  public move(delta: number) {
+    const mixer = this.getMixer();
 
     const entity = this.getEntity();
     const animation = entity.getAnimation();

@@ -3,6 +3,16 @@ import {Direction, DirectionKey} from "@/ts/enums/direction";
 export class DirectionHelper {
   static delta = 0.0001;
 
+  public static zKey(keys: string[]) {
+    const zKeys = keys.filter(key => [DirectionKey.N, DirectionKey.S].includes(key as DirectionKey));
+    return zKeys.length != 1 ? null : zKeys[0] as DirectionKey;
+  }
+
+  public static xKey(keys: string[]) {
+    const xKeys = keys.filter(key => [DirectionKey.E, DirectionKey.W].includes(key as DirectionKey));
+    return xKeys.length != 1 ? null : xKeys[0] as DirectionKey;
+  }
+
   public static is(value: number, direction: Direction) {
     return Math.abs(direction - value) < DirectionHelper.delta;
   }

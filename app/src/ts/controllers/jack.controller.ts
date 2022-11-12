@@ -28,6 +28,11 @@ export class JackController extends ModelController<JackEntity> {
   public move(delta: number) {
     super.move(delta);
 
+    const velocity = this.getVelocity();
+    this.body.velocity.x = velocity.x;
+    this.body.velocity.y = velocity.y;
+    this.body.velocity.z = velocity.z;
+
     const intent = this.entity.getIntent();
 
     // split the intended rotation into x and y components

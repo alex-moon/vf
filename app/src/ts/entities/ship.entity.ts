@@ -1,31 +1,38 @@
 import {Intent} from "@/ts/entities/intent";
 import {ModelEntity} from "@/ts/entities/model.entity";
-import {DirectionHelper} from "@/ts/helpers/direction.helper";
-import {Direction, DirectionKey} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CollisionBox} from "@/ts/entities/collision-box";
-import {Vec3} from "cannon-es";
+import {DirectionKey} from "@/ts/enums/direction";
+import {DirectionHelper} from "@/ts/helpers/direction.helper";
+import {Quaternion, Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
 
 enum ShipState {
   DEFAULT = 'default',
-  OPEN = 'open',
-  CLOSED = 'closed',
+  LANDED = 'landed',
+  FLYING = 'flying',
 }
 
 export class ShipEntity extends ModelEntity {
-  protected speed = {
-    [ShipState.OPEN]: 0,
-    [ShipState.CLOSED]: 0,
+  protected acceleration = {
+    [ShipState.LANDED]: 0,
+    [ShipState.FLYING]: 8,
+  }
+  protected roll = {
+    [ShipState.LANDED]: 0,
+    [ShipState.FLYING]: Math.PI / 12,
   }
 
   protected path = '/glb/ship.glb';
   protected animations = [
     ShipState.DEFAULT,
-    ShipState.OPEN,
-    ShipState.CLOSED,
+    ShipState.FLYING,
+    ShipState.LANDED + '.C',
+    ShipState.LANDED,
+    ShipState.LANDED + '.O',
   ];
-  protected intent = new Intent(ShipState.OPEN);
+
+  protected intent = new Intent(ShipState.LANDED);
   protected box = {
     // width: 22,
     // height: 6,
@@ -49,31 +56,43 @@ export class ShipEntity extends ModelEntity {
 
   public onKeysChanged($event: KeysChangedEvent) {
     super.onKeysChanged($event);
-    // const zKeys = $event.keys.filter(key => [DirectionKey.N, DirectionKey.S].includes(key as DirectionKey));
-    // const xKeys = $event.keys.filter(key => [DirectionKey.E, DirectionKey.W].includes(key as DirectionKey));
-    // const zKey = zKeys.length != 1 ? null : zKeys[0] as DirectionKey;
-    // const xKey = xKeys.length != 1 ? null : xKeys[0] as DirectionKey;
-    // if (zKey || xKey) {
-    //   this.intent.state = ShipState.CLOSED;
-    //   this.intent.speed = this.speed[ShipState.CLOSED];
-    //   this.intent.direction = DirectionHelper.fromKeys(zKey, xKey);
-    // } else {
-    //   this.intent.state = ShipState.OPEN;
-    //   this.intent.speed = this.speed[ShipState.OPEN];
-    //   this.intent.direction = null;
-    // }
+    if (this.intent.state !== ShipState.FLYING) {
+      return;
+    }
+
+    const zKey = DirectionHelper.zKey($event.keys);
+    const xKey = DirectionHelper.xKey($event.keys);
+    if (zKey) {
+      const sign = zKey === DirectionKey.N ? 1 : -1;
+      this.intent.acceleration.set(0, 0, sign * this.acceleration[ShipState.FLYING]);
+    } else {
+      this.intent.acceleration.set(0, 0, 0);
+    }
+
+    if (xKey) {
+      const sign = xKey === DirectionKey.W ? -1 : 1;
+      this.intent.quaternion.mult(new Quaternion().setFromAxisAngle(
+        new Vec3(0, 0, 1),
+        sign * this.roll[ShipState.FLYING]
+      ), this.intent.quaternion);
+    }
+    // @todo reset rotation???
   }
 
   public onPointerMove($event: MouseEvent) {
     super.onPointerMove($event);
-    // const previous = new Vec3();
-    // this.intent.pov.quaternion.toEuler(previous);
-    // const x = MathHelper.clamp(previous.x + $event.movementY * 0.001, -0.75, 0.9);
-    //
-    // this.intent.pov.quaternion.setFromEuler(
-    //   x,
-    //   -$event.movementX * 0.01,
-    //   0
-    // );
+    if (this.intent.state !== ShipState.FLYING) {
+      return;
+    }
+
+    const previous = new Vec3();
+    this.intent.quaternion.toEuler(previous);
+    const x = MathHelper.clamp(previous.x + $event.movementY * 0.001, -0.75, 0.9);
+
+    this.intent.quaternion.setFromEuler(
+      x,
+      -$event.movementX * 0.01,
+      0
+    );
   }
 }

@@ -11,11 +11,11 @@ enum JackState {
   DEFAULT = 'default',
   IDLE = 'idle',
   RUNNING = 'running',
+  VEHICLE = 'vehicle',
 }
 
 export class JackEntity extends ModelEntity {
   protected speed = {
-    [JackState.IDLE]: 0,
     [JackState.RUNNING]: 8,
   }
 
@@ -53,23 +53,32 @@ export class JackEntity extends ModelEntity {
   }
 
   public onKeysChanged($event: KeysChangedEvent) {
-    const zKeys = $event.keys.filter(key => [DirectionKey.N, DirectionKey.S].includes(key as DirectionKey));
-    const xKeys = $event.keys.filter(key => [DirectionKey.E, DirectionKey.W].includes(key as DirectionKey));
-    const zKey = zKeys.length != 1 ? null : zKeys[0] as DirectionKey;
-    const xKey = xKeys.length != 1 ? null : xKeys[0] as DirectionKey;
+    super.onKeysChanged($event);
+
+    if (this.intent.state === JackState.VEHICLE) {
+      return;
+    }
+
+    const zKey = DirectionHelper.zKey($event.keys);
+    const xKey = DirectionHelper.xKey($event.keys);
     if (zKey || xKey) {
       this.intent.state = JackState.RUNNING;
       this.intent.speed = this.speed[JackState.RUNNING];
       this.intent.direction = DirectionHelper.fromKeys(zKey, xKey);
     } else {
       this.intent.state = JackState.IDLE;
-      this.intent.speed = this.speed[JackState.IDLE];
+      this.intent.speed = 0;
       this.intent.direction = null;
     }
   }
 
   public onPointerMove($event: MouseEvent) {
     super.onPointerMove($event);
+
+    if (this.intent.state === JackState.VEHICLE) {
+      return;
+    }
+
     const previous = new Vec3();
     this.intent.pov.quaternion.toEuler(previous);
     const x = MathHelper.clamp(previous.x + $event.movementY * 0.001, -0.75, 0.9);

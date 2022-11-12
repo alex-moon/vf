@@ -14,6 +14,9 @@ export class Intent {
 
   pov: EntityPov;
 
+  acceleration: Vec3 = new Vec3(0, 0, 0);
+  quaternion: Quaternion = new Quaternion().normalize();
+
   constructor(state: string) {
     this.state = state;
     this.pov = {
@@ -21,10 +24,4 @@ export class Intent {
       quaternion: new Quaternion().normalize(),
     };
   }
-}
-
-export class ControllerIntent {
-  position ?: Vec3;
-  velocity ?: Vec3;
-  force ?: Vec3;
 }
