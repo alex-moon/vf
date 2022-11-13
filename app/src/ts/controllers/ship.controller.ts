@@ -103,4 +103,12 @@ export class ShipController extends ModelController<ShipEntity> {
     this.body.velocity.y += acceleration.y;
     this.body.velocity.z += acceleration.z;
   }
+
+  public getAcceleration() {
+    const intent = this.entity.getIntent();
+    const rotation = this.body.quaternion.clone();
+    const acceleration = intent.acceleration.clone();
+    rotation.vmult(acceleration, acceleration);
+    return acceleration;
+  }
 }

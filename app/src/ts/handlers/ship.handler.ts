@@ -3,7 +3,6 @@ import {ShipController} from "@/ts/controllers/ship.controller";
 import {ShipEntity} from "@/ts/entities/ship.entity";
 import {World} from "@/ts/world";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
-import {Body} from "cannon-es";
 import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 
 export class ShipHandler extends ModelHandler<ShipController> {
@@ -29,6 +28,7 @@ export class ShipHandler extends ModelHandler<ShipController> {
     this.controller.startLanding(asteroid);
 
     const body = this.getBody();
+    body.velocity.set(0, 0, 0);
     const origin = asteroid.getBody().position;
     const target = body.position.clone();
     target.vsub(origin, target);

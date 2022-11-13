@@ -27,7 +27,7 @@ export class CameraController extends Controller<CameraEntity> {
     return this.target;
   }
 
-  public move(delta: number) {
+  public move(delta: number, cut = false) {
     super.move(delta);
     const body = this.getBody();
 
@@ -45,13 +45,21 @@ export class CameraController extends Controller<CameraEntity> {
 
     const position = pov.position.clone();
     position.addScaledVector(1, vector, position);
-    body.position.lerp(position, multiple, body.position);
+    if (cut) {
+      body.position.copy(position);
+    } else {
+      body.position.lerp(position, multiple, body.position);
+    }
 
     // second set rotation
     const to = pov.quaternion.clone();
     to.mult(new Quaternion().setFromAxisAngle(new Vec3(0, 1, 0), Math.PI), to);
     to.mult(new Quaternion().setFromAxisAngle(new Vec3(1, 0, 0), -0.1419), to);
-    body.quaternion.slerp(to, multiple, body.quaternion);
+    if (cut) {
+      body.quaternion.copy(to);
+    } else {
+      body.quaternion.slerp(to, multiple, body.quaternion);
+    }
   }
 
   protected calculateDistance() {

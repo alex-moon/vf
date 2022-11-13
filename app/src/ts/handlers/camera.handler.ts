@@ -11,7 +11,12 @@ export class CameraHandler extends Handler<CameraController> {
   public setTarget(target: ModelHandler<any>) {
     this.controller.setTarget(target);
   }
+
   public getTarget() {
     return this.controller.getTarget();
+  }
+
+  public cut() {
+    this.controller.move(0, true);
   }
 }

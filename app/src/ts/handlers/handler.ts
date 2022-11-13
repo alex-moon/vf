@@ -30,7 +30,12 @@ export abstract class Handler<C extends Controller<any>> {
       body.position.y + offset.y,
       body.position.z + offset.z
     );
-    object.quaternion.set(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w);
+    object.quaternion.set(
+      body.quaternion.x,
+      body.quaternion.y,
+      body.quaternion.z,
+      body.quaternion.w
+    );
   }
 
   protected getOffset() {

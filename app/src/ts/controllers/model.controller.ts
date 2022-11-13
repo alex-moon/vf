@@ -34,30 +34,11 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   public getPov() {
     const intent = this.entity.getIntent();
     const position = this.body.position.clone();
-    position.addScaledVector(1, intent.pov.position, position);
     const quaternion = new Quaternion();
     this.body.quaternion.mult(intent.pov.quaternion, quaternion);
+    this.body.quaternion.vmult(intent.pov.position, position);
+    this.body.position.addScaledVector(1, position, position);
     return {position, quaternion} as EntityPov;
-  }
-
-  public getVelocity() {
-    const intent = this.entity.getIntent();
-    const rotation = this.body.quaternion.clone();
-    rotation.mult(new Quaternion().setFromAxisAngle(
-      new Vec3(0, 1, 0),
-      intent.direction || 0
-    ), rotation);
-    const velocity = new Vec3(0, 0, intent.speed);
-    rotation.vmult(velocity, velocity);
-    return velocity;
-  }
-
-  public getAcceleration() {
-    const intent = this.entity.getIntent();
-    const rotation = this.body.quaternion.clone();
-    const acceleration = intent.acceleration.clone();
-    rotation.vmult(acceleration, acceleration);
-    return acceleration;
   }
 
   public move(delta: number) {

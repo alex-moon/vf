@@ -1,19 +1,23 @@
 import {
-  AdditiveBlending,
   AnimationMixer,
   AxesHelper,
-  BoxGeometry, Camera,
-  Color, Group,
+  BoxGeometry,
+  Camera,
+  Color,
+  Group,
   Mesh,
   MeshPhongMaterial,
-  NearestFilter, Object3D,
+  NearestFilter,
+  Object3D,
   PerspectiveCamera,
-  PMREMGenerator, PointLight,
+  PMREMGenerator,
+  PointLight,
   RepeatWrapping,
   Scene,
   SphereGeometry,
   sRGBEncoding,
-  TextureLoader, Vector2,
+  TextureLoader,
+  Vector2,
   Vector3,
   WebGLCubeRenderTarget,
   WebGLRenderer,
@@ -21,7 +25,6 @@ import {
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {Lensflare, LensflareElement} from "three/examples/jsm/objects/Lensflare";
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
-import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {Handler} from "@/ts/handlers/handler";
@@ -310,7 +313,7 @@ export class View {
 
     // debugging
     if (this.debug) {
-      cam.position.set(20, 20, 20);
+      cam.position.set(2000, 2000, 2000);
       cam.lookAt(this.axes.position);
     }
 

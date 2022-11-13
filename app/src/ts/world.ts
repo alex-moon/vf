@@ -164,7 +164,9 @@ export class World {
     this.handlers.forEach(handler => handler.onPoint($event));
   }
 
+  // @todo this is why you need a global pubsub
   private collide($event: any) {
+    // @todo there are some bogus collide events happening
     if (this.ship.isLanding()) {
       this.ship.land();
       this.jack.exitVehicle();
@@ -178,7 +180,8 @@ export class World {
     });
   }
 
-  // @todo this is something you'd handle in the handler?
+  // not used anywhere but this is really the only place you can do this
+  // @todo how would you do this better?
   public intersects(
     handler: Handler<any>,
     origin: Vector3,
@@ -243,7 +246,7 @@ export class World {
 
   private isSelectable(handler: Handler<any>) {
     if (handler === this.ship) {
-      return this.ship.isLanded() || this.ship.isLanding();
+      return this.ship.isLanded();
     }
     if (handler === this.asteroid) {
       return this.ship.isFlying();
@@ -257,17 +260,12 @@ export class World {
         this.jack.enterVehicle(this.ship);
         this.ship.startLaunching();
         this.camera.setTarget(this.ship);
-      } else if (this.ship.isLanding()) {
-        this.ship.startLaunching();
       }
-
-      // @todo automatically on land
-      // this.jack.exitVehicle();
-      // this.camera.setTarget(this.jack);
     }
     if (this.selected === this.asteroid) {
       if (this.ship.isFlying()) {
         this.ship.startLanding(this.asteroid);
+        this.camera.cut();
       }
     }
   }

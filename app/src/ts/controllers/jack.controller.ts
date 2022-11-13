@@ -70,6 +70,18 @@ export class JackController extends ModelController<JackEntity> {
     this.lightTarget.position.set(to.x, to.y, to.z);
   }
 
+  public getVelocity() {
+    const intent = this.entity.getIntent();
+    const rotation = this.body.quaternion.clone();
+    rotation.mult(new Quaternion().setFromAxisAngle(
+      new Vec3(0, 1, 0),
+      intent.direction || 0
+    ), rotation);
+    const velocity = new Vec3(0, 0, intent.speed);
+    rotation.vmult(velocity, velocity);
+    return velocity;
+  }
+
   public move(delta: number) {
     super.move(delta);
 
