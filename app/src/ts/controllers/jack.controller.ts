@@ -44,6 +44,22 @@ export class JackController extends ModelController<JackEntity> {
     this.object.visible = false;
   }
 
+  public exitVehicle() {
+    if (this.vehicle) {
+      this.entity.exitVehicle();
+      const vehicle = this.vehicle.getBody();
+      this.vehicle = null;
+      this.body.type = Body.DYNAMIC;
+      this.object.visible = true;
+      const relative = new Vec3(0, 0, vehicle.boundingRadius);
+      vehicle.quaternion.vmult(relative, relative);
+      const position = vehicle.position.clone();
+      position.addScaledVector(1, relative, position);
+      this.body.position.copy(position);
+      this.body.quaternion.copy(vehicle.quaternion);
+    }
+  }
+
   private moveLight() {
     const intent = this.entity.getIntent();
     this.light.position.set(intent.pov.position.x, intent.pov.position.y, intent.pov.position.z);

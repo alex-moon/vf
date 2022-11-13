@@ -1,13 +1,11 @@
-import {Intent} from "@/ts/entities/intent";
 import {ModelEntity} from "@/ts/entities/model.entity";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
-import {Direction, DirectionKey} from "@/ts/enums/direction";
+import {Direction} from "@/ts/enums/direction";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CollisionBox} from "@/ts/entities/collision-box";
 import {Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
-import {JackState, JackIntent} from "@/ts/entities/jack.intent";
-import {ShipIntent} from "@/ts/entities/ship.intent";
+import {JackIntent, JackState} from "@/ts/entities/jack.intent";
 
 export class JackEntity extends ModelEntity {
   protected speed = {
@@ -43,6 +41,10 @@ export class JackEntity extends ModelEntity {
 
   public enterVehicle() {
     this.intent.state = JackState.VEHICLE;
+  }
+
+  public exitVehicle() {
+    this.intent.state = JackState.IDLE;
   }
 
   public getAnimation(key: string|null = null) {
@@ -92,7 +94,7 @@ export class JackEntity extends ModelEntity {
 
     this.intent.pov.quaternion.setFromEuler(
       x,
-      -$event.movementX * 0.01,
+      -$event.movementX * 0.001,
       0
     );
   }

@@ -1,7 +1,7 @@
 import {ShipEntity} from "@/ts/entities/ship.entity";
 import {ModelController} from "@/ts/controllers/model.controller";
 import {Model} from "@/ts/interfaces/model";
-import {Quaternion} from "cannon-es";
+import {Quaternion, Body} from "cannon-es";
 import {
   EquirectangularReflectionMapping,
   MeshPhysicalMaterial,
@@ -10,16 +10,52 @@ import {
   TextureLoader
 } from "three";
 import {ShipIntent} from "@/ts/entities/ship.intent";
+import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 
 export class ShipController extends ModelController<ShipEntity> {
   protected windshield!: Object3D;
   protected root!: Object3D;
 
+  protected asteroid: AsteroidHandler|null = null;
+
   public isFlying() {
     return this.entity.isFlying();
   }
+
   public startFlying() {
     this.entity.startFlying();
+    this.asteroid = null;
+  }
+
+  public isLanding() {
+    return this.entity.isLanding();
+  }
+
+  public startLanding(asteroid: AsteroidHandler) {
+    this.entity.startLanding();
+    this.asteroid = asteroid;
+  }
+
+  public isLaunching() {
+    return this.entity.isLaunching();
+  }
+
+  public startLaunching() {
+    this.entity.startLaunching();
+    this.body.type = Body.DYNAMIC;
+  }
+
+  public isLanded() {
+    return this.entity.isLanded();
+  }
+
+  public land() {
+    this.entity.land();
+    this.body.type = Body.STATIC;
+  }
+
+  public getAsteroid() {
+    return this.asteroid;
   }
 
   public setModel(model: Model) {

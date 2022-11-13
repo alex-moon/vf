@@ -202,7 +202,6 @@ export class View {
       const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
       mesh.castShadow = mesh.receiveShadow = true;
-      mesh.position.set(0, -entity.radius, 0);
       handler.setObject(mesh);
       this.scene.add(mesh);
       resolve();
@@ -225,7 +224,6 @@ export class View {
       const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
       mesh.castShadow = mesh.receiveShadow = true;
-      mesh.position.set(0, -5, 0);
       handler.setObject(mesh);
       this.scene.add(mesh);
       resolve();
@@ -254,7 +252,6 @@ export class View {
       }
 
       group.castShadow = group.receiveShadow = true;
-      group.position.set(0, -entity.radius, 0);
       handler.setObject(group);
       this.scene.add(group);
       resolve();
@@ -269,7 +266,6 @@ export class View {
         1,
         10000
       );
-      camera.position.set(0, 2, -2);
       handler.setObject(camera);
       resolve();
     });
@@ -331,7 +327,8 @@ export class View {
     const viewport = new Vector2(this.$element.offsetWidth, this.$element.offsetHeight);
     this.outlinePass = new OutlinePass(viewport, this.scene, camera);
     this.outlinePass.visibleEdgeColor.set('#ffffff');
-    this.outlinePass.hiddenEdgeColor.set('#190a05');
+    this.outlinePass.hiddenEdgeColor.set('#ffffff');
+    // this.outlinePass.hiddenEdgeColor.set('#190a05');
     this.outlinePass.edgeStrength = 3;
     this.outlinePass.edgeGlow = 1;
     this.outlinePass.edgeThickness = 1;

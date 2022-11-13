@@ -47,14 +47,9 @@ export class ShipEntity extends ModelEntity {
 
   private calculatePovQuaternion() {
     if (this.intent.state === ShipState.FLYING) {
-      this.intent.pov.quaternion.setFromEuler(
-        -Math.PI / 2,
-        Math.PI,
-        0,
-        'YXZ'
-      );
+      this.intent.pov.quaternion.setFromEuler(-Math.PI / 2, Math.PI, 0,'YXZ');
     } else {
-      this.intent.pov.quaternion.setFromEuler(0, 0, 0);
+      this.intent.pov.quaternion.setFromEuler(0, Math.PI, 0);
     }
   }
 
@@ -73,6 +68,30 @@ export class ShipEntity extends ModelEntity {
 
   public startFlying() {
     this.intent.state = ShipState.FLYING;
+  }
+
+  public isLanding() {
+    return this.intent.state === ShipState.LANDING;
+  }
+
+  public startLanding() {
+    this.intent.state = ShipState.LANDING;
+  }
+
+  public isLanded() {
+    return this.intent.state === ShipState.LANDED;
+  }
+
+  public land() {
+    this.intent.state = ShipState.LANDED;
+  }
+
+  public isLaunching() {
+    return this.intent.state === ShipState.LAUNCHING;
+  }
+
+  public startLaunching() {
+    this.intent.state = ShipState.LAUNCHING;
   }
 
   public getAnimation(key: DoorState|null = null) {
@@ -114,7 +133,7 @@ export class ShipEntity extends ModelEntity {
     const previous = new Vec3();
     this.intent.quaternion.toEuler(previous);
     this.intent.quaternion.setFromEuler(
-      previous.x + $event.movementY * 0.001,
+      previous.x - $event.movementY * 0.001,
       0,
       previous.z - $event.movementX * 0.001
     );

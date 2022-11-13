@@ -119,6 +119,7 @@ export class World {
     document.addEventListener("keyup", this.onKeyUp.bind(this), false);
     document.addEventListener("mousemove", this.onPointerMove.bind(this), false);
     document.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+    this.ship.getBody().addEventListener('collide', this.collide.bind(this));
   }
 
   private onKeyDown($event: KeyboardEvent) {
@@ -161,6 +162,14 @@ export class World {
 
   private onPoint($event: PointEvent) {
     this.handlers.forEach(handler => handler.onPoint($event));
+  }
+
+  private collide($event: any) {
+    if (this.ship.isLanding()) {
+      this.ship.land();
+      this.jack.exitVehicle();
+      this.camera.setTarget(this.jack);
+    }
   }
 
   private move(delta: number) {
@@ -215,7 +224,7 @@ export class World {
       const handler = this.handlerForObject(intersection.object);
       if (handler && this.isSelectable(handler)) {
         this.selected = handler;
-        this.view.setSelected(intersection.object);
+        this.view.setSelected(handler.getObject());
         return;
       }
     }
@@ -234,17 +243,31 @@ export class World {
 
   private isSelectable(handler: Handler<any>) {
     if (handler === this.ship) {
-      return !this.ship.isFlying();
+      return this.ship.isLanded() || this.ship.isLanding();
+    }
+    if (handler === this.asteroid) {
+      return this.ship.isFlying();
     }
     return false;
   }
 
   private use() {
     if (this.selected === this.ship) {
-      if (this.jack.isOnFoot()) {
+      if (this.ship.isLanded() && this.jack.isOnFoot()) {
         this.jack.enterVehicle(this.ship);
-        this.ship.startFlying();
+        this.ship.startLaunching();
         this.camera.setTarget(this.ship);
+      } else if (this.ship.isLanding()) {
+        this.ship.startLaunching();
+      }
+
+      // @todo automatically on land
+      // this.jack.exitVehicle();
+      // this.camera.setTarget(this.jack);
+    }
+    if (this.selected === this.asteroid) {
+      if (this.ship.isFlying()) {
+        this.ship.startLanding(this.asteroid);
       }
     }
   }

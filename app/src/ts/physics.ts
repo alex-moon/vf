@@ -162,7 +162,7 @@ export class Physics {
       body.quaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2);
       body.position.set(
         this.startingPosition.x + MathHelper.random(-100, 100),
-        this.startingPosition.y + MathHelper.random(-100, 100),
+        this.startingPosition.y + MathHelper.random(100, 200),
         this.startingPosition.z + MathHelper.random(-100, 100),
       );
       body.angularVelocity.set(0, 1e-3, 0);
@@ -177,8 +177,7 @@ export class Physics {
       const body = new Body({
         shape: new Box(new Vec3(0.1, 0.1, 0.1)),
       });
-      body.position.set(0, 5, -20);
-      body.quaternion.set(-0.2, 0, 0, 1).normalize();
+      body.position.copy(this.startingPosition);
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
