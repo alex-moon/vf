@@ -57,7 +57,6 @@ export class JackEntity extends ModelEntity {
     ) {
       key = this.intent.state + '.S';
     }
-    console.log('animation', key);
     return this.animations.indexOf(key);
   }
 

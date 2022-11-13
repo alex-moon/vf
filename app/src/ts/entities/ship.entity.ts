@@ -45,12 +45,12 @@ export class ShipEntity extends ModelEntity {
   constructor() {
     super();
     this.intent.pov.position.y = 1;
-    // this.intent.pov.quaternion = new Quaternion().setFromEuler(
-    //   - Math.PI / 2,
-    //   Math.PI,
-    //   0,
-    //   'YXZ'
-    // );
+    this.intent.pov.quaternion = new Quaternion().setFromEuler(
+      - Math.PI / 2,
+      Math.PI,
+      0,
+      'YXZ'
+    );
   }
 
   public isFlying() {

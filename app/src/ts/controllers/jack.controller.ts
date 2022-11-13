@@ -1,7 +1,7 @@
 import {JackEntity} from "@/ts/entities/jack.entity";
 import {ModelController} from "@/ts/controllers/model.controller";
 import {Model} from "@/ts/interfaces/model";
-import {Object3D} from "three";
+import {Object3D, SpotLight} from "three";
 import {Direction} from "@/ts/enums/direction";
 import {Body, Quaternion, Vec3} from "cannon-es";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
@@ -10,6 +10,8 @@ import {ModelHandler} from "@/ts/handlers/model.handler";
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
   protected root!: Object3D;
+  protected light!: SpotLight;
+  protected lightTarget!: Object3D;
   protected vehicle: ModelHandler<any>|null = null;
 
   public setModel(model: Model) {
@@ -25,13 +27,30 @@ export class JackController extends ModelController<JackEntity> {
       throw new Error('Could not get Root of Jack');
     }
     this.root = root;
+
+    this.light = new SpotLight(0x99ccff, 5, 100, Math.PI/4, 1);
+    this.getObject().add(this.light);
+    this.lightTarget = new Object3D();
+    this.getObject().add(this.lightTarget);
+    this.light.target = this.lightTarget;
+    this.moveLight();
   }
 
   public enterVehicle(vehicle: ModelHandler<any>) {
     this.entity.enterVehicle();
     this.vehicle = vehicle;
-    this.body.type = Body.KINEMATIC;
+    this.body.type = Body.STATIC;
     this.object.visible = false;
+  }
+
+  private moveLight() {
+    const intent = this.entity.getIntent();
+    this.light.position.set(intent.pov.position.x, intent.pov.position.y, intent.pov.position.z);
+    const to = intent.pov.position.clone();
+    const vector = new Vec3(0, 0, 7);
+    intent.pov.quaternion.vmult(vector, vector);
+    to.addScaledVector(1, vector, to);
+    this.lightTarget.position.set(to.x, to.y, to.z);
   }
 
   public move(delta: number) {
@@ -57,6 +76,8 @@ export class JackController extends ModelController<JackEntity> {
 
     // rotate the body
     this.body.quaternion.mult(y, this.body.quaternion);
+
+    this.moveLight();
 
     // rotate the head
     this.head.quaternion.set(x.x, x.y, x.z, x.w);

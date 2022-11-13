@@ -70,7 +70,7 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
       this.animation = animation;
       if (animation) {
         const animations = this.getModel().animations;
-        if (animations.includes(animation)) {
+        if (animations.hasOwnProperty(animation)) {
           mixer.clipAction(animations[animation]).play();
         }
       }
