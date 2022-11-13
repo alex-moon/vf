@@ -330,8 +330,8 @@ export class View {
     const viewport = new Vector2(this.$element.offsetWidth, this.$element.offsetHeight);
     this.outlinePass = new OutlinePass(viewport, this.scene, camera);
     this.outlinePass.visibleEdgeColor.set('#ffffff');
-    this.outlinePass.hiddenEdgeColor.set('#ffffff');
-    // this.outlinePass.hiddenEdgeColor.set('#190a05');
+    // this.outlinePass.hiddenEdgeColor.set('#ffffff');
+    this.outlinePass.hiddenEdgeColor.set('#190a05');
     this.outlinePass.edgeStrength = 3;
     this.outlinePass.edgeGlow = 1;
     this.outlinePass.edgeThickness = 1;

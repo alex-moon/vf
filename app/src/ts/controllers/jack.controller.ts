@@ -51,7 +51,7 @@ export class JackController extends ModelController<JackEntity> {
       this.vehicle = null;
       this.body.type = Body.DYNAMIC;
       this.object.visible = true;
-      const relative = new Vec3(0, 0, vehicle.boundingRadius);
+      const relative = new Vec3(0, 0, vehicle.boundingRadius * 2);
       vehicle.quaternion.vmult(relative, relative);
       const position = vehicle.position.clone();
       position.addScaledVector(1, relative, position);
