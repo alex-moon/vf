@@ -42,6 +42,7 @@ export class World {
   }
 
   public init($element: HTMLDivElement) {
+    this.physics.init();
     this.view.init($element);
     Promise.all([
       this.loadAsteroid(),
@@ -57,6 +58,7 @@ export class World {
       );
       this.bindEvents();
       this.animate();
+      this.start();
     });
   }
 
@@ -245,5 +247,11 @@ export class World {
         this.camera.setTarget(this.ship);
       }
     }
+  }
+
+  private start() {
+    this.jack.enterVehicle(this.ship);
+    this.ship.startFlying();
+    this.camera.setTarget(this.ship);
   }
 }

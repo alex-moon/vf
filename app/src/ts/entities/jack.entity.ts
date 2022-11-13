@@ -6,13 +6,8 @@ import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CollisionBox} from "@/ts/entities/collision-box";
 import {Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
-
-enum JackState {
-  DEFAULT = 'default',
-  IDLE = 'idle',
-  RUNNING = 'running',
-  VEHICLE = 'vehicle',
-}
+import {JackState, JackIntent} from "@/ts/entities/jack.intent";
+import {ShipIntent} from "@/ts/entities/ship.intent";
 
 export class JackEntity extends ModelEntity {
   protected speed = {
@@ -26,7 +21,7 @@ export class JackEntity extends ModelEntity {
     JackState.RUNNING,
     JackState.RUNNING + '.S',
   ];
-  protected intent = new Intent(JackState.IDLE);
+  protected intent = new JackIntent(JackState.IDLE);
   protected box = {
     width: 0.5,
     height: 1,
@@ -36,6 +31,10 @@ export class JackEntity extends ModelEntity {
   constructor() {
     super();
     this.intent.pov.position.y = 1;
+  }
+
+  public getIntent(): JackIntent {
+    return super.getIntent() as JackIntent;
   }
 
   public isOnFoot() {

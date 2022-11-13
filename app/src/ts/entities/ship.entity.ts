@@ -1,38 +1,29 @@
-import {Intent} from "@/ts/entities/intent";
 import {ModelEntity} from "@/ts/entities/model.entity";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CollisionBox} from "@/ts/entities/collision-box";
 import {DirectionKey} from "@/ts/enums/direction";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {Quaternion, Vec3} from "cannon-es";
-import {MathHelper} from "@/ts/helpers/math.helper";
-
-enum ShipState {
-  DEFAULT = 'default',
-  LANDED = 'landed',
-  FLYING = 'flying',
-}
+import {DoorState, ShipIntent, ShipState} from "@/ts/entities/ship.intent";
 
 export class ShipEntity extends ModelEntity {
   protected acceleration = {
-    [ShipState.LANDED]: 0,
-    [ShipState.FLYING]: 8,
+    [ShipState.FLYING]: 1,
   }
   protected roll = {
-    [ShipState.LANDED]: 0,
-    [ShipState.FLYING]: Math.PI / 12,
+    [ShipState.FLYING]: 0.01,
   }
 
   protected path = '/glb/ship.glb';
   protected animations = [
-    ShipState.DEFAULT,
-    ShipState.FLYING,
-    ShipState.LANDED + '.C',
-    ShipState.LANDED,
-    ShipState.LANDED + '.O',
+    DoorState.DEFAULT,
+    DoorState.CLOSED,
+    DoorState.CLOSING,
+    DoorState.OPEN,
+    DoorState.OPENING,
   ];
 
-  protected intent = new Intent(ShipState.LANDED);
+  protected intent = new ShipIntent(ShipState.LANDED);
   protected box = {
     // width: 22,
     // height: 6,
@@ -45,12 +36,35 @@ export class ShipEntity extends ModelEntity {
   constructor() {
     super();
     this.intent.pov.position.y = 1;
-    this.intent.pov.quaternion = new Quaternion().setFromEuler(
-      - Math.PI / 2,
-      Math.PI,
-      0,
-      'YXZ'
+    this.getIntent();
+  }
+
+  public getIntent(): ShipIntent {
+    this.calculatePovQuaternion();
+    this.calculateIntentQuaternion();
+    return super.getIntent() as ShipIntent;
+  }
+
+  private calculatePovQuaternion() {
+    if (this.intent.state === ShipState.FLYING) {
+      this.intent.pov.quaternion.setFromEuler(
+        -Math.PI / 2,
+        Math.PI,
+        0,
+        'YXZ'
+      );
+    } else {
+      this.intent.pov.quaternion.setFromEuler(0, 0, 0);
+    }
+  }
+
+  private calculateIntentQuaternion() {
+    const quaternion = new Quaternion().setFromEuler(
+      this.intent.angularVelocity.x,
+      this.intent.angularVelocity.y,
+      this.intent.angularVelocity.z
     );
+    this.intent.quaternion.mult(quaternion, this.intent.quaternion);
   }
 
   public isFlying() {
@@ -61,9 +75,9 @@ export class ShipEntity extends ModelEntity {
     this.intent.state = ShipState.FLYING;
   }
 
-  public getAnimation(key: ShipState|null = null) {
+  public getAnimation(key: DoorState|null = null) {
     if (key === null) {
-      key = this.intent.state as ShipState;
+      key = this.intent.doorState as DoorState;
     }
     return this.animations.indexOf(key);
   }
@@ -85,12 +99,10 @@ export class ShipEntity extends ModelEntity {
 
     if (xKey) {
       const sign = xKey === DirectionKey.W ? -1 : 1;
-      this.intent.quaternion.mult(new Quaternion().setFromAxisAngle(
-        new Vec3(0, 1, 0),
-        sign * this.roll[ShipState.FLYING]
-      ), this.intent.quaternion);
+      this.intent.angularVelocity.set(0, sign * this.roll[ShipState.FLYING], 0);
+    } else {
+      this.intent.angularVelocity.set(0, 0, 0);
     }
-    // @todo reset rotation???
   }
 
   public onPointerMove($event: MouseEvent) {
@@ -102,9 +114,9 @@ export class ShipEntity extends ModelEntity {
     const previous = new Vec3();
     this.intent.quaternion.toEuler(previous);
     this.intent.quaternion.setFromEuler(
-      previous.x + $event.movementY * 0.01,
-      previous.y - $event.movementX * 0.01,
-      0
+      previous.x + $event.movementY * 0.001,
+      0,
+      previous.z - $event.movementX * 0.001
     );
   }
 }

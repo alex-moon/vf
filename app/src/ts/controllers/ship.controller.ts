@@ -9,10 +9,18 @@ import {
   SkinnedMesh,
   TextureLoader
 } from "three";
+import {ShipIntent} from "@/ts/entities/ship.intent";
 
 export class ShipController extends ModelController<ShipEntity> {
   protected windshield!: Object3D;
   protected root!: Object3D;
+
+  public isFlying() {
+    return this.entity.isFlying();
+  }
+  public startFlying() {
+    this.entity.startFlying();
+  }
 
   public setModel(model: Model) {
     super.setModel(model);
@@ -48,7 +56,7 @@ export class ShipController extends ModelController<ShipEntity> {
   public move(delta: number) {
     super.move(delta);
 
-    const intent = this.entity.getIntent();
+    const intent = this.entity.getIntent() as ShipIntent;
     this.body.quaternion.mult(intent.quaternion, this.body.quaternion);
 
     // reset intent pov quaternion @todo not this class' responsibility

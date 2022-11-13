@@ -7,8 +7,10 @@ import {Body, Box, ConvexPolyhedron, NaiveBroadphase, Sphere, Vec3, World} from 
 import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
+import {MathHelper} from "@/ts/helpers/math.helper";
 
 export class Physics {
+  protected startingPosition!: Vec3;
   protected world: World;
 
   constructor() {
@@ -26,6 +28,11 @@ export class Physics {
   }
 
   public init() {
+    this.startingPosition = new Vec3(
+      MathHelper.random(1900, 2100),
+      MathHelper.random(1900, 2100),
+      MathHelper.random(1900, 2100),
+    );
   }
 
   public getWorld() {
@@ -68,9 +75,9 @@ export class Physics {
       body.linearDamping = 0;
       body.angularDamping = 0.75;
       body.position.set(
-        Math.sign(Math.random() - 0.5) * entity.box.width,
-        entity.box.height,
-        Math.sign(Math.random() - 0.5) * entity.box.depth
+        this.startingPosition.x + MathHelper.random(-20, 20),
+        this.startingPosition.y + MathHelper.random(-20, 20),
+        this.startingPosition.z + MathHelper.random(-20, 20),
       );
       body.fixedRotation = true;
       body.updateMassProperties();
@@ -137,16 +144,27 @@ export class Physics {
       const body = new Body({
         mass: 1e5 * Math.PI * entity.radius * entity.radius * entity.radius,
       });
+      // @todo normals error seems bogus to me - hide errors/warnings for now
+      console.log('disabling console');
+      const wincon = (window as any).console;
+      (window as any).console = {error: () => {}, warn: () => {}, log: () => {}};
       for (const hull of entity.hulls) {
-        body.addShape(new ConvexPolyhedron({
+        const convex = new ConvexPolyhedron({
           vertices: hull.vertices.map((x: [number, number, number]) => {
             return new Vec3(x[0], x[1], x[2]);
           }),
           faces: hull.faces,
-        }));
+        });
+        body.addShape(convex);
       }
+      (window as any).console = wincon;
+      console.log('console restored');
       body.quaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2);
-      body.position.set(0, -1.1 * entity.radius, 0);
+      body.position.set(
+        this.startingPosition.x + MathHelper.random(-100, 100),
+        this.startingPosition.y + MathHelper.random(-100, 100),
+        this.startingPosition.z + MathHelper.random(-100, 100),
+      );
       body.angularVelocity.set(0, 1e-3, 0);
       this.world.addBody(body);
       handler.setBody(body);

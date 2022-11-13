@@ -88,7 +88,7 @@ export class View {
     // sun
     const sun = new PointLight(0xffffff, 1, 10000);
     sun.castShadow = true;
-    sun.position.set(2000, 2000, 2000);
+    sun.position.set(0, 0, 0);
     this.scene.add(sun);
     const lensflareTexture = this.texture.load('/lensflare.png');
     const lensflare = new Lensflare();
@@ -314,7 +314,7 @@ export class View {
 
     // debugging
     if (this.debug) {
-      cam.position.set(20, 0, 20);
+      cam.position.set(20, 20, 20);
       cam.lookAt(this.axes.position);
     }
 

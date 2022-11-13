@@ -6,6 +6,7 @@ import {Direction} from "@/ts/enums/direction";
 import {Body, Quaternion, Vec3} from "cannon-es";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
 import {ModelHandler} from "@/ts/handlers/model.handler";
+import {JackIntent} from "@/ts/entities/jack.intent";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -57,7 +58,9 @@ export class JackController extends ModelController<JackEntity> {
     super.move(delta);
 
     if (this.vehicle) {
-      this.body.position = this.vehicle.getPov().position;
+      const pov = this.vehicle.getPov()
+      this.body.position.copy(pov.position);
+      this.body.quaternion.copy(pov.quaternion);
       return;
     }
 
@@ -66,7 +69,7 @@ export class JackController extends ModelController<JackEntity> {
     this.body.velocity.y = velocity.y;
     this.body.velocity.z = velocity.z;
 
-    const intent = this.entity.getIntent();
+    const intent = this.entity.getIntent() as JackIntent;
 
     // split the intended rotation into x and y components
     const euler = new Vec3();
