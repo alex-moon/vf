@@ -3,11 +3,10 @@ import {
   Color,
   ConeGeometry,
   Mesh,
-  MeshPhysicalMaterial,
   MeshStandardMaterial,
   PerspectiveCamera,
-  PointLight,
   Scene,
+  ShaderMaterial,
   TextureLoader,
   Vector2,
   WebGLRenderer
@@ -37,6 +36,8 @@ export class Dev {
 
     this.renderer = new WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.autoClear = false;
+    this.renderer.setClearColor( 0x101000 );
 
     this.scene = new Scene();
     this.scene.background = new Color(0x0);
@@ -69,7 +70,6 @@ export class Dev {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     this.composer = new EffectComposer(this.renderer);
-    // this.composer.renderToScreen = false;
     const render = new RenderPass(this.scene, this.camera);
     this.composer.addPass(render);
     const bloom = new UnrealBloomPass(
@@ -78,11 +78,7 @@ export class Dev {
       1.5,
       0.1
     );
-    bloom.renderToScreen = true;
     this.composer.addPass(bloom);
-    // const copy = new ShaderPass(CopyShader);
-    // copy.renderToScreen = true;
-    // this.composer.addPass(copy);
 
     this.load().then(this.animate.bind(this));
   }
@@ -90,15 +86,13 @@ export class Dev {
   protected load() {
     return new Promise((resolve, reject) => {
       const cone = new ConeGeometry(1, 4, 16);
-      const coneMat = new MeshPhysicalMaterial({
-        color: 0xffffff,
-        emissive: 0x33ccff,
-        opacity: 0.5,
+      const coneMat = new ShaderMaterial({
+        vertexShader: this.vertexShader(),
+        fragmentShader: this.fragmentShader(),
         transparent: true,
       });
       const coneMesh = new Mesh(cone, coneMat);
       coneMesh.position.set(0, 2, 0);
-      coneMesh.layers.set(1);
       this.scene.add(coneMesh);
       this.controls.target.copy(coneMesh.position);
 
@@ -111,12 +105,7 @@ export class Dev {
       });
       const cubeMesh = new Mesh(cube, cubeMat);
       cubeMesh.position.set(0, -1, 0);
-      cubeMesh.layers.set(0);
-      this.scene.add(cubeMesh);
-
-      const light = new PointLight(0x33ccff, 1, 100);
-      light.position.set(0, 5, 0);
-      this.scene.add(light);
+      // this.scene.add(cubeMesh);
 
       resolve();
     });
@@ -128,30 +117,26 @@ export class Dev {
 
     this.controls.update();
 
-    this.camera.layers.set(0);
     this.renderer.render(this.scene, this.camera);
-
-    this.camera.layers.set(1);
-    this.composer.render();
   }
 
   protected vertexShader() {
     return `
       varying vec2 vUv;
       void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `;
   }
 
   protected fragmentShader() {
     return `
-      uniform sampler2D baseTexture;
-      uniform sampler2D bloomTexture;
+      uniform vec2 u_resolution;
       varying vec2 vUv;
       void main() {
-          gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+        float alpha = smoothstep(0.5, 0.0, vUv.y);
+        gl_FragColor = vec4(0.3, 0.8, 1.0, alpha);
       }
     `;
   }
