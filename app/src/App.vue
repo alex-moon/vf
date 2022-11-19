@@ -17,8 +17,8 @@
       </v-navigation-drawer>
       <v-main color="grey">
         <!-- @todo router -->
-<!--        <vf-game-canvas></vf-game-canvas>-->
-        <vf-dev-canvas></vf-dev-canvas>
+        <vf-game-canvas></vf-game-canvas>
+<!--        <vf-dev-canvas></vf-dev-canvas>-->
       </v-main>
     </v-layout>
   </v-app>

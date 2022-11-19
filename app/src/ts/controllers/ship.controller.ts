@@ -7,14 +7,20 @@ import {
   MeshPhysicalMaterial,
   Object3D,
   SkinnedMesh,
-  TextureLoader
+  TextureLoader,
+  Vector3
 } from "three";
-import {ShipIntent} from "@/ts/entities/ship.intent";
+import {ShipIntent, ShipState} from "@/ts/entities/ship.intent";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
+import {ThrusterHelper} from "@/ts/helpers/thruster.helper";
+import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
+import {DirectionHelper} from "@/ts/helpers/direction.helper";
+import {DirectionKey} from "@/ts/enums/direction";
 
 export class ShipController extends ModelController<ShipEntity> {
   protected windshield!: Object3D;
   protected root!: Object3D;
+  protected thrusters: Object3D[] = [];
 
   protected asteroid: AsteroidHandler|null = null;
 
@@ -82,6 +88,23 @@ export class ShipController extends ModelController<ShipEntity> {
       envMap: envMap
     });
 
+    // could get this from the prop positions?
+    const d = 1.25;
+    const y = -0.5;
+    for (const point of [
+      new Vector3(d, y, d),
+      new Vector3(d, y, -d),
+      new Vector3(-d, y, -d),
+      new Vector3(-d, y, d),
+    ]) {
+      const thruster = ThrusterHelper.get(0.35, 1.5);
+      thruster.position.copy(point);
+      thruster.rotateX(Math.PI);
+      thruster.visible = false;
+      this.object.add(thruster);
+      this.thrusters.push(thruster);
+    }
+
     const root = model.scene.getObjectByName('Root');
     if (!root) {
       throw new Error('Could not get Root of Ship');
@@ -110,5 +133,17 @@ export class ShipController extends ModelController<ShipEntity> {
     const acceleration = intent.acceleration.clone();
     rotation.vmult(acceleration, acceleration);
     return acceleration;
+  }
+
+  public onKeysChanged($event: KeysChangedEvent) {
+    super.onKeysChanged($event);
+    if (!this.isFlying()) {
+      return;
+    }
+
+    const zKey = DirectionHelper.zKey($event.keys);
+    // const sign = zKey === DirectionKey.N ? 1 : -1;
+    // @todo what if backward?
+    this.thrusters.forEach(o => o.visible = !!zKey);
   }
 }

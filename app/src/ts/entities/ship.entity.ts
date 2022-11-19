@@ -48,6 +48,7 @@ export class ShipEntity extends ModelEntity {
   private calculatePovQuaternion() {
     if (this.intent.state === ShipState.FLYING) {
       this.intent.pov.quaternion.setFromEuler(-Math.PI / 2, Math.PI, 0,'YXZ');
+      // this.intent.pov.quaternion.setFromEuler(0, Math.PI, 0);
     } else {
       this.intent.pov.quaternion.setFromEuler(0, Math.PI, 0);
     }
