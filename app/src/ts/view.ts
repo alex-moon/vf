@@ -41,6 +41,7 @@ import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
 import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
 import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
 import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
+import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass";
 
 export class View {
   protected texture: TextureLoader;
@@ -55,6 +56,7 @@ export class View {
   protected controls!: OrbitControls;
   protected composer!: EffectComposer;
   protected outlinePass!: OutlinePass;
+  protected bloomPass!: UnrealBloomPass;
 
   constructor() {
     this.renderer = new WebGLRenderer({ antialias: true });
@@ -89,7 +91,7 @@ export class View {
     skyboxTexture.magFilter = NearestFilter;
 
     // sun
-    const sun = new PointLight(0xffffff, 1, 10000);
+    const sun = new PointLight(0xffffff, 3, 10000);
     sun.castShadow = true;
     sun.position.set(0, 0, 0);
     this.scene.add(sun);
@@ -322,12 +324,16 @@ export class View {
   }
 
   private initComposer(camera: Camera) {
+    const viewport = new Vector2(this.$element.offsetWidth, this.$element.offsetHeight);
+
     this.composer = new EffectComposer(this.renderer);
 
     const renderPass = new RenderPass(this.scene, camera);
     this.composer.addPass(renderPass);
 
-    const viewport = new Vector2(this.$element.offsetWidth, this.$element.offsetHeight);
+    this.bloomPass = new UnrealBloomPass(viewport, 0.5, 0.5, 0.5);
+    // this.composer.addPass(this.bloomPass);
+
     this.outlinePass = new OutlinePass(viewport, this.scene, camera);
     this.outlinePass.visibleEdgeColor.set('#ffffff');
     // this.outlinePass.hiddenEdgeColor.set('#ffffff');
