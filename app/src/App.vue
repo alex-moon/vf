@@ -5,7 +5,6 @@
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <template v-slot:append>
           <h1>
-            <!-- @todo router -->
             VoidFill
             <a href="/">
               <img src="logo.png" alt="VoidFill logo" />
@@ -17,7 +16,9 @@
 
       </v-navigation-drawer>
       <v-main color="grey">
-        <vf-game-canvas></vf-game-canvas>
+        <!-- @todo router -->
+<!--        <vf-game-canvas></vf-game-canvas>-->
+        <vf-dev-canvas></vf-dev-canvas>
       </v-main>
     </v-layout>
   </v-app>
@@ -26,10 +27,12 @@
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
 import GameCanvas from "@/components/GameCanvas.vue";
+import DevCanvas from "@/components/DevCanvas.vue";
 
 @Options({
   components: {
     'vf-game-canvas': GameCanvas,
+    'vf-dev-canvas': DevCanvas,
   },
 })
 export default class App extends Vue {
