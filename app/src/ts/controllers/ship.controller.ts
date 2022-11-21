@@ -110,7 +110,8 @@ export class ShipController extends ModelController<ShipEntity> {
       model.scene.getObjectByName('ThrusterBR') || new Object3D(),
     ];
     this.thrusters.forEach((t) => {
-      const light = new PointLight(0x00e3e0, 0.5, 1);
+      const light = new PointLight(0x00e3e0, 1, 3);
+      light.position.y = 2;
       t.add(light);
       t.visible = false;
     });
