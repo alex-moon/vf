@@ -4,6 +4,7 @@ import {ShipEntity} from "@/ts/entities/ship.entity";
 import {World} from "@/ts/world";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
+import {Vec3} from "cannon-es";
 
 export class ShipHandler extends ModelHandler<ShipController> {
   static LANDING_ALTITUDE = 22;
@@ -82,6 +83,9 @@ export class ShipHandler extends ModelHandler<ShipController> {
         } else {
           const entity = asteroid.getEntity() as AsteroidEntity;
           if (distance >= entity.radius + ShipHandler.LANDING_ALTITUDE) {
+            const velocity = new Vec3();
+            force.scale(-10, velocity);
+            body.velocity.copy(velocity);
             this.startFlying();
           } else {
             body.position.addScaledVector(-0.5, force, body.position);
