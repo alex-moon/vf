@@ -49,6 +49,14 @@ export class ShipEntity extends ModelEntity {
     if (this.intent.state === ShipState.FLYING) {
       this.intent.pov.quaternion.setFromEuler(-Math.PI / 2, Math.PI, 0,'YXZ');
       // this.intent.pov.quaternion.setFromEuler(0, Math.PI, 0);
+
+      // tiny difference to camera angle x to suggest acceleration
+      const acceleration = this.intent.acceleration.y;
+      if (acceleration != 0) {
+        const sign = acceleration > 0 ? 1 : -1;
+        const aq = new Quaternion().setFromEuler(sign * 0.2, 0, 0);
+        this.intent.pov.quaternion.mult(aq, this.intent.pov.quaternion);
+      }
     } else {
       this.intent.pov.quaternion.setFromEuler(0, Math.PI, 0);
     }

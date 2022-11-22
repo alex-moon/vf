@@ -14,6 +14,7 @@ import {ShipIntent} from "@/ts/entities/ship.intent";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
+import {DirectionKey} from "@/ts/enums/direction";
 
 export class ShipController extends ModelController<ShipEntity> {
   protected windshield!: Object3D;
@@ -87,22 +88,6 @@ export class ShipController extends ModelController<ShipEntity> {
       envMap: envMap
     });
 
-    // could get this from the prop positions?
-    // const d = 1.25;
-    // const y = -0.5;
-    // for (const point of [
-    //   new Vector3(d, y, d),
-    //   new Vector3(d, y, -d),
-    //   new Vector3(-d, y, -d),
-    //   new Vector3(-d, y, d),
-    // ]) {
-    //   const thruster = ThrusterHelper.get(0.35, 1.5);
-    //   thruster.position.copy(point);
-    //   thruster.rotateX(Math.PI);
-    //   thruster.visible = false;
-    //   this.object.add(thruster);
-    //   this.thrusters.push(thruster);
-    // }
     this.thrusters = [
       model.scene.getObjectByName('ThrusterTL') || new Object3D(),
       model.scene.getObjectByName('ThrusterTR') || new Object3D(),
@@ -158,9 +143,8 @@ export class ShipController extends ModelController<ShipEntity> {
     super.onKeysChanged($event);
     if (this.isFlying()) {
       const zKey = DirectionHelper.zKey($event.keys);
-      // const sign = zKey === DirectionKey.N ? 1 : -1;
-      // @todo what if backward?
-      this.updateThrusters(!!zKey);
+      // @todo if backward, we want reverse lights to come on
+      this.updateThrusters(zKey === DirectionKey.N);
     }
   }
 
