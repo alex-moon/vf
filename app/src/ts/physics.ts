@@ -8,6 +8,8 @@ import {ConvexHandler} from "@/ts/handlers/convex.handler";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 import {MathHelper} from "@/ts/helpers/math.helper";
+import {BeltHelper} from "@/ts/helpers/belt.helper";
+import {Debug} from "@/ts/helpers/debug";
 
 export class Physics {
   protected startingPosition!: Vec3;
@@ -29,10 +31,11 @@ export class Physics {
 
   public init() {
     this.startingPosition = new Vec3(
-      MathHelper.random(1900, 2100),
-      MathHelper.random(1900, 2100),
-      MathHelper.random(1900, 2100),
+      MathHelper.random(BeltHelper.INNER_RADIUS, BeltHelper.OUTER_RADIUS),
+      0,
+      MathHelper.random(BeltHelper.INNER_RADIUS, BeltHelper.OUTER_RADIUS),
     );
+    Debug.FIXED_CAMERA_POSITION = this.startingPosition.toArray();
   }
 
   public getWorld() {

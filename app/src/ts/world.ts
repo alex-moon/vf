@@ -20,6 +20,7 @@ import {ShipController} from "@/ts/controllers/ship.controller";
 import {ShipEntity} from "@/ts/entities/ship.entity";
 import {MouseHelper} from "@/ts/helpers/mouse.helper";
 import {BeltCube, BeltHelper} from "@/ts/helpers/belt.helper";
+import {Debug} from "@/ts/helpers/debug";
 
 export class World {
   protected view: View;
@@ -50,12 +51,14 @@ export class World {
       this.loadShip(),
       this.loadCamera(),
     ]).then(() => {
-      // @ts-ignore
-      this.debugger = new CannonDebugger(
-        this.view.getScene(),
-        this.physics.getWorld(),
-        {}
-      );
+      if (Debug.CANNON_DEBUGGER) {
+        // @ts-ignore
+        this.debugger = new CannonDebugger(
+          this.view.getScene(),
+          this.physics.getWorld(),
+          {}
+        );
+      }
       this.bindEvents();
       this.animate();
       this.start();

@@ -5,7 +5,7 @@ import {
   Camera,
   Color,
   Group,
-  Mesh,
+  Mesh, MeshBasicMaterial,
   MeshPhongMaterial,
   NearestFilter,
   Object3D,
@@ -42,17 +42,19 @@ import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
 import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
 import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
 import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass";
-import {BeltCube} from "@/ts/helpers/belt.helper";
+import {BeltCube, BeltHelper} from "@/ts/helpers/belt.helper";
+import {Debug} from "@/ts/helpers/debug";
 
 export class View {
   protected texture: TextureLoader;
   protected draco: DRACOLoader;
   protected gltf: GLTFLoader;
-  protected stats: any;
-  protected axes: AxesHelper;
+  protected stats?: any;
+  protected axes?: AxesHelper;
   protected renderer!: WebGLRenderer;
   protected pmremGenerator!: PMREMGenerator;
   protected scene: Scene;
+  protected sun: Object3D;
   protected $element!: HTMLDivElement;
   protected controls!: OrbitControls;
   protected composer!: EffectComposer;
@@ -72,12 +74,16 @@ export class View {
     //   0.04
     // ).texture;
 
-    // @ts-ignore
-    this.stats = new Stats();
-    this.stats.domElement.style.position = 'absolute';
+    if (Debug.STATS) {
+      // @ts-ignore
+      this.stats = new Stats();
+      this.stats.domElement.style.position = 'absolute';
+    }
 
-    this.axes = new AxesHelper( 5 );
-    this.scene.add(this.axes);
+    if (Debug.AXES_HELPER) {
+      this.axes = new AxesHelper(5);
+      this.scene.add(this.axes);
+    }
 
     // sky
     this.texture = new TextureLoader();
@@ -92,19 +98,27 @@ export class View {
     skyboxTexture.magFilter = NearestFilter;
 
     // sun
-    const sun = new PointLight(0xffffff, 3, 10000);
-    sun.castShadow = true;
-    sun.position.set(0, 0, 0);
-    this.scene.add(sun);
+    const sungeom = new SphereGeometry(7e4);
+    const sunmat = new MeshBasicMaterial({
+      color: 0xffffff
+    });
+    this.sun = new Mesh(sungeom, sunmat);
+    this.sun.position.set(0, 0, 0);
+    this.scene.add(this.sun);
+
+    const sunlight = new PointLight(0xffffff, 3, BeltHelper.OUTER_RADIUS, 0);
+    sunlight.castShadow = true;
+    sunlight.position.set(0, 0, 0);
+    this.scene.add(sunlight);
     const lensflareTexture = this.texture.load('/lensflare.png');
     const lensflare = new Lensflare();
     lensflare.addElement(new LensflareElement(
       lensflareTexture,
-      1024,
+      256,
       0.0,
       new Color(0xffffff)
     ));
-    sun.add(lensflare);
+    sunlight.add(lensflare);
 
     this.draco = new DRACOLoader();
     this.draco.setDecoderPath('js/libs/draco/gltf/');
@@ -114,7 +128,9 @@ export class View {
 
   public init($element: HTMLDivElement) {
     this.$element = $element;
-    this.$element.appendChild(this.stats.dom);
+    if (this.stats) {
+      this.$element.appendChild(this.stats.dom);
+    }
     this.$element.appendChild(this.renderer.domElement);
     this.renderer.setSize(this.$element.offsetWidth, this.$element.offsetHeight);
     this.bindEvents();
@@ -270,7 +286,7 @@ export class View {
         40,
         this.$element.offsetWidth / this.$element.offsetHeight,
         1,
-        BeltCube.EDGE * 3.46 // 2√3 - i.e. major diagonal of cube x2
+        BeltHelper.OUTER_RADIUS, // BeltCube.EDGE * 3.46 // 2√3 - i.e. major diagonal of cube x2
       );
       handler.setObject(camera);
       resolve();
@@ -297,7 +313,6 @@ export class View {
     this.outlinePass.selectedObjects = [];
   }
 
-  private debug = false;
   public animate(delta: number, camera: CameraHandler) {
     // if (!this.controls) {
     //   this.controls = new OrbitControls(camera.getObject(), this.renderer.domElement);
@@ -308,16 +323,21 @@ export class View {
       this.initComposer(camera.getObject());
     }
 
-    this.stats.update();
+    this.stats?.update();
     const cam = camera.getObject();
     const target = camera.getTarget();
     const object = target.getObject();
-    this.axes.position.set(object.position.x, object.position.y, object.position.z);
+
+    if (this.axes) {
+      this.axes.position.set(object.position.x, object.position.y, object.position.z);
+    }
 
     // debugging
-    if (this.debug) {
-      cam.position.set(2000, 2000, 2000);
-      cam.lookAt(this.axes.position);
+    if (Debug.FIXED_CAMERA) {
+      // cam.position.set(1.5e5, 1.5e5, 1.5e5);
+      // cam.lookAt(this.sun.position);
+      cam.position.fromArray(Debug.FIXED_CAMERA_POSITION);
+      cam.lookAt(object.position);
     }
 
     // this.renderer.render(this.scene, cam);

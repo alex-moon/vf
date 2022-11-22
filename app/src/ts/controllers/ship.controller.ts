@@ -125,7 +125,6 @@ export class ShipController extends ModelController<ShipEntity> {
     if (speed > 1e5) {
       this.body.velocity.scale(1e5 / speed, this.body.velocity);
     }
-    console.log('speed', speed);
 
     if (!this.isFlying()) {
       if (this.isLaunching() || this.isLanding()) {
