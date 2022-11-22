@@ -34,7 +34,11 @@ export class BeltCube {
   public asteroidRadius(): number {
     const exponent = MathUtils.seededRandom(this.hash());
     const value = Math.pow(50, exponent);
-    return MathHelper.clamp(value, 5, 50);
+    // ATTENTION: min here MUST be at least
+    // sqrt((6 * 100) / (4 * pi)) = 6.91
+    // where the 6 is the minimum number of points on a sphere
+    // because the minimal sphere is a cube
+    return MathHelper.clamp(value, 7, 50);
   }
 
   public getMin(): Vec3 {
