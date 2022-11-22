@@ -6,7 +6,7 @@ export class AsteroidHelper {
   static SMOOTHNESS = 0.5;
   static VARIANCE = 0.05;
 
-  public static get(radius: number, seed: string, numPoints?: number) {
+  public static get(radius: number, seed: number, numPoints?: number) {
     if (numPoints === undefined) {
       numPoints = Math.floor((4 * Math.PI * radius * radius) / (this.RESOLUTION * this.RESOLUTION));
     }
@@ -51,7 +51,7 @@ export class AsteroidHelper {
           || y === 0
           || x === steps
           || y === steps * 2
-        ) ? radius : AsteroidHelper.distance(radius, nearby);
+        ) ? radius : AsteroidHelper.distance(radius, seed, nearby);
         distances[x][y] = distance;
         const vector = new Vector3(0, 0, distance);
         vector.applyEuler(euler);
@@ -88,7 +88,7 @@ export class AsteroidHelper {
     return hulls;
   }
 
-  private static distance(radius: number, nearby: number[]) {
+  private static distance(radius: number, seed: number, nearby: number[]) {
     if (nearby.length === 0) {
       return radius * (Math.random() * (1 - AsteroidHelper.SMOOTHNESS) + AsteroidHelper.SMOOTHNESS);
     }

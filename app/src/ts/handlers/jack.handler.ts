@@ -2,7 +2,6 @@ import {ModelHandler} from "@/ts/handlers/model.handler";
 import {JackController} from "@/ts/controllers/jack.controller";
 import {JackEntity} from "@/ts/entities/jack.entity";
 import {World} from "@/ts/world";
-import {Quaternion, Vec3} from "cannon-es";
 
 export class JackHandler extends ModelHandler<JackController> {
   public getEntity(): JackEntity {
@@ -34,6 +33,8 @@ export class JackHandler extends ModelHandler<JackController> {
     const force = this.applyGravity(body, world);
 
     // second rotate body
-    this.rotateToward(body, force);
+    if (force) {
+      this.rotateToward(body, force);
+    }
   }
 }

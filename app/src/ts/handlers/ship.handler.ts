@@ -56,6 +56,10 @@ export class ShipHandler extends ModelHandler<ShipController> {
     return this.controller.land();
   }
 
+  public getAsteroid() {
+    return this.controller.getAsteroid();
+  }
+
   public move(delta: number, world: World) {
     super.move(delta, world);
 

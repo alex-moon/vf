@@ -37,16 +37,21 @@ export class ModelHandler<C extends ModelController<any>> extends Handler<C> {
   }
 
   protected applyGravity(body: Body, world: World, scale: number = 1) {
-    const asteroid = world.getAsteroid().getBody();
-    const target = asteroid.position;
+    const asteroid = world.getAsteroid();
+    if (!asteroid) {
+      return null;
+    }
+
+    const asteroidBody = asteroid.getBody();
+    const target = asteroidBody.position;
     const origin = body.position;
     const force = target.clone();
     force.vsub(origin, force);
     force.normalize();
     const gravity = this.gravity(
       body.mass,
-      asteroid.mass,
-      body.position.distanceTo(asteroid.position)
+      asteroidBody.mass,
+      body.position.distanceTo(asteroidBody.position)
     ) * scale;
     force.scale(gravity, force);
     body.applyForce(force);

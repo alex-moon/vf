@@ -19,12 +19,22 @@ export class BeltCube {
     return MathHelper.cantor(this.xi, MathHelper.cantor(this.yi, this.zi));
   }
 
-  public asteroidPosition() {
+  public asteroidPosition(): Vec3 {
     const hash = this.hash();
     const x = MathUtils.seededRandom(hash);
-    const y = MathUtils.seededRandom(hash);
-    const z = MathUtils.seededRandom(hash);
-    console.log('x', x, 'y', y, 'z', z);
+    const y = MathUtils.seededRandom(hash * 2);
+    const z = MathUtils.seededRandom(hash * 3);
+    const result = this.getCenter();
+    result.x += x * BeltCube.EDGE / 2;
+    result.y += y * BeltCube.EDGE / 2;
+    result.z += z * BeltCube.EDGE / 2;
+    return result;
+  }
+
+  public asteroidRadius(): number {
+    const exponent = MathUtils.seededRandom(this.hash());
+    const value = Math.pow(50, exponent);
+    return MathHelper.clamp(value, 5, 50);
   }
 
   public getMin(): Vec3 {
@@ -32,6 +42,14 @@ export class BeltCube {
       this.xi * BeltCube.EDGE,
       this.yi * BeltCube.EDGE,
       this.zi * BeltCube.EDGE
+    );
+  }
+
+  public getCenter(): Vec3 {
+    return new Vec3(
+      this.xi * BeltCube.EDGE + BeltCube.EDGE / 2,
+      this.yi * BeltCube.EDGE + BeltCube.EDGE / 2,
+      this.zi * BeltCube.EDGE + BeltCube.EDGE / 2
     );
   }
 

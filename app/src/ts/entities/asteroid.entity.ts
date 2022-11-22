@@ -6,10 +6,10 @@ export class AsteroidEntity extends Entity {
   public radius: number;
   public hulls: {vertices: [number, number, number][], faces: number[][]}[] = [];
 
-  constructor(texture: string, radius: number) {
+  constructor(texture: string, radius: number, hash: number) {
     super();
     this.texture = texture;
     this.radius = radius;
-    this.hulls = AsteroidHelper.get(radius, 'asteroid');
+    this.hulls = AsteroidHelper.get(radius, hash);
   }
 }

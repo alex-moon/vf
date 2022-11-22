@@ -42,6 +42,7 @@ import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
 import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
 import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
 import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import {BeltCube} from "@/ts/helpers/belt.helper";
 
 export class View {
   protected texture: TextureLoader;
@@ -269,7 +270,7 @@ export class View {
         40,
         this.$element.offsetWidth / this.$element.offsetHeight,
         1,
-        10000
+        BeltCube.EDGE * 3.46 // 2√3 - i.e. major diagonal of cube x2
       );
       handler.setObject(camera);
       resolve();

@@ -19,13 +19,14 @@ import {ShipHandler} from "@/ts/handlers/ship.handler";
 import {ShipController} from "@/ts/controllers/ship.controller";
 import {ShipEntity} from "@/ts/entities/ship.entity";
 import {MouseHelper} from "@/ts/helpers/mouse.helper";
+import {BeltCube, BeltHelper} from "@/ts/helpers/belt.helper";
 
 export class World {
   protected view: View;
   protected physics: Physics;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
-  protected asteroid!: AsteroidHandler;
+  protected asteroids: AsteroidHandler[] = [];
   protected jack!: JackHandler;
   protected ship!: ShipHandler;
   protected camera!: CameraHandler;
@@ -45,7 +46,6 @@ export class World {
     this.physics.init();
     this.view.init($element);
     Promise.all([
-      this.loadAsteroid(),
       this.loadJack(),
       this.loadShip(),
       this.loadCamera(),
@@ -71,7 +71,7 @@ export class World {
   }
 
   public getAsteroid() {
-    return this.asteroid;
+    return this.ship.getAsteroid();
   }
 
   protected loadCamera() {
@@ -99,18 +99,6 @@ export class World {
     return Promise.all([
       this.physics.load(this.ship),
       this.view.load(this.ship),
-    ]);
-  }
-
-  protected loadAsteroid() {
-    this.asteroid = new AsteroidHandler(new AsteroidController(new AsteroidEntity(
-      '/asteroid.png',
-      50
-    )));
-    this.handlers.push(this.asteroid);
-    return Promise.all([
-      this.physics.load(this.asteroid),
-      this.view.load(this.asteroid),
     ]);
   }
 
@@ -248,13 +236,17 @@ export class World {
     if (handler === this.ship) {
       return this.ship.isLanded();
     }
-    if (handler === this.asteroid) {
+    if (this.asteroids.includes(handler)) {
       return this.ship.isFlying();
     }
     return false;
   }
 
   private use() {
+    if (!this.selected) {
+      return;
+    }
+
     if (this.selected === this.ship) {
       if (this.ship.isLanded() && this.jack.isOnFoot()) {
         this.jack.enterVehicle(this.ship);
@@ -262,9 +254,9 @@ export class World {
         this.camera.setTarget(this.ship);
       }
     }
-    if (this.selected === this.asteroid) {
+    if (this.asteroids.includes(this.selected)) {
       if (this.ship.isFlying()) {
-        this.ship.startLanding(this.asteroid);
+        this.ship.startLanding(this.selected);
         this.camera.cut();
       }
     }
@@ -274,5 +266,31 @@ export class World {
     this.jack.enterVehicle(this.ship);
     this.ship.startFlying();
     this.camera.setTarget(this.ship);
+    this.loadAsteroids();
+  }
+
+  protected loadAsteroids() {
+    const position = this.ship.getBody().position;
+    const cubes = BeltHelper.getNearest(position);
+    for (const cube of cubes) {
+      this.loadAsteroid(cube);
+    }
+  }
+
+  protected loadAsteroid(cube: BeltCube) {
+    const asteroid = new AsteroidHandler(new AsteroidController(new AsteroidEntity(
+      '/asteroid.png',
+      cube.asteroidRadius(),
+      cube.hash()
+    )));
+    this.asteroids.push(asteroid);
+    this.handlers.push(asteroid);
+    return Promise.all([
+      this.physics.load(asteroid),
+      this.view.load(asteroid),
+    ]).then(() => {
+      const position = asteroid.getBody().position;
+      position.copy(cube.asteroidPosition());
+    });
   }
 }

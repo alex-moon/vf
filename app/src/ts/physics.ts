@@ -145,7 +145,6 @@ export class Physics {
         mass: 1e5 * Math.PI * entity.radius * entity.radius * entity.radius,
       });
       // @todo normals error seems bogus to me - hide errors/warnings for now
-      console.log('disabling console');
       const wincon = (window as any).console;
       (window as any).console = {error: () => {}, warn: () => {}, log: () => {}};
       for (const hull of entity.hulls) {
@@ -158,7 +157,6 @@ export class Physics {
         body.addShape(convex);
       }
       (window as any).console = wincon;
-      console.log('console restored');
       body.quaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2);
       body.position.set(
         this.startingPosition.x + MathHelper.random(-100, 100),

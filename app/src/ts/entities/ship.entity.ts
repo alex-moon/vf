@@ -8,7 +8,7 @@ import {DoorState, ShipIntent, ShipState} from "@/ts/entities/ship.intent";
 
 export class ShipEntity extends ModelEntity {
   protected acceleration = {
-    [ShipState.FLYING]: 1,
+    [ShipState.FLYING]: 10,
   }
   protected roll = {
     [ShipState.FLYING]: 0.01,
@@ -54,7 +54,7 @@ export class ShipEntity extends ModelEntity {
       const acceleration = this.intent.acceleration.y;
       if (acceleration != 0) {
         const sign = acceleration > 0 ? 1 : -1;
-        const aq = new Quaternion().setFromEuler(sign * 0.2, 0, 0);
+        const aq = new Quaternion().setFromEuler(sign * 0.05, 0, 0);
         this.intent.pov.quaternion.mult(aq, this.intent.pov.quaternion);
       }
     } else {
