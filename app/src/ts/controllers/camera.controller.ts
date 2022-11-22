@@ -35,19 +35,27 @@ export class CameraController extends Controller<CameraEntity> {
     const pov = target.getPov();
     const quaternion = pov.quaternion.clone();
 
+    // step for slerps/lerps
+    const velocity = target.getBody().velocity.length();
+    let step = velocity / 100;
+    if (velocity > 90) {
+      step = 0.9;
+    }
+    if (velocity < 10) {
+      step = 0.1;
+    }
+
     // first set position
     const vector = new Vec3();
     const distance = this.calculateDistance();
     quaternion.vmult(new Vec3(0, distance / 3, -distance), vector);
-
-    const velocity = target.getBody().velocity.length();
 
     const position = pov.position.clone();
     position.addScaledVector(1, vector, position);
     if (cut) {
       body.position.copy(position);
     } else {
-      body.position.lerp(position, velocity > 10 ? 1 : 0.1, body.position);
+      body.position.lerp(position, step, body.position);
     }
 
     // second set rotation
@@ -57,7 +65,7 @@ export class CameraController extends Controller<CameraEntity> {
     if (cut) {
       body.quaternion.copy(to);
     } else {
-      body.quaternion.slerp(to, 0.1, body.quaternion);
+      body.quaternion.slerp(to, step, body.quaternion);
     }
   }
 
