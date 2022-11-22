@@ -203,11 +203,23 @@ export class World {
   private animate() {
     requestAnimationFrame(this.animate.bind(this));
     const delta = this.clock.getDelta();
+    this.moveEverything();
     this.move(delta);
     this.view.animate(delta, this.camera);
     this.physics.animate(delta);
     this.debugger?.update();
     this.updateSelected();
+  }
+
+  private moveEverything() {
+    const origin = this.ship.getBody().position;
+    this.handlers.forEach((handler) => {
+      if (handler !== this.ship) {
+        const p = handler.getBody().position;
+        p.addScaledVector(-1, origin, p);
+      }
+    });
+    origin.set(0, 0, 0);
   }
 
   private updateSelected() {

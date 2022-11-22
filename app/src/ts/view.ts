@@ -102,7 +102,8 @@ export class View {
     const sunmat = new MeshBasicMaterial({
       color: 0xffffff
     });
-    this.sun = new Mesh(sungeom, sunmat);
+    // this.sun = new Mesh(sungeom, sunmat);
+    this.sun = new Object3D(); // let's handle this another time
     this.sun.position.set(0, 0, 0);
     this.scene.add(this.sun);
 
@@ -356,12 +357,14 @@ export class View {
     // this.composer.addPass(this.bloomPass);
 
     this.outlinePass = new OutlinePass(viewport, this.scene, camera);
-    this.outlinePass.visibleEdgeColor.set('#ffffff');
-    // this.outlinePass.hiddenEdgeColor.set('#ffffff');
-    this.outlinePass.hiddenEdgeColor.set('#190a05');
+    // this.outlinePass.visibleEdgeColor.set('#ffffff');
+    // this.outlinePass.hiddenEdgeColor.set('#190a05');
+    this.outlinePass.visibleEdgeColor.set('#190a05');
+    this.outlinePass.hiddenEdgeColor.set('#ffffff');
     this.outlinePass.edgeStrength = 3;
     this.outlinePass.edgeGlow = 1;
     this.outlinePass.edgeThickness = 1;
+
     this.composer.addPass(this.outlinePass);
   }
 }
