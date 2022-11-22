@@ -10,6 +10,6 @@ export class AsteroidEntity extends Entity {
     super();
     this.texture = texture;
     this.radius = radius;
-    this.hulls = AsteroidHelper.get(radius);
+    this.hulls = AsteroidHelper.get(radius, 'asteroid');
   }
 }

@@ -6,7 +6,7 @@ export class AsteroidHelper {
   static SMOOTHNESS = 0.5;
   static VARIANCE = 0.05;
 
-  public static get(radius: number, numPoints?: number) {
+  public static get(radius: number, seed: string, numPoints?: number) {
     if (numPoints === undefined) {
       numPoints = Math.floor((4 * Math.PI * radius * radius) / (this.RESOLUTION * this.RESOLUTION));
     }
