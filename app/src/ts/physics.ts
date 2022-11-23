@@ -10,6 +10,7 @@ import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 import {MathHelper} from "@/ts/helpers/math.helper";
 import {BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
+import {SunHandler} from "@/ts/handlers/sun.handler";
 
 export class Physics {
   protected startingPosition!: Vec3;
@@ -42,7 +43,14 @@ export class Physics {
     return this.world;
   }
 
+  public unload(handler: Handler<any>) {
+    this.world.removeBody(handler.getBody());
+  }
+
   public load(handler: Handler<any>): Promise<void> {
+    if (handler instanceof SunHandler) {
+      return this.loadSun(handler);
+    }
     if (handler instanceof ModelHandler) {
       return this.loadModel(handler);
     }
@@ -62,6 +70,19 @@ export class Physics {
       return this.loadConvex(handler);
     }
     return new Promise((resolve, reject) => reject());
+  }
+
+  protected loadSun(handler: SunHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const entity = handler.getEntity();
+      const body = new Body({
+        shape: new Sphere(entity.radius),
+      });
+      body.position.set(0, 0, 0);
+      this.world.addBody(body);
+      handler.setBody(body);
+      resolve();
+    });
   }
 
   protected loadModel(handler: ModelHandler<any>): Promise<void> {

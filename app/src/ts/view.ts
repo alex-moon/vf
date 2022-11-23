@@ -44,6 +44,7 @@ import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
 import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import {BeltCube, BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
+import {SunHandler} from "@/ts/handlers/sun.handler";
 
 export class View {
   protected texture: TextureLoader;
@@ -54,7 +55,6 @@ export class View {
   protected renderer!: WebGLRenderer;
   protected pmremGenerator!: PMREMGenerator;
   protected scene: Scene;
-  protected sun: Object3D;
   protected $element!: HTMLDivElement;
   protected controls!: OrbitControls;
   protected composer!: EffectComposer;
@@ -97,30 +97,6 @@ export class View {
     skyboxTexture.minFilter = NearestFilter;
     skyboxTexture.magFilter = NearestFilter;
 
-    // sun
-    const sungeom = new SphereGeometry(7e4);
-    const sunmat = new MeshBasicMaterial({
-      color: 0xffffff
-    });
-    // this.sun = new Mesh(sungeom, sunmat);
-    this.sun = new Object3D(); // let's handle this another time
-    this.sun.position.set(0, 0, 0);
-    this.scene.add(this.sun);
-
-    const sunlight = new PointLight(0xffffff, 3, BeltHelper.OUTER_RADIUS, 0);
-    sunlight.castShadow = true;
-    sunlight.position.set(0, 0, 0);
-    this.scene.add(sunlight);
-    const lensflareTexture = this.texture.load('/lensflare.png');
-    const lensflare = new Lensflare();
-    lensflare.addElement(new LensflareElement(
-      lensflareTexture,
-      256,
-      0.0,
-      new Color(0xffffff)
-    ));
-    sunlight.add(lensflare);
-
     this.draco = new DRACOLoader();
     this.draco.setDecoderPath('js/libs/draco/gltf/');
     this.gltf = new GLTFLoader();
@@ -147,7 +123,14 @@ export class View {
     return this.scene;
   }
 
+  public unload(handler: Handler<any>) {
+    this.scene.remove(handler.getObject());
+  }
+
   public load(handler: Handler<any>): Promise<void> {
+    if (handler instanceof SunHandler) {
+      return this.loadSun(handler);
+    }
     if (handler instanceof ModelHandler) {
       return this.loadModel(handler);
     }
@@ -168,6 +151,38 @@ export class View {
       return this.loadConvex(handler);
     }
     return new Promise((resolve, reject) => reject());
+  }
+
+  protected loadSun(handler: SunHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // sun
+      const sungeom = new SphereGeometry(handler.getEntity().radius);
+      const sunmat = new MeshBasicMaterial({
+        color: 0xffffff
+      });
+      const sun = new Mesh(sungeom, sunmat);
+      sun.position.set(0, 0, 0);
+      this.scene.add(sun);
+      handler.setObject(sun);
+
+      // light
+      const sunlight = new PointLight(0xffffff, 3, BeltHelper.OUTER_RADIUS, 0);
+      sunlight.castShadow = true;
+      sunlight.position.set(0, 0, 0);
+      sun.add(sunlight);
+
+      // lens flare
+      const lensflareTexture = this.texture.load('/lensflare.png');
+      const lensflare = new Lensflare();
+      lensflare.addElement(new LensflareElement(
+        lensflareTexture,
+        512,
+        0.0,
+        new Color(0xffffff)
+      ));
+      sunlight.add(lensflare);
+      resolve();
+    });
   }
 
   protected loadModel(handler: ModelHandler<any>): Promise<void> {
@@ -336,7 +351,7 @@ export class View {
     // debugging
     if (Debug.FIXED_CAMERA) {
       // cam.position.set(1.5e5, 1.5e5, 1.5e5);
-      // cam.lookAt(this.sun.position);
+      // cam.lookAt(sun.position);
       cam.position.fromArray(Debug.FIXED_CAMERA_POSITION);
       cam.lookAt(object.position);
     }

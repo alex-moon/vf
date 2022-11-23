@@ -119,8 +119,11 @@ export class ShipEntity extends ModelEntity {
     const zKey = DirectionHelper.zKey($event.keys);
     const xKey = DirectionHelper.xKey($event.keys);
     if (zKey) {
-      const sign = zKey === DirectionKey.N ? 1 : -1;
-      this.intent.acceleration.set(0, sign * this.acceleration[ShipState.FLYING], 0);
+      if (zKey === DirectionKey.N) {
+        this.intent.acceleration.set(0, this.acceleration[ShipState.FLYING], 0);
+      } else {
+        this.intent.acceleration.set(0, -this.acceleration[ShipState.FLYING], 0);
+      }
     } else {
       this.intent.acceleration.set(0, 0, 0);
     }

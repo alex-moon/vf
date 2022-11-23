@@ -10,7 +10,7 @@ import {
   SkinnedMesh,
   TextureLoader
 } from "three";
-import {ShipIntent} from "@/ts/entities/ship.intent";
+import {ShipIntent, ShipState} from "@/ts/entities/ship.intent";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
@@ -147,8 +147,19 @@ export class ShipController extends ModelController<ShipEntity> {
     super.onKeysChanged($event);
     if (this.isFlying()) {
       const zKey = DirectionHelper.zKey($event.keys);
-      // @todo if backward, we want reverse lights to come on
       this.updateThrusters(zKey === DirectionKey.N);
+      if (zKey === DirectionKey.S) {
+        // @todo if backward, we want reverse lights to come on
+        const intent = this.entity.getIntent();
+        // @todo accelerate in direction opposite travel
+        const velocity = this.body.velocity.clone();
+        velocity.normalize();
+        velocity.scale(-intent.acceleration.length(), velocity);
+        const rotation = this.body.quaternion.clone();
+        rotation.conjugate(rotation);
+        rotation.vmult(velocity, velocity);
+        intent.acceleration.copy(velocity);
+      }
     }
   }
 

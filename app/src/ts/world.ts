@@ -21,13 +21,18 @@ import {ShipEntity} from "@/ts/entities/ship.entity";
 import {MouseHelper} from "@/ts/helpers/mouse.helper";
 import {BeltCube, BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
+import {SunHandler} from "@/ts/handlers/sun.handler";
+import {SunController} from "@/ts/controllers/sun.controller";
+import {SunEntity} from "@/ts/entities/sun.entity";
+import {Vec3} from "cannon-es";
 
 export class World {
   protected view: View;
   protected physics: Physics;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
-  protected asteroids: AsteroidHandler[] = [];
+  protected asteroids: {[key: string]: AsteroidHandler} = {};
+  protected sun!: SunHandler;
   protected jack!: JackHandler;
   protected ship!: ShipHandler;
   protected camera!: CameraHandler;
@@ -47,6 +52,7 @@ export class World {
     this.physics.init();
     this.view.init($element);
     Promise.all([
+      this.loadSun(),
       this.loadJack(),
       this.loadShip(),
       this.loadCamera(),
@@ -84,6 +90,15 @@ export class World {
     return Promise.all([
       this.physics.load(this.camera),
       this.view.load(this.camera),
+    ]);
+  }
+
+  protected loadSun() {
+    this.sun = new SunHandler(new SunController(new SunEntity(7e4)));
+    this.handlers.push(this.sun);
+    return Promise.all([
+      this.physics.load(this.sun),
+      this.view.load(this.sun),
     ]);
   }
 
@@ -209,6 +224,7 @@ export class World {
     this.physics.animate(delta);
     this.debugger?.update();
     this.updateSelected();
+    this.loadAsteroids();
   }
 
   private moveEverything() {
@@ -251,7 +267,7 @@ export class World {
     if (handler === this.ship) {
       return this.ship.isLanded();
     }
-    if (this.asteroids.includes(handler)) {
+    if (handler instanceof AsteroidHandler) {
       return this.ship.isFlying();
     }
     return false;
@@ -269,7 +285,7 @@ export class World {
         this.camera.setTarget(this.ship);
       }
     }
-    if (this.asteroids.includes(this.selected)) {
+    if (this.selected instanceof AsteroidHandler) {
       if (this.ship.isFlying()) {
         this.ship.startLanding(this.selected);
         this.camera.cut();
@@ -281,15 +297,36 @@ export class World {
     this.jack.enterVehicle(this.ship);
     this.ship.startFlying();
     this.camera.setTarget(this.ship);
-    this.loadAsteroids();
   }
 
   protected loadAsteroids() {
-    const position = this.ship.getBody().position;
+    const position = this.ship.getBody().position.clone();
+    this.addOrigin(position);
     const cubes = BeltHelper.getNearest(position);
+
+    // first load what we don't have
+    const keep = [];
     for (const cube of cubes) {
+      const hash = cube.hash();
+      keep.push('' + hash);
+      if (Object.keys(this.asteroids).includes('' + hash)) {
+        continue;
+      }
       this.loadAsteroid(cube);
     }
+
+    // now unload what we don't need any more
+    for (const key of Object.keys(this.asteroids)) {
+      if (!keep.includes(key)) {
+        this.unloadAsteroid(this.asteroids[key]);
+        delete this.asteroids[key];
+      }
+    }
+  }
+
+  protected unloadAsteroid(handler: AsteroidHandler) {
+    this.physics.unload(handler);
+    this.view.unload(handler);
   }
 
   protected loadAsteroid(cube: BeltCube) {
@@ -298,14 +335,23 @@ export class World {
       cube.asteroidRadius(),
       cube.hash()
     )));
-    this.asteroids.push(asteroid);
+    this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
-    return Promise.all([
+    Promise.all([
       this.physics.load(asteroid),
       this.view.load(asteroid),
     ]).then(() => {
-      const position = asteroid.getBody().position;
-      position.copy(cube.asteroidPosition());
+      const position = cube.asteroidPosition();
+      this.subOrigin(position);
+      asteroid.getBody().position.copy(position);
     });
+  }
+
+  protected addOrigin(position: Vec3) {
+    position.addScaledVector(1, this.sun.getBody().position, position);
+  }
+
+  protected subOrigin(position: Vec3) {
+    position.addScaledVector(-1, this.sun.getBody().position, position);
   }
 }
