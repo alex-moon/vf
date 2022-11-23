@@ -149,11 +149,10 @@ export class ShipController extends ModelController<ShipEntity> {
       const zKey = DirectionHelper.zKey($event.keys);
       this.updateThrusters(zKey === DirectionKey.N);
       if (zKey === DirectionKey.S) {
-        // @todo if backward, we want reverse lights to come on
+        // @todo want brake lights to come on
         const intent = this.entity.getIntent();
-        // @todo accelerate in direction opposite travel
         const velocity = this.body.velocity.clone();
-        velocity.normalize();
+        velocity.scale(1 / velocity.length(), velocity);
         velocity.scale(-intent.acceleration.length(), velocity);
         const rotation = this.body.quaternion.clone();
         rotation.conjugate(rotation);

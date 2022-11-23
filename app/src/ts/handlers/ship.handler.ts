@@ -33,7 +33,7 @@ export class ShipHandler extends ModelHandler<ShipController> {
     const origin = asteroid.getBody().position;
     const target = body.position.clone();
     target.vsub(origin, target);
-    target.normalize();
+    // target.scale(1 / target.length(), target);
     const entity = asteroid.getEntity() as AsteroidEntity;
     target.scale(entity.radius + ShipHandler.LANDING_ALTITUDE, target);
     target.vadd(origin, target);
@@ -80,7 +80,7 @@ export class ShipHandler extends ModelHandler<ShipController> {
         const force = target.clone();
         force.vsub(origin, force);
         const distance = force.length();
-        force.normalize();
+        force.scale(1 / distance, force);
         if (landing) {
           this.rotateToward(body, force);
           body.position.addScaledVector(0.5, force, body.position);

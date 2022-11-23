@@ -302,6 +302,7 @@ export class World {
   protected loadAsteroids() {
     const position = this.ship.getBody().position.clone();
     this.addOrigin(position);
+    // const cube = BeltHelper.getCube(position);
     const cubes = BeltHelper.getNearest(position);
 
     // first load what we don't have
@@ -335,6 +336,7 @@ export class World {
       cube.asteroidRadius(),
       cube.hash()
     )));
+    asteroid.setCube(cube);
     this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
     Promise.all([
