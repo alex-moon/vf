@@ -3,7 +3,7 @@ import {MathUtils} from "three";
 import {MathHelper} from "@/ts/helpers/math.helper";
 
 export class BeltCube {
-  static EDGE = 1.5e2; // 1.5e4;
+  static EDGE = 1.5e4;
 
   readonly xi: number;
   readonly yi: number;
