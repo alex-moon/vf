@@ -7,7 +7,7 @@ import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
 import {Vec3} from "cannon-es";
 
 export class ShipHandler extends ModelHandler<ShipController> {
-  static LANDING_ALTITUDE = 22;
+  static LANDING_ALTITUDE = 18;
 
   public getEntity(): ShipEntity {
     return super.getEntity();
@@ -33,7 +33,7 @@ export class ShipHandler extends ModelHandler<ShipController> {
     const origin = asteroid.getBody().position;
     const target = body.position.clone();
     target.vsub(origin, target);
-    // target.scale(1 / target.length(), target);
+    target.scale(1 / target.length(), target);
     const entity = asteroid.getEntity() as AsteroidEntity;
     target.scale(entity.radius + ShipHandler.LANDING_ALTITUDE, target);
     target.vadd(origin, target);
