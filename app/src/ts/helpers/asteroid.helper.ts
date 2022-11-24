@@ -4,7 +4,7 @@ import {Euler, Vector3} from 'three';
 export class AsteroidHelper {
   static RESOLUTION = 10;
   static SMOOTHNESS = 0.5;
-  static VARIANCE = 0.05;
+  static VARIANCE = 0.5;
 
   public static get(radius: number, seed: number, numPoints?: number) {
     if (numPoints === undefined) {
