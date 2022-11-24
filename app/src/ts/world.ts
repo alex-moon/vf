@@ -301,7 +301,7 @@ export class World {
 
   protected loadAsteroids() {
     const position = this.ship.getBody().position.clone();
-    this.addOrigin(position);
+    this.subOrigin(position);
     // const cube = BeltHelper.getCube(position);
     const cubes = BeltHelper.getNearest(position);
 
@@ -344,7 +344,7 @@ export class World {
       this.view.load(asteroid),
     ]).then(() => {
       const position = cube.asteroidPosition();
-      this.subOrigin(position);
+      this.addOrigin(position);
       asteroid.getBody().position.copy(position);
     });
   }

@@ -139,7 +139,14 @@ export class ShipController extends ModelController<ShipEntity> {
     const intent = this.entity.getIntent();
     const rotation = this.body.quaternion.clone();
     const acceleration = intent.acceleration.clone();
-    rotation.vmult(acceleration, acceleration);
+    if (acceleration.y >= 0) {
+      rotation.vmult(acceleration, acceleration);
+    } else {
+      const velocity = this.body.velocity.clone();
+      velocity.scale(1 / velocity.length(), velocity);
+      velocity.scale(-acceleration.length(), velocity);
+      acceleration.copy(velocity);
+    }
     return acceleration;
   }
 
@@ -150,14 +157,6 @@ export class ShipController extends ModelController<ShipEntity> {
       this.updateThrusters(zKey === DirectionKey.N);
       if (zKey === DirectionKey.S) {
         // @todo want brake lights to come on
-        const intent = this.entity.getIntent();
-        const velocity = this.body.velocity.clone();
-        velocity.scale(1 / velocity.length(), velocity);
-        velocity.scale(-intent.acceleration.length(), velocity);
-        const rotation = this.body.quaternion.clone();
-        rotation.conjugate(rotation);
-        rotation.vmult(velocity, velocity);
-        intent.acceleration.copy(velocity);
       }
     }
   }
