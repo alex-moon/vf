@@ -288,6 +288,10 @@ export class World {
     }
     if (this.selected instanceof AsteroidHandler) {
       if (this.ship.isFlying()) {
+        const hash = this.selected.getCube()?.hash();
+        if (hash) {
+          console.log('landing on', NameHelper.get(hash));
+        }
         this.ship.startLanding(this.selected);
         this.camera.cut();
       }
@@ -340,7 +344,7 @@ export class World {
     asteroid.setCube(cube);
     this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
-    console.log('loaded asteroid', NameHelper.get(cube.hash()));
+    // console.log(NameHelper.get(cube.hash()));
     Promise.all([
       this.physics.load(asteroid),
       this.view.load(asteroid),
