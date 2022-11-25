@@ -25,6 +25,7 @@ import {SunHandler} from "@/ts/handlers/sun.handler";
 import {SunController} from "@/ts/controllers/sun.controller";
 import {SunEntity} from "@/ts/entities/sun.entity";
 import {Vec3} from "cannon-es";
+import {NameHelper} from "@/ts/helpers/name.helper";
 
 export class World {
   protected view: View;
@@ -339,6 +340,7 @@ export class World {
     asteroid.setCube(cube);
     this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
+    console.log('loaded asteroid', NameHelper.get(cube.hash()));
     Promise.all([
       this.physics.load(asteroid),
       this.view.load(asteroid),
