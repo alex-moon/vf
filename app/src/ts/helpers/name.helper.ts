@@ -1,3 +1,5 @@
+import {StringHelper} from "@/ts/helpers/string.helper";
+
 export class NameHelper {
   public static get(hash: number) {
     let hex = hash.toString(16);
@@ -18,7 +20,7 @@ export class NameHelper {
         result += ' ';
       }
     }
-    return result;
+    return StringHelper.ucwords(result);
   }
 
   static syllables = [
