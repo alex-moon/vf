@@ -264,7 +264,6 @@ export class World {
 
     const now = this.clock.getElapsedTime();
     if (!this.nearestUpdated || (now - this.nearestUpdated) > World.UPDATE_NEAREST_PERIOD) {
-      console.log('updating nearest');
       this.nearestUpdated = now;
       this.nearest = null;
       let distance = Infinity;

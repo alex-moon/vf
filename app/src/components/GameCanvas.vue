@@ -21,9 +21,11 @@ export default class GameCanvas extends Vue {
 div {
   display: block;
   border: solid 1px #535c69;
-  margin: 24px auto;
-  width: 800px;
-  height: 600px;
+  margin: 0;
+  // width: 800px;
+  // height: 600px;
+  width: 100%;
+  height: calc(100% - 70px);
   position: relative;
 }
 </style>

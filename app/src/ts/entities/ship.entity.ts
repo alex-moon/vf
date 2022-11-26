@@ -54,7 +54,7 @@ export class ShipEntity extends ModelEntity {
       const acceleration = this.intent.acceleration.y;
       if (acceleration != 0) {
         const sign = acceleration > 0 ? 1 : -1;
-        const aq = new Quaternion().setFromEuler(sign * 0.05, 0, 0);
+        const aq = new Quaternion().setFromEuler(sign * 0.01, 0, 0);
         this.intent.pov.quaternion.mult(aq, this.intent.pov.quaternion);
       }
     } else {
