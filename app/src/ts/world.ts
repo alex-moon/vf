@@ -53,7 +53,7 @@ export class World {
   protected raycaster = new Raycaster();
 
   protected uis: Ui[] = [];
-  protected afterMoveCallbacks: (() => void)[] = [];
+  protected afterResetOriginCallbacks: (() => void)[] = [];
 
   constructor(view: View, physics: Physics) {
     this.clock = new Clock;
@@ -198,7 +198,7 @@ export class World {
   private collide($event: any) {
     // @todo there are some bogus collide events happening
     if (this.ship.isLanding()) {
-      this.afterMove(() => {
+      this.afterResetOrigin(() => {
         this.ship.land();
         this.jack.exitVehicle();
         this.camera.setTarget(this.jack);
@@ -206,7 +206,7 @@ export class World {
     }
   }
 
-  private move(delta: number) {
+  private update(delta: number) {
     this.handlers.forEach((handler) => {
       handler.move(delta, this);
     });
@@ -244,9 +244,9 @@ export class World {
   private animate() {
     requestAnimationFrame(this.animate.bind(this));
     const delta = this.clock.getDelta();
-    this.moveEverything();
-    this.runAfterMoveCallbacks();
-    this.move(delta);
+    this.resetOrigin();
+    this.runAfterResetOriginCallbacks();
+    this.update(delta);
     this.view.animate(delta, this.camera);
     this.physics.animate(delta);
     this.debugger?.update();
@@ -257,18 +257,16 @@ export class World {
     });
   }
 
-  private afterMove(callback: () => void) {
-    this.afterMoveCallbacks.push(callback);
+  private afterResetOrigin(callback: () => void) {
+    this.afterResetOriginCallbacks.push(callback);
   }
 
-  private runAfterMoveCallbacks() {
-    this.afterMoveCallbacks.forEach((callback) => {
-      callback();
-    });
-    this.afterMoveCallbacks = [];
+  private runAfterResetOriginCallbacks() {
+    this.afterResetOriginCallbacks.forEach(callback => callback());
+    this.afterResetOriginCallbacks = [];
   }
 
-  private moveEverything() {
+  private resetOrigin() {
     const origin = this.ship.getBody().position;
     this.handlers.forEach((handler) => {
       if (handler !== this.ship) {
