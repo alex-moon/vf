@@ -24,8 +24,8 @@ import {Debug} from "@/ts/helpers/debug";
 import {SunHandler} from "@/ts/handlers/sun.handler";
 import {SunController} from "@/ts/controllers/sun.controller";
 import {SunEntity} from "@/ts/entities/sun.entity";
+import {HudUi} from "@/ts/ui/hud.ui";
 import {Vec3} from "cannon-es";
-import {NameHelper} from "@/ts/helpers/name.helper";
 
 export class World {
   protected view: View;
@@ -288,10 +288,8 @@ export class World {
     }
     if (this.selected instanceof AsteroidHandler) {
       if (this.ship.isFlying()) {
-        const hash = this.selected.getCube()?.hash();
-        if (hash) {
-          console.log('landing on', NameHelper.get(hash));
-        }
+        const cube = this.selected.getCube();
+        console.log('landing on', cube?.name);
         this.ship.startLanding(this.selected);
         this.camera.cut();
       }
@@ -310,6 +308,8 @@ export class World {
     // const cube = BeltHelper.getCube(position);
     const cubes = BeltHelper.getNearest(position);
 
+    let changed = false;
+
     // first load what we don't have
     const keep = [];
     for (const cube of cubes) {
@@ -319,6 +319,7 @@ export class World {
         continue;
       }
       this.loadAsteroid(cube);
+      changed = true;
     }
 
     // now unload what we don't need any more
@@ -326,7 +327,12 @@ export class World {
       if (!keep.includes(key)) {
         this.unloadAsteroid(this.asteroids[key]);
         delete this.asteroids[key];
+        changed = true;
       }
+    }
+
+    if (changed) {
+      console.log('nearest asteroid', BeltHelper.getCube(position)?.name);
     }
   }
 

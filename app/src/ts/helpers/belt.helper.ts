@@ -1,10 +1,12 @@
 import {Vec3} from "cannon-es";
 import {MathUtils} from "three";
 import {MathHelper} from "@/ts/helpers/math.helper";
+import {NameHelper} from "@/ts/helpers/name.helper";
 
 export class BeltCube {
   static EDGE = 1.5e4;
 
+  readonly name: string;
   readonly xi: number;
   readonly yi: number;
   readonly zi: number;
@@ -13,6 +15,7 @@ export class BeltCube {
     this.xi = xi;
     this.yi = yi;
     this.zi = zi;
+    this.name = NameHelper.get(this.hash());
   }
 
   public hash(): number {
