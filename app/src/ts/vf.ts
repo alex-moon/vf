@@ -16,4 +16,8 @@ export class Vf {
   public init($element: HTMLDivElement) {
     this.world.init($element);
   }
+
+  public resize() {
+    this.world.resize();
+  }
 }

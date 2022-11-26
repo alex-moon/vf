@@ -27,5 +27,9 @@ export abstract class Ui {
     return div;
   }
 
+  public resize(width: number, height: number) {
+    // implement in children if necessary
+  }
+
   public abstract draw(world: World): void;
 }

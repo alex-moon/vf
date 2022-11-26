@@ -6,7 +6,7 @@ import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {PointEvent} from "@/ts/events/point.event";
-import {Clock, Object3D, Raycaster, Vector3} from "three";
+import {Camera, Clock, Object3D, PerspectiveCamera, Raycaster, Vector3} from "three";
 import {Physics} from "@/ts/physics";
 import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {JackController} from "@/ts/controllers/jack.controller";
@@ -31,6 +31,8 @@ import {ReticleUi} from "@/ts/ui/reticle.ui";
 
 export class World {
   static UPDATE_NEAREST_PERIOD = 1 / 2;
+
+  protected $element!: HTMLDivElement;
 
   protected view: View;
   protected physics: Physics;
@@ -62,6 +64,7 @@ export class World {
   }
 
   public init($element: HTMLDivElement) {
+    this.$element = $element;
     this.physics.init();
     this.view.init($element);
     Promise.all([
@@ -83,6 +86,18 @@ export class World {
       this.start();
       this.initUi($element);
     });
+  }
+
+  public resize() {
+    if (this.camera) {
+      const camera = this.camera.getObject();
+      if (camera instanceof PerspectiveCamera) {
+        camera.aspect = this.$element.offsetWidth / this.$element.offsetHeight;
+        camera.updateProjectionMatrix();
+      }
+    }
+    this.view.resize();
+    this.uis.forEach(ui => ui.resize(this.$element.offsetWidth, this.$element.offsetHeight));
   }
 
   public isReady() {

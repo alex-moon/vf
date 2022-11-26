@@ -17,7 +17,7 @@ import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {DirectionKey} from "@/ts/enums/direction";
 
 export class ShipController extends ModelController<ShipEntity> {
-  static MAX_SPEED = 1e5;
+  static MAX_SPEED = 6e3; //1e5;
 
   protected windshield!: Object3D;
   protected root!: Object3D;

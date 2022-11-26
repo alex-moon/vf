@@ -22,10 +22,9 @@ div {
   display: block;
   border: solid 1px #535c69;
   margin: 0;
-  // width: 800px;
-  // height: 600px;
+  // @todo need to reset three etc. on change
   width: 100%;
-  height: calc(100% - 70px);
+  height: calc(100vh - 70px);
   position: relative;
 }
 </style>

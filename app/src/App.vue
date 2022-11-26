@@ -2,7 +2,7 @@
   <v-app>
     <v-layout>
       <v-app-bar color="indigo">
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon @click.stop="toggleDrawer()"></v-app-bar-nav-icon>
         <template v-slot:append>
           <h1>
             VoidFill
@@ -28,15 +28,24 @@
 import {Options, Vue} from 'vue-class-component';
 import GameCanvas from "@/components/GameCanvas.vue";
 import DevCanvas from "@/components/DevCanvas.vue";
+import {Vf} from "@/ts/vf";
 
 @Options({
   components: {
     'vf-game-canvas': GameCanvas,
     'vf-dev-canvas': DevCanvas,
   },
+  inject: ['vf'],
 })
 export default class App extends Vue {
+  vf!: Vf;
   public drawer = true;
+  public toggleDrawer() {
+    this.drawer = !this.drawer;
+    setTimeout(() => {
+      this.vf.resize();
+    }, 200);
+  }
 }
 </script>
 

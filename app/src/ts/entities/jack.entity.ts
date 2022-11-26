@@ -90,7 +90,11 @@ export class JackEntity extends ModelEntity {
 
     const previous = new Vec3();
     this.intent.pov.quaternion.toEuler(previous);
-    const x = MathHelper.clamp(previous.x + $event.movementY * 0.001, -0.75, 0.9);
+    const x = MathHelper.clamp(
+      previous.x + $event.movementY * 0.001,
+      -1.2,
+      1.0
+    );
 
     this.intent.pov.quaternion.setFromEuler(
       x,

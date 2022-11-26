@@ -6,11 +6,16 @@ export class ReticleUi extends Ui {
     super(
       $parent,
       $parent.offsetWidth/2 - 6,
-      $parent.offsetHeight/2 + 24, // @todo where does this 24 come from?
+      $parent.offsetHeight/2 - 6,
       13,
       13
     );
     this.$el.style.backgroundImage = 'url(/reticle.png)';
+  }
+
+  public resize(width: number, height: number) {
+    this.$el.style.left = (width / 2 - 6) + 'px';
+    this.$el.style.top = (height / 2 - 6) + 'px';
   }
 
   draw(world: World): void {

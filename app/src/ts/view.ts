@@ -110,8 +110,14 @@ export class View {
       this.$element.appendChild(this.stats.dom);
     }
     this.$element.appendChild(this.renderer.domElement);
+    console.log('init sizing renderer', this.$element.offsetWidth, this.$element.offsetHeight);
     this.renderer.setSize(this.$element.offsetWidth, this.$element.offsetHeight);
     this.bindEvents();
+  }
+
+  public resize() {
+    console.log('resizing renderer', this.$element.offsetWidth, this.$element.offsetHeight);
+    this.renderer.setSize(this.$element.offsetWidth, this.$element.offsetHeight);
   }
 
   private bindEvents() {

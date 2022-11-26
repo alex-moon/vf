@@ -4,7 +4,7 @@ import {MathHelper} from "@/ts/helpers/math.helper";
 import {NameHelper} from "@/ts/helpers/name.helper";
 
 export class BeltCube {
-  static EDGE = 1e5;
+  static EDGE = 1.5e4;
 
   readonly name: string;
   readonly xi: number;
