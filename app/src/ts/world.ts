@@ -29,16 +29,22 @@ import {Vec3} from "cannon-es";
 import {Ui} from "@/ts/ui/ui";
 
 export class World {
+  static UPDATE_NEAREST_PERIOD = 1 / 2;
+
   protected view: View;
   protected physics: Physics;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
+
   protected asteroids: {[key: string]: AsteroidHandler} = {};
   protected nearest: AsteroidHandler|null = null;
+  protected nearestUpdated?: number;
+
   protected sun!: SunHandler;
   protected jack!: JackHandler;
   protected ship!: ShipHandler;
   protected camera!: CameraHandler;
+
   protected ready = false;
   protected selected: Handler<any>|null = null;
 
@@ -256,16 +262,21 @@ export class World {
     });
     origin.set(0, 0, 0);
 
-    this.nearest = null;
-    let distance = Infinity;
-    Object.values(this.asteroids).forEach((asteroid) => {
-      const diff = new Vec3();
-      asteroid.getBody().position.vsub(this.ship.getBody().position, diff);
-      if (diff.length() < distance) {
-        distance = diff.length();
-        this.nearest = asteroid;
-      }
-    });
+    const now = this.clock.getElapsedTime();
+    if (!this.nearestUpdated || (now - this.nearestUpdated) > World.UPDATE_NEAREST_PERIOD) {
+      console.log('updating nearest');
+      this.nearestUpdated = now;
+      this.nearest = null;
+      let distance = Infinity;
+      Object.values(this.asteroids).forEach((asteroid) => {
+        const diff = new Vec3();
+        asteroid.getBody().position.vsub(this.ship.getBody().position, diff);
+        if (diff.length() < distance) {
+          distance = diff.length();
+          this.nearest = asteroid;
+        }
+      });
+    }
   }
 
   private updateSelected() {
