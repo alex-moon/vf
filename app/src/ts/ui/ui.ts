@@ -3,8 +3,14 @@ import {World} from "@/ts/world";
 export abstract class Ui {
   protected $el!: HTMLDivElement;
 
-  constructor($parent: HTMLDivElement) {
-    this.$el = this.makeEl();
+  constructor($parent: HTMLDivElement, left = 0, top = 0, width = 0, height = 0) {
+    if (width === 0) {
+      width = $parent.offsetWidth;
+    }
+    if (height === 0) {
+      height = $parent.offsetHeight;
+    }
+    this.$el = this.makeDiv(left, top, width, height);
     $parent.appendChild(this.$el);
   }
 
@@ -17,9 +23,9 @@ export abstract class Ui {
     div.style.width = width + 'px';
     div.style.height = height + 'px';
     div.style.zIndex = '10000';
+    div.style.overflow = 'hidden';
     return div;
   }
 
-  protected abstract makeEl(): HTMLDivElement;
   public abstract draw(world: World): void;
 }

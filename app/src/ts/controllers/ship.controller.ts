@@ -10,13 +10,15 @@ import {
   SkinnedMesh,
   TextureLoader
 } from "three";
-import {ShipIntent, ShipState} from "@/ts/entities/ship.intent";
+import {ShipIntent} from "@/ts/entities/ship.intent";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {DirectionKey} from "@/ts/enums/direction";
 
 export class ShipController extends ModelController<ShipEntity> {
+  static MAX_SPEED = 1e5;
+
   protected windshield!: Object3D;
   protected root!: Object3D;
   protected thrusters: Object3D[] = [];
@@ -122,8 +124,8 @@ export class ShipController extends ModelController<ShipEntity> {
     this.body.velocity.y += acceleration.y;
     this.body.velocity.z += acceleration.z;
     const speed = this.body.velocity.length();
-    if (speed > 1e5) {
-      this.body.velocity.scale(1e5 / speed, this.body.velocity);
+    if (speed > ShipController.MAX_SPEED) {
+      this.body.velocity.scale(ShipController.MAX_SPEED / speed, this.body.velocity);
     }
 
     if (!this.isFlying()) {
@@ -143,8 +145,12 @@ export class ShipController extends ModelController<ShipEntity> {
       rotation.vmult(acceleration, acceleration);
     } else {
       const velocity = this.body.velocity.clone();
-      velocity.scale(1 / velocity.length(), velocity);
-      velocity.scale(-acceleration.length(), velocity);
+      if (velocity.length() < acceleration.length()) {
+        velocity.scale(-1, velocity);
+      } else {
+        velocity.scale(1 / velocity.length(), velocity);
+        velocity.scale(-acceleration.length(), velocity);
+      }
       acceleration.copy(velocity);
     }
     return acceleration;

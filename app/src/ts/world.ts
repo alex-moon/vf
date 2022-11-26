@@ -85,8 +85,18 @@ export class World {
     return this.jack;
   }
 
+  public getShip() {
+    return this.ship;
+  }
+
   public getAsteroid() {
-    return this.ship.getAsteroid() || this.nearest;
+    if (this.ship.getAsteroid()) {
+      return this.ship.getAsteroid();
+    }
+    if (this.selected instanceof AsteroidHandler) {
+      return this.selected;
+    }
+    return this.nearest;
   }
 
   protected loadCamera() {
@@ -245,6 +255,17 @@ export class World {
       }
     });
     origin.set(0, 0, 0);
+
+    this.nearest = null;
+    let distance = Infinity;
+    Object.values(this.asteroids).forEach((asteroid) => {
+      const diff = new Vec3();
+      asteroid.getBody().position.vsub(this.ship.getBody().position, diff);
+      if (diff.length() < distance) {
+        distance = diff.length();
+        this.nearest = asteroid;
+      }
+    });
   }
 
   private updateSelected() {
@@ -297,7 +318,6 @@ export class World {
     if (this.selected instanceof AsteroidHandler) {
       if (this.ship.isFlying()) {
         const cube = this.selected.getCube();
-        console.log('landing on', cube?.name);
         this.ship.startLanding(this.selected);
         this.camera.cut();
       }
@@ -319,8 +339,6 @@ export class World {
     this.subOrigin(position);
     const cubes = BeltHelper.getNearest(position);
 
-    let changed = false;
-
     // first load what we don't have
     const keep = [];
     for (const cube of cubes) {
@@ -330,7 +348,6 @@ export class World {
         continue;
       }
       this.loadAsteroid(cube);
-      changed = true;
     }
 
     // now unload what we don't need any more
@@ -338,14 +355,6 @@ export class World {
       if (!keep.includes(key)) {
         this.unloadAsteroid(this.asteroids[key]);
         delete this.asteroids[key];
-        changed = true;
-      }
-    }
-
-    if (changed) {
-      const nearest = BeltHelper.getCube(position);
-      if (nearest) {
-        this.nearest = this.asteroids['' + nearest.hash()];
       }
     }
   }
@@ -364,7 +373,6 @@ export class World {
     asteroid.setCube(cube);
     this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
-    // console.log(NameHelper.get(cube.hash()));
     Promise.all([
       this.physics.load(asteroid),
       this.view.load(asteroid),

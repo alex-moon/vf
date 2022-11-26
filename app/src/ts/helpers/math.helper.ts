@@ -14,4 +14,8 @@ export class MathHelper {
   public static cantor(a: number, b: number) {
     return (a + b + 1) * (a + b) / 2 + b;
   }
+
+  public static rescale(value: number, fromMin: number, fromMax: number, toMin: number, toMax: number) {
+    return (toMax - toMin) * (value - fromMin) / (fromMax - fromMin) + toMin;
+  }
 }
