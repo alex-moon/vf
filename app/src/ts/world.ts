@@ -26,6 +26,7 @@ import {SunController} from "@/ts/controllers/sun.controller";
 import {SunEntity} from "@/ts/entities/sun.entity";
 import {HudUi} from "@/ts/ui/hud.ui";
 import {Vec3} from "cannon-es";
+import {Ui} from "@/ts/ui/ui";
 
 export class World {
   protected view: View;
@@ -33,6 +34,7 @@ export class World {
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
   protected asteroids: {[key: string]: AsteroidHandler} = {};
+  protected nearest: AsteroidHandler|null = null;
   protected sun!: SunHandler;
   protected jack!: JackHandler;
   protected ship!: ShipHandler;
@@ -42,6 +44,8 @@ export class World {
 
   protected debugger ?: {update: () => void;};
   protected raycaster = new Raycaster();
+
+  protected uis: Ui[] = [];
 
   constructor(view: View, physics: Physics) {
     this.clock = new Clock;
@@ -69,6 +73,7 @@ export class World {
       this.bindEvents();
       this.animate();
       this.start();
+      this.initUi($element);
     });
   }
 
@@ -81,7 +86,7 @@ export class World {
   }
 
   public getAsteroid() {
-    return this.ship.getAsteroid();
+    return this.ship.getAsteroid() || this.nearest;
   }
 
   protected loadCamera() {
@@ -226,6 +231,9 @@ export class World {
     this.debugger?.update();
     this.updateSelected();
     this.loadAsteroids();
+    this.uis.forEach((ui) => {
+      ui.draw(this);
+    });
   }
 
   private moveEverything() {
@@ -296,6 +304,10 @@ export class World {
     }
   }
 
+  private initUi($element: HTMLDivElement) {
+    this.uis.push(new HudUi($element));
+  }
+
   private start() {
     this.jack.enterVehicle(this.ship);
     this.ship.startFlying();
@@ -305,7 +317,6 @@ export class World {
   protected loadAsteroids() {
     const position = this.ship.getBody().position.clone();
     this.subOrigin(position);
-    // const cube = BeltHelper.getCube(position);
     const cubes = BeltHelper.getNearest(position);
 
     let changed = false;
@@ -332,7 +343,10 @@ export class World {
     }
 
     if (changed) {
-      console.log('nearest asteroid', BeltHelper.getCube(position)?.name);
+      const nearest = BeltHelper.getCube(position);
+      if (nearest) {
+        this.nearest = this.asteroids['' + nearest.hash()];
+      }
     }
   }
 

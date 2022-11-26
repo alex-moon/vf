@@ -46,8 +46,6 @@ import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass
 import {BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
 import {SunHandler} from "@/ts/handlers/sun.handler";
-import {HudUi} from "@/ts/ui/hud.ui";
-import {Ui} from "@/ts/ui/ui";
 
 export class View {
   protected texture: TextureLoader;
@@ -63,9 +61,6 @@ export class View {
   protected composer!: EffectComposer;
   protected outlinePass!: OutlinePass;
   protected bloomPass!: UnrealBloomPass;
-
-  protected hud!: HudUi;
-  protected uis: Ui[] = [];
 
   constructor() {
     this.renderer = new WebGLRenderer({ antialias: true });
@@ -117,7 +112,6 @@ export class View {
     this.$element.appendChild(this.renderer.domElement);
     this.renderer.setSize(this.$element.offsetWidth, this.$element.offsetHeight);
     this.bindEvents();
-    this.initUis();
   }
 
   private bindEvents() {
@@ -126,17 +120,8 @@ export class View {
     });
   }
 
-  private initUis() {
-    this.hud = new HudUi(this.$element.offsetWidth, this.$element.offsetHeight);
-    this.uis.push(this.hud);
-  }
-
   public getScene() {
     return this.scene;
-  }
-
-  public getHud() {
-    return this.hud;
   }
 
   public unload(handler: Handler<any>) {
@@ -374,12 +359,6 @@ export class View {
 
     // this.renderer.render(this.scene, cam);
     this.composer.render();
-
-    // @todo this does not work
-    // this.uis.forEach((ui) => {
-    //   ui.draw();
-    //   this.renderer.render(ui.getScene(), ui.getCamera());
-    // });
   }
 
   private initComposer(camera: Camera) {

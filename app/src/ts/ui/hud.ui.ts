@@ -1,25 +1,26 @@
 import {Ui} from "@/ts/ui/ui";
+import {World} from "@/ts/world";
 
 export class HudUi extends Ui {
-  protected image!: HTMLImageElement;
+  protected $name!: HTMLDivElement;
 
-  public constructor(width: number, height: number) {
-    super(width, height);
-    const image = new Image();
-    image.onload = () => {
-      this.image = image;
-    }
-    image.src = "/hud.png";
+  constructor($parent: HTMLDivElement) {
+    super($parent);
+    this.$name = this.makeDiv(144, 17, 420, 16);
+    this.$name.style.fontSize = '16px';
+    this.$name.style.lineHeight = '8px';
+    this.$name.style.fontFamily = 'pixelmix';
+    this.$name.style.color = 'white';
+    this.$el.appendChild(this.$name);
   }
 
-  public draw() {
-    if (this.image) {
-      this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
-      this.context.drawImage(this.image, 21, 21);
-      this.context.font = "16pt pixelmix";
-      this.context.fillStyle = "rgba(255, 255, 255, 1)";
-      this.context.fillText("Kalchioydeis Oytemidas", 165, 37, 420);
-      this.texture.needsUpdate = true;
-    }
+  protected makeEl() {
+    const $el = this.makeDiv(21, 21, 579, 121);
+    $el.style.backgroundImage = 'url(/hud.png)';
+    return $el;
+  }
+
+  public draw(world: World) {
+    this.$name.innerText = world.getAsteroid()?.getCube()?.name || '???';
   }
 }
