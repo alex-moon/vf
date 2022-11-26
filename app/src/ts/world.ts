@@ -53,6 +53,7 @@ export class World {
   protected raycaster = new Raycaster();
 
   protected uis: Ui[] = [];
+  protected afterMoveCallbacks: (() => void)[] = [];
 
   constructor(view: View, physics: Physics) {
     this.clock = new Clock;
@@ -197,9 +198,11 @@ export class World {
   private collide($event: any) {
     // @todo there are some bogus collide events happening
     if (this.ship.isLanding()) {
-      this.ship.land();
-      this.jack.exitVehicle();
-      this.camera.setTarget(this.jack);
+      this.afterMove(() => {
+        this.ship.land();
+        this.jack.exitVehicle();
+        this.camera.setTarget(this.jack);
+      });
     }
   }
 
@@ -242,6 +245,7 @@ export class World {
     requestAnimationFrame(this.animate.bind(this));
     const delta = this.clock.getDelta();
     this.moveEverything();
+    this.runAfterMoveCallbacks();
     this.move(delta);
     this.view.animate(delta, this.camera);
     this.physics.animate(delta);
@@ -251,6 +255,17 @@ export class World {
     this.uis.forEach((ui) => {
       ui.draw(this);
     });
+  }
+
+  private afterMove(callback: () => void) {
+    this.afterMoveCallbacks.push(callback);
+  }
+
+  private runAfterMoveCallbacks() {
+    this.afterMoveCallbacks.forEach((callback) => {
+      callback();
+    });
+    this.afterMoveCallbacks = [];
   }
 
   private moveEverything() {
