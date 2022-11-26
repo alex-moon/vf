@@ -4,8 +4,7 @@ import {ShipHandler} from "@/ts/handlers/ship.handler";
 import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
 import {Quaternion, Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
-import {BeltCube, BeltHelper} from "@/ts/helpers/belt.helper";
-import {ShipEntity} from "@/ts/entities/ship.entity";
+import {BeltCube} from "@/ts/helpers/belt.helper";
 import {ShipController} from "@/ts/controllers/ship.controller";
 
 export class HudUi extends Ui {

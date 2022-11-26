@@ -27,6 +27,7 @@ import {SunEntity} from "@/ts/entities/sun.entity";
 import {HudUi} from "@/ts/ui/hud.ui";
 import {Vec3} from "cannon-es";
 import {Ui} from "@/ts/ui/ui";
+import {ReticleUi} from "@/ts/ui/reticle.ui";
 
 export class World {
   static UPDATE_NEAREST_PERIOD = 1 / 2;
@@ -336,6 +337,7 @@ export class World {
 
   private initUi($element: HTMLDivElement) {
     this.uis.push(new HudUi($element));
+    this.uis.push(new ReticleUi($element));
   }
 
   private start() {
