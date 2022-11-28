@@ -2,6 +2,7 @@ import {ModelHandler} from "@/ts/handlers/model.handler";
 import {JackController} from "@/ts/controllers/jack.controller";
 import {JackEntity} from "@/ts/entities/jack.entity";
 import {World} from "@/ts/world";
+import {JackState} from "@/ts/entities/jack.intent";
 
 export class JackHandler extends ModelHandler<JackController> {
   public getEntity(): JackEntity {
@@ -20,6 +21,7 @@ export class JackHandler extends ModelHandler<JackController> {
     this.controller.exitVehicle();
   }
 
+  private state = 'walking';
   public move(delta: number, world: World) {
     super.move(delta, world);
 
@@ -35,6 +37,24 @@ export class JackHandler extends ModelHandler<JackController> {
     // second rotate body
     if (force) {
       this.rotateToward(body, force);
+    }
+
+    // detect contacts
+    const intent = this.getEntity().getIntent();
+    let seen = false;
+    for (const contact of world.getPhysics().getWorld().contacts) {
+      if (contact.bi === body) {
+        seen = true;
+        if ([JackState.IDLE, JackState.RUNNING].includes(intent.state as JackState)) {
+          break;
+        }
+        this.getEntity().getIntent().state = JackState.IDLE;
+      }
+    }
+    if (!seen) {
+      if (intent.state !== JackState.FALLING) {
+        intent.state = JackState.FALLING;
+      }
     }
   }
 }

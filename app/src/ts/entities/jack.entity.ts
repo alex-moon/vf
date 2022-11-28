@@ -15,6 +15,7 @@ export class JackEntity extends ModelEntity {
   protected path = '/glb/jack.glb';
   protected animations = [
     JackState.DEFAULT,
+    JackState.FALLING,
     JackState.IDLE,
     JackState.RUNNING,
     JackState.RUNNING + '.S',
@@ -36,7 +37,11 @@ export class JackEntity extends ModelEntity {
   }
 
   public isOnFoot() {
-    return [JackState.IDLE, JackState.RUNNING].includes(this.intent.state as JackState);
+    return [
+      JackState.IDLE,
+      JackState.RUNNING,
+      JackState.FALLING,
+    ].includes(this.intent.state as JackState);
   }
 
   public enterVehicle() {

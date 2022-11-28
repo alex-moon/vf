@@ -6,7 +6,7 @@ import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CameraHandler} from "@/ts/handlers/camera.handler";
 import {CameraEntity} from "@/ts/entities/camera.entity";
 import {PointEvent} from "@/ts/events/point.event";
-import {Camera, Clock, Object3D, PerspectiveCamera, Raycaster, Vector3} from "three";
+import {Clock, Object3D, PerspectiveCamera, Raycaster, Vector3} from "three";
 import {Physics} from "@/ts/physics";
 import {KeysHelper} from "@/ts/helpers/keys.helper";
 import {JackController} from "@/ts/controllers/jack.controller";
@@ -61,6 +61,14 @@ export class World {
     this.clock = new Clock;
     this.view = view;
     this.physics = physics;
+  }
+
+  public getView() {
+    return this.view;
+  }
+
+  public getPhysics() {
+    return this.physics;
   }
 
   public init($element: HTMLDivElement) {

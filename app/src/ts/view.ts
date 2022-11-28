@@ -46,6 +46,7 @@ import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass
 import {BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
 import {SunHandler} from "@/ts/handlers/sun.handler";
+import {ModelEntity} from "@/ts/entities/model.entity";
 
 export class View {
   protected texture: TextureLoader;
@@ -194,7 +195,7 @@ export class View {
 
   protected loadModel(handler: ModelHandler<any>): Promise<void> {
     return new Promise((resolve, reject) => {
-      const entity = handler.getEntity();
+      const entity = handler.getEntity() as ModelEntity;
       this.gltf.load(entity.getPath(), (gltf: any) => {
         const model = gltf;
         model.scene.scale.set(1, 1, 1);
@@ -379,9 +380,8 @@ export class View {
     // this.composer.addPass(this.bloomPass);
 
     this.outlinePass = new OutlinePass(viewport, this.scene, camera);
-    // this.outlinePass.visibleEdgeColor.set('#ffffff');
+    this.outlinePass.visibleEdgeColor.set('#ffffff');
     // this.outlinePass.hiddenEdgeColor.set('#190a05');
-    this.outlinePass.visibleEdgeColor.set('#190a05');
     this.outlinePass.hiddenEdgeColor.set('#ffffff');
     this.outlinePass.edgeStrength = 3;
     this.outlinePass.edgeGlow = 1;
