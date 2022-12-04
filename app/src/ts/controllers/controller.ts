@@ -3,6 +3,7 @@ import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {PointEvent} from "@/ts/events/point.event";
 import {Object3D} from "three";
 import {Body} from "cannon-es";
+import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
 
 /**
  * Rationale: an entity controls things like movement at the scale of global space
@@ -40,6 +41,10 @@ export abstract class Controller<E extends Entity> {
 
   public onKeysChanged($event: KeysChangedEvent): void {
     this.entity.onKeysChanged($event);
+  }
+
+  public onContactsChanged($event: ContactsChangedEvent): void {
+    this.entity.onContactsChanged($event);
   }
 
   public onPointerMove($event: MouseEvent): void {

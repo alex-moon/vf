@@ -12,6 +12,8 @@ import {Body, Vec3} from "cannon-es";
 import {Object3D} from "three";
 import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {PointEvent} from "@/ts/events/point.event";
+import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
+import {Contact} from "@/ts/helpers/contacts.helper";
 
 export abstract class Handler<C extends Controller<any>> {
   protected controller: C;
@@ -79,6 +81,27 @@ export abstract class Handler<C extends Controller<any>> {
 
   public onKeysChanged($event: KeysChangedEvent): void {
     this.controller.onKeysChanged($event);
+  }
+
+  public onContactsChanged($event: ContactsChangedEvent): void {
+    const on: Contact[] = [];
+    const off: Contact[] = [];
+
+    $event.on.forEach((contact) => {
+      if (contact.i === this || contact.j === this) {
+        on.push(contact);
+      }
+    });
+
+    $event.off.forEach((contact) => {
+      if (contact.i === this || contact.j === this) {
+        off.push(contact);
+      }
+    });
+
+    if (on.length || off.length) {
+      this.controller.onContactsChanged(new ContactsChangedEvent(on, off));
+    }
   }
 
   public onPointerMove($event: MouseEvent): void {

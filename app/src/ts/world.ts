@@ -28,6 +28,9 @@ import {HudUi} from "@/ts/ui/hud.ui";
 import {Vec3} from "cannon-es";
 import {Ui} from "@/ts/ui/ui";
 import {ReticleUi} from "@/ts/ui/reticle.ui";
+import {JackState} from "@/ts/entities/jack.intent";
+import {ContactsHelper} from "@/ts/helpers/contacts.helper";
+import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
 
 export class World {
   static UPDATE_NEAREST_PERIOD = 1 / 2;
@@ -275,9 +278,20 @@ export class World {
     this.debugger?.update();
     this.updateSelected();
     this.loadAsteroids();
+    this.detectContacts();
     this.uis.forEach((ui) => {
       ui.draw(this);
     });
+  }
+
+  private detectContacts() {
+    const {on, off} = ContactsHelper.parse(this.physics.getWorld().contacts, this.handlers);
+    if (on.length || off.length) {
+      const event = new ContactsChangedEvent(on, off);
+      this.handlers.forEach((handler) => {
+        handler.onContactsChanged(event);
+      });
+    }
   }
 
   private afterResetOrigin(callback: () => void) {

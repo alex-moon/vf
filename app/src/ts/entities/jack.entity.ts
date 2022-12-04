@@ -6,6 +6,7 @@ import {CollisionBox} from "@/ts/entities/collision-box";
 import {Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
 import {JackIntent, JackState} from "@/ts/entities/jack.intent";
+import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
 
 export class JackEntity extends ModelEntity {
   protected speed = {
@@ -83,6 +84,26 @@ export class JackEntity extends ModelEntity {
       this.intent.state = JackState.IDLE;
       this.intent.speed = 0;
       this.intent.direction = null;
+    }
+  }
+
+  public onContactsChanged($event: ContactsChangedEvent) {
+    super.onContactsChanged($event);
+
+    if (this.intent.state === JackState.VEHICLE) {
+      return;
+    }
+
+    if ($event.on.length) {
+      if ([JackState.FALLING].includes(this.intent.state as JackState)) {
+        this.intent.state = JackState.IDLE;
+      }
+    }
+
+    if ($event.off.length) {
+      if ([JackState.IDLE, JackState.RUNNING].includes(this.intent.state as JackState)) {
+        this.intent.state = JackState.FALLING;
+      }
     }
   }
 

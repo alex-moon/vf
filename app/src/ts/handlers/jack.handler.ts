@@ -38,23 +38,5 @@ export class JackHandler extends ModelHandler<JackController> {
     if (force) {
       this.rotateToward(body, force);
     }
-
-    // detect contacts
-    const intent = this.getEntity().getIntent();
-    let seen = false;
-    for (const contact of world.getPhysics().getWorld().contacts) {
-      if (contact.bi === body) {
-        seen = true;
-        if ([JackState.IDLE, JackState.RUNNING].includes(intent.state as JackState)) {
-          break;
-        }
-        this.getEntity().getIntent().state = JackState.IDLE;
-      }
-    }
-    if (!seen) {
-      if (intent.state !== JackState.FALLING) {
-        intent.state = JackState.FALLING;
-      }
-    }
   }
 }
