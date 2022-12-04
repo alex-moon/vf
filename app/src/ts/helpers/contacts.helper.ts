@@ -44,6 +44,15 @@ export class ContactsHelper {
     return {on, off};
   }
 
+  public static forCollision($event: any, handlers: Handler<any>[]) {
+    const hi = ContactsHelper.handlerForBody($event.bi, handlers);
+    const hj = ContactsHelper.handlerForBody($event.bj, handlers);
+    if (hi && hj) {
+      return new Contact(hi, hj);
+    }
+    return null;
+  }
+
   private static handlerForBody(body: Body, handlers: Handler<any>[]) {
     for (const handler of handlers) {
       if (handler.getBody() === body) {

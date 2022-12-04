@@ -41,6 +41,7 @@ export class JackController extends ModelController<JackEntity> {
     this.entity.enterVehicle();
     this.vehicle = vehicle;
     this.body.type = Body.STATIC;
+    this.body.collisionResponse = false;
     this.object.visible = false;
   }
 
@@ -51,6 +52,7 @@ export class JackController extends ModelController<JackEntity> {
       const vehicleBody = this.vehicle.getBody();
       this.vehicle = null;
       this.body.type = Body.DYNAMIC;
+      this.body.collisionResponse = true;
       this.object.visible = true;
 
       // get position in space in front of the ship door

@@ -111,13 +111,11 @@ export class View {
       this.$element.appendChild(this.stats.dom);
     }
     this.$element.appendChild(this.renderer.domElement);
-    console.log('init sizing renderer', this.$element.offsetWidth, this.$element.offsetHeight);
     this.renderer.setSize(this.$element.offsetWidth, this.$element.offsetHeight);
     this.bindEvents();
   }
 
   public resize() {
-    console.log('resizing renderer', this.$element.offsetWidth, this.$element.offsetHeight);
     this.renderer.setSize(this.$element.offsetWidth, this.$element.offsetHeight);
   }
 
@@ -174,7 +172,12 @@ export class View {
       handler.setObject(sun);
 
       // light
-      const sunlight = new PointLight(0xffffff, 3, BeltHelper.OUTER_RADIUS, 0);
+      const sunlight = new PointLight(
+        0xffffff,
+        1,
+        BeltHelper.OUTER_RADIUS,
+        0
+      );
       sunlight.castShadow = true;
       sunlight.position.set(0, 0, 0);
       sun.add(sunlight);

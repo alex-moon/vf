@@ -220,15 +220,20 @@ export class World {
     this.handlers.forEach(handler => handler.onPoint($event));
   }
 
-  // @todo this is why you need a global pubsub
   private collide($event: any) {
-    // @todo there are some bogus collide events happening
-    if (this.ship.isLanding()) {
-      this.afterResetOrigin(() => {
-        this.ship.land();
-        this.jack.exitVehicle();
-        this.camera.setTarget(this.jack);
-      });
+    const contact = ContactsHelper.forCollision($event.contact, this.handlers);
+    if (contact) {
+      if (this.ship === contact.i || this.ship === contact.j) {
+        if (contact.i instanceof AsteroidHandler || contact.j instanceof AsteroidHandler) {
+          if (this.ship.isLanding()) {
+            this.afterResetOrigin(() => {
+              this.ship.land();
+              this.jack.exitVehicle();
+              this.camera.setTarget(this.jack);
+            });
+          }
+        }
+      }
     }
   }
 
@@ -378,7 +383,6 @@ export class World {
     }
     if (this.selected instanceof AsteroidHandler) {
       if (this.ship.isFlying()) {
-        const cube = this.selected.getCube();
         this.ship.startLanding(this.selected);
         this.camera.cut();
       }
