@@ -204,8 +204,8 @@ export class View {
         model.scene.scale.set(1, 1, 1);
 
         const mixer = new AnimationMixer(model.scene);
-        const animation = model.animations[entity.getAnimation()];
-        mixer.clipAction(animation).play();
+        // const animation = model.animations[entity.getAnimation()];
+        // mixer.clipAction(animation).play();
 
         handler.setModel(model);
         handler.setMixer(mixer);

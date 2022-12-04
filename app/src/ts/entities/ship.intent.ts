@@ -21,5 +21,5 @@ export class ShipIntent extends Intent {
   acceleration: Vec3 = new Vec3(0, 0, 0);
   quaternion: Quaternion = new Quaternion().normalize();
   angularVelocity: Vec3 = new Vec3(0, 0, 0);
-  doorState: DoorState = DoorState.OPEN;
+  doorState: DoorState = DoorState.CLOSED;
 }

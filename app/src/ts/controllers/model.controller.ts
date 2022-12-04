@@ -1,6 +1,6 @@
 import {Controller} from "@/ts/controllers/controller";
 import {ModelEntity} from "@/ts/entities/model.entity";
-import {AnimationMixer, Object3D} from "three";
+import {AnimationMixer, LoopOnce, Object3D} from "three";
 import {Model} from "@/ts/interfaces/model";
 import {Quaternion, Vec3} from "cannon-es";
 import {EntityPov} from "@/ts/entities/intent";
@@ -57,5 +57,30 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
       }
     }
     mixer.update(delta);
+  }
+
+  public onAnimationFinished(callback: () => void) {
+    let fn: (e: any) => void;
+    fn = (e: any) => {
+      callback();
+      this.mixer.removeEventListener('finished', fn);
+    }
+    this.mixer.addEventListener('finished', fn);
+    const mixer = this.getMixer();
+
+    // @todo clean this up (duplicated from above)
+    const animation = this.getEntity().getAnimation();
+    if (animation !== this.animation) {
+      mixer.stopAllAction();
+      this.animation = animation;
+      if (animation) {
+        const animations = this.getModel().animations;
+        if (animations.hasOwnProperty(animation)) {
+          const clip = mixer.clipAction(animations[animation]);
+          clip.setLoop(LoopOnce, 1);
+          clip.play();
+        }
+      }
+    }
   }
 }

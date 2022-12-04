@@ -228,8 +228,10 @@ export class World {
           if (this.ship.isLanding()) {
             this.afterResetOrigin(() => {
               this.ship.land();
-              this.jack.exitVehicle();
-              this.camera.setTarget(this.jack);
+              this.ship.openDoor().then(() => {
+                this.jack.exitVehicle();
+                this.camera.setTarget(this.jack);
+              });
             });
           }
         }
@@ -377,8 +379,10 @@ export class World {
     if (this.selected === this.ship) {
       if (this.ship.isLanded() && this.jack.isOnFoot()) {
         this.jack.enterVehicle(this.ship);
-        this.ship.startLaunching();
-        this.camera.setTarget(this.ship);
+        this.ship.closeDoor().then(() => {
+          this.ship.startLaunching();
+          this.camera.setTarget(this.ship);
+        });
       }
     }
     if (this.selected instanceof AsteroidHandler) {

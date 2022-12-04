@@ -35,6 +35,10 @@ export class ModelHandler<C extends ModelController<any>> extends Handler<C> {
   //   return offset;
   // }
 
+  public onAnimationFinished(callback: () => void) {
+    this.controller.onAnimationFinished(callback);
+  }
+
   protected applyGravity(body: Body, world: World, scale: number = 1) {
     const asteroid = world.getAsteroid();
     if (!asteroid) {
