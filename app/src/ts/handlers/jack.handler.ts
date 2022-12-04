@@ -2,7 +2,6 @@ import {ModelHandler} from "@/ts/handlers/model.handler";
 import {JackController} from "@/ts/controllers/jack.controller";
 import {JackEntity} from "@/ts/entities/jack.entity";
 import {World} from "@/ts/world";
-import {JackState} from "@/ts/entities/jack.intent";
 
 export class JackHandler extends ModelHandler<JackController> {
   public getEntity(): JackEntity {

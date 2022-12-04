@@ -7,6 +7,7 @@ import {Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
 import {JackIntent, JackState} from "@/ts/entities/jack.intent";
 import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
+import {KeysHelper} from "@/ts/helpers/keys.helper";
 
 export class JackEntity extends ModelEntity {
   protected speed = {
@@ -27,6 +28,7 @@ export class JackEntity extends ModelEntity {
     height: 1,
     depth: 0.4,
   } as CollisionBox;
+  protected isTouchingGround = false;
 
   constructor() {
     super();
@@ -38,11 +40,7 @@ export class JackEntity extends ModelEntity {
   }
 
   public isOnFoot() {
-    return [
-      JackState.IDLE,
-      JackState.RUNNING,
-      JackState.FALLING,
-    ].includes(this.intent.state as JackState);
+    return this.intent.state !== JackState.VEHICLE;
   }
 
   public enterVehicle() {
@@ -61,6 +59,7 @@ export class JackEntity extends ModelEntity {
       this.intent.direction
       && this.intent.direction < Direction.E
       && this.intent.direction > Direction.W
+      && this.intent.state === JackState.RUNNING
     ) {
       key = this.intent.state + '.S';
     }
@@ -74,8 +73,12 @@ export class JackEntity extends ModelEntity {
       return;
     }
 
-    const zKey = DirectionHelper.zKey($event.keys);
-    const xKey = DirectionHelper.xKey($event.keys);
+    this.updateState();
+  }
+
+  private updateState() {
+    const zKey = DirectionHelper.zKey(KeysHelper.keys);
+    const xKey = DirectionHelper.xKey(KeysHelper.keys);
     if (zKey || xKey) {
       this.intent.state = JackState.RUNNING;
       this.intent.speed = this.speed[JackState.RUNNING];
@@ -84,6 +87,13 @@ export class JackEntity extends ModelEntity {
       this.intent.state = JackState.IDLE;
       this.intent.speed = 0;
       this.intent.direction = null;
+    }
+
+    if (!this.isTouchingGround) {
+      // @todo change how Jack moves if falling (in the controller presumably)
+      // we do it here instead of in getAnimation because we ultimately want Jack's movement to be
+      // acceleration-based instead of velocity based if falling (so it feels more out of control)
+      this.intent.state = JackState.FALLING;
     }
   }
 
@@ -95,16 +105,14 @@ export class JackEntity extends ModelEntity {
     }
 
     if ($event.on.length) {
-      if ([JackState.FALLING].includes(this.intent.state as JackState)) {
-        this.intent.state = JackState.IDLE;
-      }
+      this.isTouchingGround = true;
     }
 
     if ($event.off.length) {
-      if ([JackState.IDLE, JackState.RUNNING].includes(this.intent.state as JackState)) {
-        this.intent.state = JackState.FALLING;
-      }
+      this.isTouchingGround = false;
     }
+
+    this.updateState();
   }
 
   public onPointerMove($event: MouseEvent) {

@@ -123,15 +123,14 @@ export class JackController extends ModelController<JackEntity> {
     // handle wasd movement @todo this is confusing
     if (intent.direction !== null) {
       this.root.rotation.y = intent.direction;
-      // @todo head rotation is fucked
-      // this.head.rotation.y = -intent.direction;
+      this.head.rotation.y = -intent.direction;
 
       if (
         intent.direction < Direction.E
         && intent.direction > Direction.W
       ) {
         RotationHelper.y(this.root.quaternion, Math.PI);
-        // RotationHelper.y(this.head.quaternion, -Math.PI);
+        RotationHelper.y(this.head.quaternion, -Math.PI);
       }
     }
 
