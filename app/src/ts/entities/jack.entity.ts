@@ -60,9 +60,10 @@ export class JackEntity extends ModelEntity {
       this.intent.direction
       && this.intent.direction < Direction.E
       && this.intent.direction > Direction.W
-      && this.intent.state === JackState.RUNNING
     ) {
-      key = this.intent.state + '.S';
+      if (this.intent.state === JackState.RUNNING) {
+        key = this.intent.state + '.S';
+      }
     }
     return this.animations.indexOf(key);
   }

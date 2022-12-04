@@ -7,6 +7,7 @@ import {Body, Quaternion, Vec3} from "cannon-es";
 import {RotationHelper} from "@/ts/helpers/rotation.helper";
 import {ModelHandler} from "@/ts/handlers/model.handler";
 import {JackIntent} from "@/ts/entities/jack.intent";
+import {MathHelper} from "@/ts/helpers/math.helper";
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -58,7 +59,7 @@ export class JackController extends ModelController<JackEntity> {
       // get position in space in front of the ship door
       const relative = new Vec3(
         0,
-        -vehicleEntity.box.height / 2,
+        0, // -vehicleEntity.box.height / 2,
         vehicleEntity.box.depth
       );
       vehicleBody.quaternion.vmult(relative, relative);
@@ -132,7 +133,7 @@ export class JackController extends ModelController<JackEntity> {
         && intent.direction > Direction.W
       ) {
         RotationHelper.y(this.root.quaternion, Math.PI);
-        RotationHelper.y(this.head.quaternion, -Math.PI);
+        this.head.rotation.y = MathHelper.addMod(this.head.rotation.y, -Math.PI, 2 * Math.PI);
       }
     }
 
