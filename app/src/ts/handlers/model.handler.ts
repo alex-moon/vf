@@ -27,14 +27,13 @@ export class ModelHandler<C extends ModelController<any>> extends Handler<C> {
     return this.controller.getPov();
   }
 
-  protected getOffset() {
-    const body = this.controller.getBody();
-    const shape = body.shapes[0] as Box;
-    const halfHeight = shape.halfExtents.y;
-    const offset = new Vec3(0, -halfHeight, 0);
-    body.quaternion.vmult(offset, offset);
-    return offset;
-  }
+  // protected getOffset() {
+  //   const entity = this.controller.getEntity();
+  //   const halfHeight = -entity.box.height / 2;
+  //   const offset = new Vec3(0, -halfHeight, 0);
+  //   this.controller.getBody().quaternion.vmult(offset, offset);
+  //   return offset;
+  // }
 
   protected applyGravity(body: Body, world: World, scale: number = 1) {
     const asteroid = world.getAsteroid();

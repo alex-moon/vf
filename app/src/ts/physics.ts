@@ -11,6 +11,7 @@ import {MathHelper} from "@/ts/helpers/math.helper";
 import {BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
 import {SunHandler} from "@/ts/handlers/sun.handler";
+import {PillHelper} from "@/ts/helpers/pill.helper";
 
 export class Physics {
   protected startingPosition!: Vec3;
@@ -88,12 +89,18 @@ export class Physics {
   protected loadModel(handler: ModelHandler<any>): Promise<void> {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
+      const {vertices, faces} = PillHelper.get(
+        entity.box.height,
+        entity.box.width,
+        entity.box.depth
+      );
       const body = new Body({
-        shape: new Box(new Vec3(
-          entity.box.width / 2,
-          entity.box.height / 2,
-          entity.box.depth / 2
-        )),
+        shape: new ConvexPolyhedron({
+          vertices: vertices.map((x: [number, number, number]) => {
+            return new Vec3(x[0], x[1], x[2]);
+          }),
+          faces: faces,
+        }),
         mass: Math.PI * entity.box.width * entity.box.height * entity.box.depth,
       });
       body.linearDamping = 0;

@@ -36,6 +36,7 @@ export class JackEntity extends ModelEntity {
   }
 
   public getIntent(): JackIntent {
+    this.updateState();
     return super.getIntent() as JackIntent;
   }
 
@@ -64,16 +65,6 @@ export class JackEntity extends ModelEntity {
       key = this.intent.state + '.S';
     }
     return this.animations.indexOf(key);
-  }
-
-  public onKeysChanged($event: KeysChangedEvent) {
-    super.onKeysChanged($event);
-
-    if (this.intent.state === JackState.VEHICLE) {
-      return;
-    }
-
-    this.updateState();
   }
 
   private updateState() {
@@ -111,8 +102,6 @@ export class JackEntity extends ModelEntity {
     if ($event.off.length) {
       this.isTouchingGround = false;
     }
-
-    this.updateState();
   }
 
   public onPointerMove($event: MouseEvent) {
