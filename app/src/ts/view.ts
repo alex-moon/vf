@@ -174,7 +174,7 @@ export class View {
       // light
       const sunlight = new PointLight(
         0xffffff,
-        1,
+        2,
         BeltHelper.OUTER_RADIUS,
         0
       );
