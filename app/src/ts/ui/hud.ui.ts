@@ -6,6 +6,7 @@ import {Quaternion, Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
 import {BeltCube} from "@/ts/helpers/belt.helper";
 import {ShipController} from "@/ts/controllers/ship.controller";
+import {AsteroidType} from "@/ts/enums/asteroid-type";
 
 export class HudUi extends Ui {
   protected $name!: HTMLDivElement;
@@ -68,7 +69,22 @@ export class HudUi extends Ui {
   }
 
   protected drawMessages() {
-    this.$messages.innerText = 'Objective: mine Hydrogen.';
+    const type = this.asteroid?.getEntity().type;
+    let message;
+    switch (type) {
+      case AsteroidType.C:
+        message = 'Type C: carbonaceous asteroid';
+        break;
+      case AsteroidType.S:
+        message = 'Type S: silicaceous asteroid';
+        break;
+      case AsteroidType.M:
+        message = 'Type M: metallic asteroid';
+        break;
+      default:
+        message = 'Type: unknown';
+    }
+    this.$messages.innerText = message;
   }
 
   protected drawDirection() {

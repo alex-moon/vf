@@ -31,9 +31,10 @@ export class OreHelper {
         continue;
       }
       const oreType = MathHelper.seededRandom(seed);
-      const oreTypes = OreHelper.TYPES[type];
+      const oreTypes = OreHelper.TYPES[type] as any;
       for (const key of Object.keys(oreTypes)) {
-        if (oreType < oreTypes[key]) {
+        const p = oreTypes[key];
+        if (oreType < p) {
           result.push(OreHelper.getForVertex(seed, vertex));
         }
       }
