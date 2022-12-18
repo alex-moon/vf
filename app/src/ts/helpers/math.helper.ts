@@ -1,4 +1,8 @@
+import {MathUtils} from "three";
+
 export class MathHelper {
+  private static c: {[key: string]: number} = {};
+
   public static addMod(a: number, b: number, m: number) {
     return (((a + b) % m) + m) % m;
   }
@@ -7,8 +11,14 @@ export class MathHelper {
     return Math.min(Math.max(value, min), max)
   }
 
-  public static random(min: number, max: number) {
-    return Math.random() * (max - min) + min;
+  public static random(min: number, max: number, seed ?: number) {
+    let rand = Math.random();
+    if (seed) {
+      MathHelper.c['' + seed] = MathHelper.c['' + seed] || 0;
+      const c = MathHelper.c['' + seed] ++;
+      rand = MathUtils.seededRandom(seed + c);
+    }
+    return rand * (max - min) + min;
   }
 
   public static cantor(a: number, b: number) {
@@ -17,5 +27,9 @@ export class MathHelper {
 
   public static rescale(value: number, fromMin: number, fromMax: number, toMin: number, toMax: number) {
     return (toMax - toMin) * (value - fromMin) / (fromMax - fromMin) + toMin;
+  }
+
+  public static seededRandom(seed: number) {
+    return MathHelper.random(0, 1, seed);
   }
 }

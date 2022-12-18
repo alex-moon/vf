@@ -1,10 +1,28 @@
 import qh from 'quickhull3d';
 import {Euler, Vector3} from 'three';
+import {MathHelper} from "@/ts/helpers/math.helper";
+import {AsteroidType} from "@/ts/enums/asteroid-type";
 
 export class AsteroidHelper {
   static RESOLUTION = 10;
   static SMOOTHNESS = 0.5;
   static VARIANCE = 0.5;
+  static TYPES = {
+    [AsteroidType.C]: 0.75, // carbonaceous
+    [AsteroidType.S]: 0.15, // silicaceous
+    [AsteroidType.M]: 0.1, // metallic
+  }
+
+  public static type(seed: number) {
+    const rand = MathHelper.seededRandom(seed);
+    if (rand < AsteroidHelper.TYPES[AsteroidType.C]) {
+      return AsteroidType.C;
+    }
+    if (rand + AsteroidHelper.TYPES[AsteroidType.C] < AsteroidHelper.TYPES[AsteroidType.S]) {
+      return AsteroidType.S;
+    }
+    return AsteroidType.M;
+  }
 
   public static get(radius: number, seed: number, numPoints?: number) {
     if (numPoints === undefined) {
@@ -90,10 +108,14 @@ export class AsteroidHelper {
 
   private static distance(radius: number, seed: number, nearby: number[]) {
     if (nearby.length === 0) {
-      return radius * (Math.random() * (1 - AsteroidHelper.SMOOTHNESS) + AsteroidHelper.SMOOTHNESS);
+      return radius * (
+        MathHelper.seededRandom(seed)
+        * (1 - AsteroidHelper.SMOOTHNESS)
+        + AsteroidHelper.SMOOTHNESS
+      );
     }
     let previous = nearby.reduce((a, b) => a + b, 0) / nearby.length;
-    const next = previous + (2 * Math.random() - 1) * AsteroidHelper.VARIANCE * radius;
+    const next = previous + (2 * MathHelper.seededRandom(seed) - 1) * AsteroidHelper.VARIANCE * radius;
     if (next > radius) {
       return radius;
     }

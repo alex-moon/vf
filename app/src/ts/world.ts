@@ -245,8 +245,8 @@ export class World {
     });
   }
 
-  // not used anywhere but this is really the only place you can do this
-  // @todo how would you do this better?
+  // @todo replace with physics.world.raycastClosest
+  // @see https://github.com/alex-moon/vf/issues/25
   public intersects(
     handler: Handler<any>,
     origin: Vector3,
@@ -440,7 +440,7 @@ export class World {
       cube.asteroidRadius(),
       cube.hash()
     )));
-    asteroid.setCube(cube);
+    asteroid.setCube(cube);``
     this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
     Promise.all([
