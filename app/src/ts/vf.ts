@@ -15,6 +15,11 @@ export class Vf {
 
   public init($element: HTMLDivElement) {
     this.world.init($element);
+    this.bindEvents();
+  }
+
+  private bindEvents() {
+    window.addEventListener('resize', this.resize.bind(this));
   }
 
   public resize() {
