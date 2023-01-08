@@ -26,11 +26,10 @@ export abstract class Handler<C extends Controller<any>> {
     this.controller.move(delta);
     const object = this.controller.getObject();
     const body = this.controller.getBody();
-    const offset = this.getOffset();
     object.position.set(
-      body.position.x + offset.x,
-      body.position.y + offset.y,
-      body.position.z + offset.z
+      body.position.x,
+      body.position.y,
+      body.position.z
     );
     object.quaternion.set(
       body.quaternion.x,
@@ -38,10 +37,6 @@ export abstract class Handler<C extends Controller<any>> {
       body.quaternion.z,
       body.quaternion.w
     );
-  }
-
-  protected getOffset() {
-    return new Vec3(0, 0, 0);
   }
 
   public getEntity() {

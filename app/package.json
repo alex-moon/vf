@@ -6,7 +6,7 @@
     "serve": "vite preview",
     "build": "vite build",
     "lint": "vue-cli-service lint",
-    "dev": "vite"
+    "dev": "vite --host 0.0.0.0"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",

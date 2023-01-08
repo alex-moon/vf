@@ -85,11 +85,13 @@ export class AsteroidHelper {
     }
 
     // next build the hulls
+    const flatVertices: [number, number, number][] = [];
     const hulls: {vertices: [number, number, number][], faces: number[][]}[] = [];
     for (let x = 0; x <= steps; x++) {
       for (let y = 0; y <= steps * 2; y++) {
         const xni = (x === steps) ? 0 : (x + 1);
         const yni = (y === steps * 2) ? 0 : (y + 1);
+        flatVertices.push(vertices[x][y]);
         const points = [
           vertices[x][y],
           vertices[xni][y],
@@ -103,7 +105,11 @@ export class AsteroidHelper {
         });
       }
     }
-    return hulls;
+
+    return {
+      vertices: flatVertices,
+      hulls,
+    };
   }
 
   private static distance(radius: number, seed: number, nearby: number[]) {

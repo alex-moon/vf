@@ -13,7 +13,6 @@ import {
   PerspectiveCamera,
   PMREMGenerator,
   PointLight,
-  RepeatWrapping,
   Scene,
   SphereGeometry,
   sRGBEncoding,
@@ -47,6 +46,9 @@ import {BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
 import {SunHandler} from "@/ts/handlers/sun.handler";
 import {ModelEntity} from "@/ts/entities/model.entity";
+import {TextureHelper} from "@/ts/helpers/texture.helper";
+import {OreHandler} from "@/ts/handlers/ore.handler";
+import {OreHelper} from "@/ts/helpers/ore.helper";
 
 export class View {
   protected texture: TextureLoader;
@@ -222,13 +224,8 @@ export class View {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
       const geometry = new BoxGeometry(entity.width, entity.height, entity.depth);
-      const map = this.texture.load(entity.texture);
-      map.wrapS = RepeatWrapping;
-      map.wrapT = RepeatWrapping;
       const dimension = Math.max(entity.width, entity.height, entity.depth);
-      map.repeat.set(dimension, dimension);
-      map.minFilter = NearestFilter;
-      map.magFilter = NearestFilter;
+      const map = TextureHelper.map(this.texture, entity.texture, dimension);
       const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
       mesh.castShadow = mesh.receiveShadow = true;
@@ -242,12 +239,7 @@ export class View {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity();
       const geometry = new SphereGeometry(entity.radius, 50, 50);
-      const map = this.texture.load(entity.texture);
-      map.wrapS = RepeatWrapping;
-      map.wrapT = RepeatWrapping;
-      map.repeat.set(entity.radius, entity.radius);
-      map.minFilter = NearestFilter;
-      map.magFilter = NearestFilter;
+      const map = TextureHelper.map(this.texture, entity.texture, entity.radius);
       const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
       mesh.castShadow = mesh.receiveShadow = true;
@@ -264,12 +256,7 @@ export class View {
         return new Vector3(x[0], x[1], x[2]);
       }));
       ConvexHelper.assignUVs(geometry);
-      const map = this.texture.load(entity.texture);
-      map.wrapS = RepeatWrapping;
-      map.wrapT = RepeatWrapping;
-      map.repeat.set(5, 5);
-      map.minFilter = NearestFilter;
-      map.magFilter = NearestFilter;
+      const map = TextureHelper.map(this.texture, entity.texture, 5);
       const material = new MeshPhongMaterial({map});
       const mesh = new Mesh(geometry, material);
       mesh.castShadow = mesh.receiveShadow = true;
@@ -283,12 +270,11 @@ export class View {
     return new Promise((resolve, reject) => {
       const entity = handler.getEntity() as AsteroidEntity;
 
-      const map = this.texture.load(entity.texture);
-      map.wrapS = RepeatWrapping;
-      map.wrapT = RepeatWrapping;
-      map.repeat.set(AsteroidHelper.RESOLUTION, AsteroidHelper.RESOLUTION);
-      map.minFilter = NearestFilter;
-      map.magFilter = NearestFilter;
+      const map = TextureHelper.map(
+        this.texture,
+        entity.texture,
+        AsteroidHelper.RESOLUTION
+      );
       const material = new MeshPhongMaterial({map});
 
       const group = new Group();
@@ -300,6 +286,24 @@ export class View {
         group.add(new Mesh(geometry, material));
       }
 
+      for (const ore of entity.ores) {
+        const entity = ore.getEntity();
+        const geometry = new ConvexGeometry(entity.vertices.map((x: [number, number, number]) => {
+          return new Vector3(x[0], x[1], x[2]);
+        }));
+        ConvexHelper.assignUVs(geometry);
+        const map = TextureHelper.map(
+          this.texture,
+          entity.texture,
+          OreHelper.RADIUS
+        );
+        const material = new MeshPhongMaterial({map});
+        const object = new Mesh(geometry, material);
+        ore.setObject(object);
+        this.scene.add(object);
+      }
+
+      // @todo not working?
       group.castShadow = group.receiveShadow = true;
       handler.setObject(group);
       this.scene.add(group);

@@ -1,7 +1,6 @@
 import {ModelEntity} from "@/ts/entities/model.entity";
 import {DirectionHelper} from "@/ts/helpers/direction.helper";
 import {Direction} from "@/ts/enums/direction";
-import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
 import {CollisionBox} from "@/ts/entities/collision-box";
 import {Vec3} from "cannon-es";
 import {MathHelper} from "@/ts/helpers/math.helper";
@@ -122,7 +121,7 @@ export class JackEntity extends ModelEntity {
 
     this.intent.pov.quaternion.setFromEuler(
       x,
-      -$event.movementX * 0.001,
+      -$event.movementX * 0.002,
       0
     );
   }

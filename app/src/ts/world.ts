@@ -31,6 +31,7 @@ import {ReticleUi} from "@/ts/ui/reticle.ui";
 import {JackState} from "@/ts/entities/jack.intent";
 import {ContactsHelper} from "@/ts/helpers/contacts.helper";
 import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
+import {TextureHelper} from "@/ts/helpers/texture.helper";
 
 export class World {
   static UPDATE_NEAREST_PERIOD = 1 / 2;
@@ -436,13 +437,15 @@ export class World {
 
   protected loadAsteroid(cube: BeltCube) {
     const asteroid = new AsteroidHandler(new AsteroidController(new AsteroidEntity(
-      '/asteroid.png',
       cube.asteroidRadius(),
       cube.hash()
     )));
-    asteroid.setCube(cube);``
+    asteroid.setCube(cube);
     this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
+    asteroid.getOres().forEach((ore) => {
+      this.handlers.push(ore);
+    });
     Promise.all([
       this.physics.load(asteroid),
       this.view.load(asteroid),

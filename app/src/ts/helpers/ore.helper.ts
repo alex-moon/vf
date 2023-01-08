@@ -4,6 +4,13 @@ import {MathHelper} from "@/ts/helpers/math.helper";
 import {AsteroidType} from "@/ts/enums/asteroid-type";
 import {OreType} from "@/ts/enums/ore-type";
 
+export interface OreRepresentation {
+  type: OreType,
+  vertices: [number, number, number][],
+  faces: number[][],
+  vertex: [number, number, number],
+}
+
 export class OreHelper {
   static RADIUS = 1;
   static STEPS = 4;
@@ -35,14 +42,20 @@ export class OreHelper {
       for (const key of Object.keys(oreTypes)) {
         const p = oreTypes[key];
         if (oreType < p) {
-          result.push(OreHelper.getForVertex(seed, vertex));
+          const ore = OreHelper.getForVertex(seed, vertex, key as OreType);
+          result.push(ore);
+          break;
         }
       }
     }
     return result;
   }
 
-  public static getForVertex(seed: number, vertex: [number, number, number]) {
+  public static getForVertex(
+    seed: number,
+    vertex: [number, number, number],
+    type: OreType
+  ): OreRepresentation {
     const steps = OreHelper.STEPS;
     const angle = Math.PI / steps;
 
@@ -69,6 +82,8 @@ export class OreHelper {
     }
 
     return {
+      type,
+      vertex,
       vertices,
       faces: qh(vertices),
     };

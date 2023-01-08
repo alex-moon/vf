@@ -4,7 +4,7 @@ import {MathHelper} from "@/ts/helpers/math.helper";
 import {NameHelper} from "@/ts/helpers/name.helper";
 
 export class BeltCube {
-  static EDGE = 1.5e4;
+  static EDGE = 3e4;
 
   readonly name: string;
   readonly xi: number;
@@ -72,6 +72,7 @@ export class BeltCube {
 export class BeltHelper {
   static INNER_RADIUS = 3e7; // 2 AU
   static OUTER_RADIUS = 4.5e7; // 3 AU
+  static NEAREST = 0; // 1;
 
   public static isIn(point: Vec3): boolean {
     // first get the center of the circular section of the torus at this angle
@@ -98,9 +99,10 @@ export class BeltHelper {
     const center = BeltHelper.getCube(point);
 
     const cubes = [];
-    for (let xi = -1; xi <= 1; xi ++) {
-      for (let yi = -1; yi <= 1; yi ++) {
-        for (let zi = -1; zi <= 1; zi ++) {
+    const n = BeltHelper.NEAREST;
+    for (let xi = -n; xi <= n; xi ++) {
+      for (let yi = -n; yi <= n; yi ++) {
+        for (let zi = -n; zi <= n; zi ++) {
           cubes.push(new BeltCube(
             center.xi + xi,
             center.yi + yi,

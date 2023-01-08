@@ -29,6 +29,8 @@ export class ShipHandler extends ModelHandler<ShipController> {
   public startLanding(asteroid: AsteroidHandler) {
     this.controller.startLanding(asteroid);
 
+    const ores = this.getAsteroid()?.getOres();
+
     const body = this.getBody();
     body.velocity.set(0, 0, 0);
     const origin = asteroid.getBody().position;

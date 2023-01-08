@@ -12,6 +12,7 @@ import {BeltHelper} from "@/ts/helpers/belt.helper";
 import {Debug} from "@/ts/helpers/debug";
 import {SunHandler} from "@/ts/handlers/sun.handler";
 import {PillHelper} from "@/ts/helpers/pill.helper";
+import {OreEntity} from "@/ts/entities/ore.entity";
 
 export class Physics {
   protected startingPosition!: Vec3;
@@ -175,6 +176,7 @@ export class Physics {
       const body = new Body({
         mass: 1e5 * Math.PI * entity.radius * entity.radius * entity.radius,
       });
+
       // @todo normals error seems bogus to me - hide errors/warnings for now
       const wincon = (window as any).console;
       (window as any).console = {error: () => {}, warn: () => {}, log: () => {}};
@@ -187,7 +189,23 @@ export class Physics {
         });
         body.addShape(convex);
       }
+
+      for (const ore of entity.ores) {
+        const entity = ore.getEntity() as OreEntity;
+        const convex = new ConvexPolyhedron({
+          vertices: entity.vertices.map((x: [number, number, number]) => {
+            return new Vec3(x[0], x[1], x[2]);
+          }),
+          faces: entity.faces,
+        });
+        // body.addShape(convex, new Vec3(entity.vertex[0], entity.vertex[1], entity.vertex[2]));
+        const body = new Body({type: Body.STATIC});
+        body.addShape(convex);
+        this.world.addBody(body);
+        ore.setBody(body);
+      }
       (window as any).console = wincon;
+
       body.quaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2);
       body.position.set(
         this.startingPosition.x + MathHelper.random(-100, 100),
