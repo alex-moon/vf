@@ -44,6 +44,7 @@ export class World {
   protected handlers: Handler<any>[] = [];
 
   protected asteroids: {[key: string]: AsteroidHandler} = {};
+  protected oresLoaded ?: string;
   protected nearest: AsteroidHandler|null = null;
   protected nearestUpdated?: number;
 
@@ -409,30 +410,59 @@ export class World {
     const position = this.ship.getBody().position.clone();
     this.subOrigin(position);
     const cubes = BeltHelper.getNearest(position);
+    const currentHash = '' + BeltHelper.getCube(position).hash();
 
     // first load what we don't have
     const keep = [];
     for (const cube of cubes) {
-      const hash = cube.hash();
-      keep.push('' + hash);
-      if (Object.keys(this.asteroids).includes('' + hash)) {
-        continue;
+      const hash = '' + cube.hash();
+      keep.push(hash);
+      if (!Object.keys(this.asteroids).includes(hash)) {
+        this.loadAsteroid(cube);
       }
-      this.loadAsteroid(cube);
+      if (hash !== currentHash) {
+        this.unloadOres(this.asteroids[hash]);
+      } else {
+        if (this.oresLoaded !== currentHash) {
+          this.loadOres(this.asteroids[currentHash]);
+          this.oresLoaded = currentHash;
+        }
+      }
     }
 
     // now unload what we don't need any more
     for (const key of Object.keys(this.asteroids)) {
       if (!keep.includes(key)) {
         this.unloadAsteroid(this.asteroids[key]);
+        this.unloadOres(this.asteroids[key]);
         delete this.asteroids[key];
       }
     }
   }
 
   protected unloadAsteroid(handler: AsteroidHandler) {
+    this.handlers.splice(this.handlers.indexOf(handler), 1);
     this.physics.unload(handler);
     this.view.unload(handler);
+  }
+
+  protected unloadOres(handler: AsteroidHandler) {
+    for (const ore of handler.getEntity().ores) {
+      this.handlers.splice(this.handlers.indexOf(ore), 1);
+      this.physics.unload(ore);
+      this.view.unload(ore);
+    }
+  }
+
+  protected loadOres(handler: AsteroidHandler) {
+    for (const ore of handler.getEntity().ores) {
+      this.handlers.push(ore);
+      Promise.all([
+        this.physics.load(ore),
+        this.view.load(ore),
+      ]).then(() => {
+      });
+    }
   }
 
   protected loadAsteroid(cube: BeltCube) {
@@ -443,9 +473,6 @@ export class World {
     asteroid.setCube(cube);
     this.asteroids['' + cube.hash()] = asteroid;
     this.handlers.push(asteroid);
-    asteroid.getOres().forEach((ore) => {
-      this.handlers.push(ore);
-    });
     Promise.all([
       this.physics.load(asteroid),
       this.view.load(asteroid),

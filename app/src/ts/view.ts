@@ -145,10 +145,12 @@ export class View {
     if (handler instanceof AsteroidHandler) {
       return this.loadAsteroid(handler);
     }
+    if (handler instanceof OreHandler) {
+      return this.loadOre(handler);
+    }
     if (handler instanceof CameraHandler) {
       return this.loadCamera(handler);
     }
-
     if (handler instanceof BoxHandler) {
       return this.loadBox(handler);
     }
@@ -286,27 +288,30 @@ export class View {
         group.add(new Mesh(geometry, material));
       }
 
-      for (const ore of entity.ores) {
-        const entity = ore.getEntity();
-        const geometry = new ConvexGeometry(entity.vertices.map((x: [number, number, number]) => {
-          return new Vector3(x[0], x[1], x[2]);
-        }));
-        ConvexHelper.assignUVs(geometry);
-        const map = TextureHelper.map(
-          this.texture,
-          entity.texture,
-          OreHelper.RADIUS
-        );
-        const material = new MeshPhongMaterial({map});
-        const object = new Mesh(geometry, material);
-        ore.setObject(object);
-        this.scene.add(object);
-      }
-
       // @todo not working?
       group.castShadow = group.receiveShadow = true;
       handler.setObject(group);
       this.scene.add(group);
+      resolve();
+    });
+  }
+
+  protected loadOre(handler: OreHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const entity = handler.getEntity();
+      const geometry = new ConvexGeometry(entity.vertices.map((x: [number, number, number]) => {
+        return new Vector3(x[0], x[1], x[2]);
+      }));
+      ConvexHelper.assignUVs(geometry);
+      const map = TextureHelper.map(
+        this.texture,
+        entity.texture,
+        OreHelper.RADIUS
+      );
+      const material = new MeshPhongMaterial({map});
+      const object = new Mesh(geometry, material);
+      handler.setObject(object);
+      this.scene.add(object);
       resolve();
     });
   }

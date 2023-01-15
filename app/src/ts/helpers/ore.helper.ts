@@ -15,7 +15,7 @@ export class OreHelper {
   static RADIUS = 1;
   static STEPS = 4;
   static SMOOTHNESS = 0.7;
-  static ORE_P = 0.2;
+  static ORE_P = 0.1;
   static TYPES = {
     [AsteroidType.C]: {
       [OreType.CARBON]: 0.8,

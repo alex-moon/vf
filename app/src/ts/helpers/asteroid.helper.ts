@@ -89,14 +89,14 @@ export class AsteroidHelper {
     const hulls: {vertices: [number, number, number][], faces: number[][]}[] = [];
     for (let x = 0; x <= steps; x++) {
       for (let y = 0; y <= steps * 2; y++) {
-        const xni = (x === steps) ? 0 : (x + 1);
-        const yni = (y === steps * 2) ? 0 : (y + 1);
+        const xn = (x === steps) ? 0 : (x + 1);
+        const yn = (y === steps * 2) ? 0 : (y + 1);
         flatVertices.push(vertices[x][y]);
         const points = [
           vertices[x][y],
-          vertices[xni][y],
-          vertices[x][yni],
-          vertices[xni][yni],
+          vertices[xn][y],
+          vertices[x][yn],
+          vertices[xn][yn],
           [0, 0, 0],
         ] as [number, number, number][];
         hulls.push({

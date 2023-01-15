@@ -13,6 +13,7 @@ import {Debug} from "@/ts/helpers/debug";
 import {SunHandler} from "@/ts/handlers/sun.handler";
 import {PillHelper} from "@/ts/helpers/pill.helper";
 import {OreEntity} from "@/ts/entities/ore.entity";
+import {OreHandler} from "@/ts/handlers/ore.handler";
 
 export class Physics {
   protected startingPosition!: Vec3;
@@ -58,6 +59,9 @@ export class Physics {
     }
     if (handler instanceof AsteroidHandler) {
       return this.loadAsteroid(handler);
+    }
+    if (handler instanceof OreHandler) {
+      return this.loadOre(handler);
     }
     if (handler instanceof CameraHandler) {
       return this.loadCamera(handler);
@@ -189,30 +193,36 @@ export class Physics {
         });
         body.addShape(convex);
       }
-
-      for (const ore of entity.ores) {
-        const entity = ore.getEntity() as OreEntity;
-        const convex = new ConvexPolyhedron({
-          vertices: entity.vertices.map((x: [number, number, number]) => {
-            return new Vec3(x[0], x[1], x[2]);
-          }),
-          faces: entity.faces,
-        });
-        // body.addShape(convex, new Vec3(entity.vertex[0], entity.vertex[1], entity.vertex[2]));
-        const body = new Body({type: Body.STATIC});
-        body.addShape(convex);
-        this.world.addBody(body);
-        ore.setBody(body);
-      }
       (window as any).console = wincon;
 
-      body.quaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2);
-      body.position.set(
-        this.startingPosition.x + MathHelper.random(-100, 100),
-        this.startingPosition.y + MathHelper.random(100, 200),
-        this.startingPosition.z + MathHelper.random(-100, 100),
-      );
-      body.angularVelocity.set(0, 1e-3, 0);
+      // body.quaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2);
+      // body.angularVelocity.set(0, 1e-2, 0);
+      this.world.addBody(body);
+      handler.setBody(body);
+      resolve();
+    });
+  }
+
+  protected loadOre(handler: OreHandler): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const entity = handler.getEntity() as OreEntity;
+      const body = new Body({
+        type: Body.STATIC,
+        collisionFilterMask: 256, // i.e. disable contacts
+      });
+
+      // @todo normals error seems bogus to me - hide errors/warnings for now
+      const wincon = (window as any).console;
+      (window as any).console = {error: () => {}, warn: () => {}, log: () => {}};
+      const convex = new ConvexPolyhedron({
+        vertices: entity.vertices.map((x: [number, number, number]) => {
+          return new Vec3(x[0], x[1], x[2]);
+        }),
+        faces: entity.faces,
+      });
+      body.addShape(convex);
+      (window as any).console = wincon;
+
       this.world.addBody(body);
       handler.setBody(body);
       resolve();
