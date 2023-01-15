@@ -32,6 +32,7 @@ import {JackState} from "@/ts/entities/jack.intent";
 import {ContactsHelper} from "@/ts/helpers/contacts.helper";
 import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
 import {TextureHelper} from "@/ts/helpers/texture.helper";
+import {OreHandler} from "@/ts/handlers/ore.handler";
 
 export class World {
   static UPDATE_NEAREST_PERIOD = 1 / 2;
@@ -370,6 +371,9 @@ export class World {
     if (handler instanceof AsteroidHandler) {
       return this.ship.isFlying();
     }
+    if (handler instanceof OreHandler) {
+      return this.jack.isOnFoot();
+    }
     return false;
   }
 
@@ -392,6 +396,11 @@ export class World {
         this.ship.startLanding(this.selected);
         this.camera.cut();
       }
+    }
+    if (this.selected instanceof OreHandler) {
+      this.selected.mine();
+      this.physics.unload(this.selected);
+      this.view.unload(this.selected);
     }
   }
 
@@ -456,6 +465,9 @@ export class World {
 
   protected loadOres(handler: AsteroidHandler) {
     for (const ore of handler.getEntity().ores) {
+      if (ore.isMined()) {
+        continue;
+      }
       this.handlers.push(ore);
       Promise.all([
         this.physics.load(ore),
