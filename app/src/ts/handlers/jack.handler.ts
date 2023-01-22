@@ -38,4 +38,8 @@ export class JackHandler extends ModelHandler<JackController> {
       this.rotateToward(body, force);
     }
   }
+
+  getDescription(): string {
+    return "Jack";
+  }
 }

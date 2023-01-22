@@ -28,11 +28,11 @@ import {HudUi} from "@/ts/ui/hud.ui";
 import {Vec3} from "cannon-es";
 import {Ui} from "@/ts/ui/ui";
 import {ReticleUi} from "@/ts/ui/reticle.ui";
-import {JackState} from "@/ts/entities/jack.intent";
 import {ContactsHelper} from "@/ts/helpers/contacts.helper";
 import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
-import {TextureHelper} from "@/ts/helpers/texture.helper";
 import {OreHandler} from "@/ts/handlers/ore.handler";
+import {Store} from "@/ts/store";
+import {MessagePriority} from "@/ts/stores/message.store";
 
 export class World {
   static UPDATE_NEAREST_PERIOD = 1 / 2;
@@ -41,6 +41,7 @@ export class World {
 
   protected view: View;
   protected physics: Physics;
+  protected store: Store;
   protected clock: Clock;
   protected handlers: Handler<any>[] = [];
 
@@ -63,10 +64,11 @@ export class World {
   protected uis: Ui[] = [];
   protected afterResetOriginCallbacks: (() => void)[] = [];
 
-  constructor(view: View, physics: Physics) {
+  constructor(view: View, physics: Physics, store: Store) {
     this.clock = new Clock;
     this.view = view;
     this.physics = physics;
+    this.store = store;
   }
 
   public getView() {
@@ -347,12 +349,19 @@ export class World {
       const handler = this.handlerForObject(intersection.object);
       if (handler && this.isSelectable(handler)) {
         this.selected = handler;
+        this.updateMessageForSelected();
         this.view.setSelected(handler.getObject());
         return;
       }
     }
     this.selected = null;
     this.view.clearSelected();
+  }
+
+  private updateMessageForSelected() {
+    if (this.selected) {
+      this.store.message.push(this.selected.getDescription(), MessagePriority.HIGH, 0);
+    }
   }
 
   private handlerForObject(object: Object3D) {
@@ -372,6 +381,9 @@ export class World {
       return this.ship.isFlying();
     }
     if (handler instanceof OreHandler) {
+      if (handler.isMined()) {
+        return false;
+      }
       return this.jack.isOnFoot();
     }
     return false;
@@ -399,13 +411,16 @@ export class World {
     }
     if (this.selected instanceof OreHandler) {
       this.selected.mine();
+      const type = this.selected.getEntity().type;
+      this.store.ore.add(type);
+      this.store.message.push('Mined ' + type);
       this.physics.unload(this.selected);
       this.view.unload(this.selected);
     }
   }
 
   private initUi($element: HTMLDivElement) {
-    this.uis.push(new HudUi($element));
+    this.uis.push(new HudUi($element, this.store.message));
     this.uis.push(new ReticleUi($element));
   }
 

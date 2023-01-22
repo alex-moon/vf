@@ -22,6 +22,8 @@ export abstract class Handler<C extends Controller<any>> {
     this.controller = controller;
   }
 
+  public abstract getDescription(): string;
+
   public move(delta: number, world: World) {
     this.controller.move(delta);
     const object = this.controller.getObject();

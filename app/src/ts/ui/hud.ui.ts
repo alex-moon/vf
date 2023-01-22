@@ -7,6 +7,7 @@ import {MathHelper} from "@/ts/helpers/math.helper";
 import {BeltCube} from "@/ts/helpers/belt.helper";
 import {ShipController} from "@/ts/controllers/ship.controller";
 import {AsteroidType} from "@/ts/enums/asteroid-type";
+import {MessageStore} from "@/ts/stores/message.store";
 
 export class HudUi extends Ui {
   protected $name!: HTMLDivElement;
@@ -21,9 +22,13 @@ export class HudUi extends Ui {
 
   protected ship: ShipHandler|null = null;
   protected asteroid: AsteroidHandler|null = null;
+  protected store: MessageStore;
 
-  constructor($parent: HTMLDivElement) {
+  constructor($parent: HTMLDivElement, store: MessageStore) {
     super($parent, 21, 21, 579, 152);
+
+    this.store = store;
+
     this.$el.style.backgroundImage = 'url(/hud.png)';
 
     this.$name = this.makeDiv(144, 17 - 8, 420, 16 + 8);
@@ -69,20 +74,22 @@ export class HudUi extends Ui {
   }
 
   protected drawMessages() {
-    const type = this.asteroid?.getEntity().type;
-    let message;
-    switch (type) {
-      case AsteroidType.C:
-        message = 'Type C: carbonaceous asteroid';
-        break;
-      case AsteroidType.S:
-        message = 'Type S: silicaceous asteroid';
-        break;
-      case AsteroidType.M:
-        message = 'Type M: metallic asteroid';
-        break;
-      default:
-        message = 'Type: unknown';
+    let message = this.store.get()?.text;
+    if (!message) {
+      const type = this.asteroid?.getEntity().type;
+      switch (type) {
+        case AsteroidType.C:
+          message = 'Type C: carbonaceous asteroid';
+          break;
+        case AsteroidType.S:
+          message = 'Type S: silicaceous asteroid';
+          break;
+        case AsteroidType.M:
+          message = 'Type M: metallic asteroid';
+          break;
+        default:
+          message = 'Type: unknown';
+      }
     }
     this.$messages.innerText = message;
   }

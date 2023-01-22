@@ -3,10 +3,9 @@ import {ModelController} from "@/ts/controllers/model.controller";
 import {Model} from "@/ts/interfaces/model";
 import {AnimationMixer} from "three";
 import {Vec3, Body, Quaternion} from "cannon-es";
-import {Box} from "shapes/Box";
 import {World} from "@/ts/world";
 
-export class ModelHandler<C extends ModelController<any>> extends Handler<C> {
+export abstract class ModelHandler<C extends ModelController<any>> extends Handler<C> {
   public setModel(model: Model) {
     this.controller.setModel(model);
   }

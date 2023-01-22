@@ -124,4 +124,8 @@ export class ShipHandler extends ModelHandler<ShipController> {
       }
     }
   }
+
+  public getDescription(): string {
+    return "Ship";
+  }
 }

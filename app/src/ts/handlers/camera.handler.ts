@@ -19,4 +19,8 @@ export class CameraHandler extends Handler<CameraController> {
   public cut() {
     this.controller.move(0, true);
   }
+
+  getDescription(): string {
+    return "Camera";
+  }
 }

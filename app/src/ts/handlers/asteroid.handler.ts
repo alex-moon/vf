@@ -2,6 +2,7 @@ import {AsteroidController} from "@/ts/controllers/asteroid.controller";
 import {Handler} from "@/ts/handlers/handler";
 import {BeltCube} from "@/ts/helpers/belt.helper";
 import {World} from "@/ts/world";
+import {StringHelper} from "@/ts/helpers/string.helper";
 
 export class AsteroidHandler extends Handler<AsteroidController> {
   protected cube?: BeltCube;
@@ -26,5 +27,9 @@ export class AsteroidHandler extends Handler<AsteroidController> {
       oreBody.position.copy(asteroidBody.position);
       oreBody.quaternion.copy(asteroidBody.quaternion);
     }
+  }
+
+  getDescription(): string {
+    return this.getCube()?.name + "\n" + StringHelper.ucwords(this.getEntity().type + "-type asteroid");
   }
 }
