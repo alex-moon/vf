@@ -25,6 +25,7 @@ import {SunHandler} from "@/ts/handlers/sun.handler";
 import {SunController} from "@/ts/controllers/sun.controller";
 import {SunEntity} from "@/ts/entities/sun.entity";
 import {HudUi} from "@/ts/ui/hud.ui";
+import {InventoryUi} from "@/ts/ui/inventory.ui";
 import {Vec3} from "cannon-es";
 import {Ui} from "@/ts/ui/ui";
 import {ReticleUi} from "@/ts/ui/reticle.ui";
@@ -421,6 +422,7 @@ export class World {
 
   private initUi($element: HTMLDivElement) {
     this.uis.push(new HudUi($element, this.store.message));
+    this.uis.push(new InventoryUi($element, this.store.ore));
     this.uis.push(new ReticleUi($element));
   }
 
