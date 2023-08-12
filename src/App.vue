@@ -7,7 +7,7 @@
           <h1>
             VoidFill
             <a href="/">
-              <img src="logo.png" alt="VoidFill logo" />
+              <img src="../public/logo.png" alt="VoidFill logo" />
             </a>
           </h1>
         </template>
@@ -39,7 +39,7 @@ import {Vf} from "@/ts/vf";
 })
 export default class App extends Vue {
   vf!: Vf;
-  public drawer = true;
+  public drawer = false;
   public toggleDrawer() {
     this.drawer = !this.drawer;
     setTimeout(() => {

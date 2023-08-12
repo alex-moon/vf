@@ -1,0 +1,12 @@
+version: "3"
+services:
+  vf:
+    volumes:
+      - .:/opt/vf
+    working_dir: /opt/vf
+    ports:
+      - "10083:80"
+    image: vf.ajmoon.com/vf
+    build:
+      context: ./
+      dockerfile: Dockerfile
