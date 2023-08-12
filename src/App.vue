@@ -13,12 +13,44 @@
         </template>
       </v-app-bar>
       <v-navigation-drawer v-model="drawer" permanent color="indigo-lighten-2">
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="text-h6">
+              VoidFill
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              an asteroid mining simulator
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
 
+        <v-divider></v-divider>
+
+        <v-list dense nav>
+          <v-list-item link to="/">
+            <v-list-item-icon>
+              <v-icon>rocket_launch</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Play</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item link to="/about">
+            <v-list-item-icon>
+              <v-icon>help</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>About</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
       </v-navigation-drawer>
       <v-main color="grey">
-        <!-- @todo router -->
+        <!-- <router-view></router-view> -->
         <vf-game-canvas></vf-game-canvas>
-<!--        <vf-dev-canvas></vf-dev-canvas>-->
       </v-main>
     </v-layout>
   </v-app>

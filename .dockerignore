@@ -1,6 +1,7 @@
 # compiled output
-/dist
-/node_modules
+# build on the host
+# /dist
+# /node_modules
 
 # IDEs and editors
 /.idea

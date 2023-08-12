@@ -23,6 +23,8 @@ tasks:
           cd /opt/$app
           git reset --hard HEAD
           git pull origin \$(git rev-parse --abbrev-ref HEAD)
+          yarn install --network-timeout 180000
+          yarn build
           docker compose build
           docker stack deploy -c docker-compose.yml $app
           docker run --rm -i \
