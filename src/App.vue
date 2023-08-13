@@ -27,30 +27,18 @@
         <v-divider></v-divider>
 
         <v-list dense nav>
-          <v-list-item link to="/">
-            <v-list-item-icon>
-              <v-icon>rocket_launch</v-icon>
-            </v-list-item-icon>
-
-            <v-list-item-content>
-              <v-list-item-title>Play</v-list-item-title>
-            </v-list-item-content>
+          <v-list-item link to="/" prepend-icon="mdi-rocket-launch">
+            Play
           </v-list-item>
 
-          <v-list-item link to="/about">
-            <v-list-item-icon>
-              <v-icon>help</v-icon>
-            </v-list-item-icon>
-
-            <v-list-item-content>
-              <v-list-item-title>About</v-list-item-title>
-            </v-list-item-content>
+          <v-list-item link to="/about" prepend-icon="mdi-help">
+            About
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main color="grey">
-        <!-- <router-view></router-view> -->
-        <vf-game-canvas></vf-game-canvas>
+        <router-view></router-view>
+        <!-- <vf-game-canvas></vf-game-canvas> -->
       </v-main>
     </v-layout>
   </v-app>

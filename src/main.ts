@@ -1,6 +1,7 @@
 import {createApp} from 'vue';
 import App from './App.vue';
 import vuetify from './plugins/vuetify';
+import router from './routing';
 import {loadFonts} from './plugins/webfontloader';
 import {Vf} from "@/ts/vf";
 import {Dev} from "@/ts/dev";
@@ -14,6 +15,7 @@ const dev = new Dev();
 createApp(App)
   // plugins
   .use(vuetify)
+  .use(router)
 
   // services
   .provide('vf', vf)
