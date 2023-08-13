@@ -59,7 +59,7 @@ import {Vf} from "@/ts/vf";
 })
 export default class App extends Vue {
   vf!: Vf;
-  public drawer = false;
+  public drawer = true;
   public toggleDrawer() {
     this.drawer = !this.drawer;
     setTimeout(() => {
