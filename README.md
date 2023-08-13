@@ -1,24 +1,30 @@
-# vue3-class-component-composition-api-example
+# VoidFill
 
-## Project setup
+VoidFill is a little game I wrote to learn some basic principles
+of 3D game design and development on
+<a href="https://threejs.org/" target="_blank">ThreeJS</a>
+and
+<a href="https://pmndrs.github.io/cannon-es/docs/" target="_blank">cannon-es</a>.
+It also gave me an excuse to learn about asteroids and the asteroid belt.
+
+## Development
+
+Project setup:
 ```
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+Compile and hot-load for development:
 ```
 yarn dev
 ```
 
-### Compiles and minifies for production
+Build for production:
 ```
 yarn build
 ```
 
-### Lints and fixes files
+Wrap in a docker container serving the app with nginx (if you're into that sort of thing):
 ```
-yarn lint
+docker-compose build
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

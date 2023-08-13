@@ -7,6 +7,12 @@
       <a href="https://threejs.org/" target="_blank">ThreeJS</a>
       and
       <a href="https://pmndrs.github.io/cannon-es/docs/" target="_blank">cannon-es</a>.
+      It also gave me an excuse to learn about asteroids and the asteroid belt.
+    </p>
+    <p>
+      <strong>
+        <a target="_blank" href="https://github.com/alex-moon/vf">Fork VoidFill on GitHub</a>
+      </strong>
     </p>
     <p>
       <strong>This game does not work on mobile devices.</strong>

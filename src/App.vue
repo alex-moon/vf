@@ -19,7 +19,7 @@
               VoidFill
             </v-list-item-title>
             <v-list-item-subtitle>
-              an asteroid mining simulator
+              an asteroid mining game
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
