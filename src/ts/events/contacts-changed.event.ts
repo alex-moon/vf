@@ -1,4 +1,4 @@
-import {Contact} from "@/ts/helpers/contacts.helper";
+import {Contact} from '@/ts/helpers/contacts.helper';
 
 export class ContactsChangedEvent {
   on: Contact[];

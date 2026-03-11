@@ -1,4 +1,4 @@
-import {Direction, DirectionKey} from "@/ts/enums/direction";
+import {Direction, DirectionKey} from '@/ts/enums/direction';
 
 export class DirectionHelper {
   static delta = 0.0001;

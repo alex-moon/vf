@@ -1,4 +1,4 @@
-import {World} from "@/ts/world";
+import {World} from '@/ts/world';
 
 export abstract class Ui {
   protected $el!: HTMLDivElement;

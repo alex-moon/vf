@@ -1,14 +1,14 @@
-import {Controller} from "@/ts/controllers/controller";
-import {Camera} from "three";
-import {CameraEntity} from "@/ts/entities/camera.entity";
-import {ModelHandler} from "@/ts/handlers/model.handler";
-import {Quaternion, Vec3} from "cannon-es";
+import {Controller} from '@/ts/controllers/controller';
+import {Camera} from 'three';
+import {CameraEntity} from '@/ts/entities/camera.entity';
+import {ModelHandler} from '@/ts/handlers/model.handler';
+import {Quaternion, Vec3} from 'cannon-es';
 
 export class CameraController extends Controller<CameraEntity> {
   SCALE_MULTIPLE = 7;
   MINIMUM = 7;
 
-  protected object!: Camera;
+  protected declare object: Camera;
   protected target!: ModelHandler<any>;
 
   public setObject(object: Camera) {

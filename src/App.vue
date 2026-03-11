@@ -2,17 +2,24 @@
   <v-app>
     <v-layout>
       <v-app-bar color="indigo">
-        <v-app-bar-nav-icon @click.stop="toggleDrawer()"></v-app-bar-nav-icon>
-        <template v-slot:append>
+        <v-app-bar-nav-icon @click.stop="toggleDrawer()" />
+        <template #append>
           <h1>
             VoidFill
             <a href="/">
-              <img src="../public/logo.png" alt="VoidFill logo" />
+              <img
+                src="/logo.png"
+                alt="VoidFill logo"
+              >
             </a>
           </h1>
         </template>
       </v-app-bar>
-      <v-navigation-drawer v-model="drawer" permanent color="indigo-lighten-2">
+      <v-navigation-drawer
+        v-model="drawer"
+        permanent
+        color="indigo-lighten-2"
+      >
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="text-h6">
@@ -24,49 +31,52 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-divider></v-divider>
+        <v-divider />
 
-        <v-list dense nav>
-          <v-list-item link to="/" prepend-icon="mdi-rocket-launch">
+        <v-list
+          dense
+          nav
+        >
+          <v-list-item
+            link
+            to="/"
+            prepend-icon="mdi-rocket-launch"
+          >
             Play
           </v-list-item>
 
-          <v-list-item link to="/about" prepend-icon="mdi-help">
+          <v-list-item
+            link
+            to="/about"
+            prepend-icon="mdi-help"
+          >
             About
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main color="grey">
-        <router-view></router-view>
-        <!-- <vf-game-canvas></vf-game-canvas> -->
+        <router-view />
       </v-main>
     </v-layout>
   </v-app>
 </template>
 
-<script lang="ts">
-import {Options, Vue} from 'vue-class-component';
-import GameCanvas from "@/components/GameCanvas.vue";
-import DevCanvas from "@/components/DevCanvas.vue";
-import {Vf} from "@/ts/vf";
+<script setup lang="ts">
+import { ref, inject } from 'vue';
+import GameCanvas from '@/components/GameCanvas.vue';
+import type { Vf } from '@/ts/vf';
 
-@Options({
-  components: {
-    'vf-game-canvas': GameCanvas,
-    'vf-dev-canvas': DevCanvas,
-  },
-  inject: ['vf'],
-})
-export default class App extends Vue {
-  vf!: Vf;
-  public drawer = true;
-  public toggleDrawer() {
-    this.drawer = !this.drawer;
-    setTimeout(() => {
-      this.vf.resize();
-    }, 200);
-  }
-}
+const vf = inject<Vf>('vf');
+const drawer = ref(true);
+
+const toggleDrawer = () => {
+  drawer.value = !drawer.value;
+  setTimeout(() => {
+    if (vf) {
+      vf.resize();
+    }
+  }, 200);
+};
 </script>
 
 <style scoped lang="scss">

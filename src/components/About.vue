@@ -4,14 +4,23 @@
     <p>
       VoidFill is a little game I wrote to learn some basic principles
       of 3D game design and development on
-      <a href="https://threejs.org/" target="_blank">ThreeJS</a>
+      <a
+        href="https://threejs.org/"
+        target="_blank"
+      >ThreeJS</a>
       and
-      <a href="https://pmndrs.github.io/cannon-es/docs/" target="_blank">cannon-es</a>.
+      <a
+        href="https://pmndrs.github.io/cannon-es/docs/"
+        target="_blank"
+      >cannon-es</a>.
       It also gave me an excuse to learn about asteroids and the asteroid belt.
     </p>
     <p>
       <strong>
-        <a target="_blank" href="https://github.com/alex-moon/vf">Fork VoidFill on GitHub</a>
+        <a
+          target="_blank"
+          href="https://github.com/alex-moon/vf"
+        >Fork VoidFill on GitHub</a>
       </strong>
     </p>
     <p>
@@ -74,12 +83,7 @@
   </div>
 </template>
 
-<script lang='ts'>
-import {Options, Vue} from 'vue-class-component';
-
-@Options({})
-export default class About extends Vue {
-}
+<script setup lang='ts'>
 </script>
 
 <style scoped lang="scss">

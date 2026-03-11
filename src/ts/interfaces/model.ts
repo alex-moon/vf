@@ -1,4 +1,4 @@
-import {Group} from "three";
+import {Group} from 'three';
 
 export interface Model {
   scene: Group,

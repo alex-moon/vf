@@ -1,9 +1,9 @@
-import {View} from "@/ts/view";
-import {World} from "@/ts/world";
-import {Physics} from "@/ts/physics";
-import {Store} from "@/ts/store";
-import {OreStore} from "@/ts/stores/ore.store";
-import {MessageStore} from "@/ts/stores/message.store";
+import {View} from '@/ts/view';
+import {World} from '@/ts/world';
+import {Physics} from '@/ts/physics';
+import {Store} from '@/ts/store';
+import {OreStore} from '@/ts/stores/ore.store';
+import {MessageStore} from '@/ts/stores/message.store';
 
 export class Vf {
   private world: World;

@@ -1,4 +1,4 @@
-import {Intent} from "@/ts/entities/intent";
+import {Intent} from '@/ts/entities/intent';
 
 export enum JackState {
   DEFAULT = 'default',

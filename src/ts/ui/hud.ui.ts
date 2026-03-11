@@ -1,13 +1,13 @@
-import {Ui} from "@/ts/ui/ui";
-import {World} from "@/ts/world";
-import {ShipHandler} from "@/ts/handlers/ship.handler";
-import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
-import {Quaternion, Vec3} from "cannon-es";
-import {MathHelper} from "@/ts/helpers/math.helper";
-import {BeltCube} from "@/ts/helpers/belt.helper";
-import {ShipController} from "@/ts/controllers/ship.controller";
-import {AsteroidType} from "@/ts/enums/asteroid-type";
-import {MessageStore} from "@/ts/stores/message.store";
+import {Ui} from '@/ts/ui/ui';
+import {World} from '@/ts/world';
+import {ShipHandler} from '@/ts/handlers/ship.handler';
+import {AsteroidHandler} from '@/ts/handlers/asteroid.handler';
+import {Quaternion, Vec3} from 'cannon-es';
+import {MathHelper} from '@/ts/helpers/math.helper';
+import {BeltCube} from '@/ts/helpers/belt.helper';
+import {ShipController} from '@/ts/controllers/ship.controller';
+import {AsteroidType} from '@/ts/enums/asteroid-type';
+import {MessageStore} from '@/ts/stores/message.store';
 
 export class HudUi extends Ui {
   protected $name!: HTMLDivElement;
@@ -33,7 +33,7 @@ export class HudUi extends Ui {
 
     this.$name = this.makeDiv(144, 17 - 8, 420, 16 + 8);
     this.$name.style.fontSize = '16px';
-    this.$name.style.fontFamily = 'pixelmix bold';
+    this.$name.style.fontFamily = 'pixelmix';
     this.$name.style.color = 'white';
 
     this.$messages = this.makeDiv(144, 69 - 8, 420, 37 + 8);

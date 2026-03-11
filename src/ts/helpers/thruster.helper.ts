@@ -1,4 +1,4 @@
-import {Color, ConeGeometry, Mesh, PointLight, ShaderMaterial} from "three";
+import {Color, ConeGeometry, Mesh, PointLight, ShaderMaterial} from 'three';
 
 export class ThrusterHelper {
   public static get(radius: number, height: number, color ?: any) {

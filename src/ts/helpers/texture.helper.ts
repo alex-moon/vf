@@ -1,4 +1,4 @@
-import {NearestFilter, RepeatWrapping, TextureLoader} from "three";
+import {NearestFilter, RepeatWrapping, TextureLoader} from 'three';
 
 export class TextureHelper {
   public static get(key: string) {

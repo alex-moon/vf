@@ -1,13 +1,13 @@
-import {JackEntity} from "@/ts/entities/jack.entity";
-import {ModelController} from "@/ts/controllers/model.controller";
-import {Model} from "@/ts/interfaces/model";
-import {Object3D, SpotLight} from "three";
-import {Direction} from "@/ts/enums/direction";
-import {Body, Quaternion, Vec3} from "cannon-es";
-import {RotationHelper} from "@/ts/helpers/rotation.helper";
-import {ModelHandler} from "@/ts/handlers/model.handler";
-import {JackIntent} from "@/ts/entities/jack.intent";
-import {MathHelper} from "@/ts/helpers/math.helper";
+import {JackEntity} from '@/ts/entities/jack.entity';
+import {ModelController} from '@/ts/controllers/model.controller';
+import {Model} from '@/ts/interfaces/model';
+import {Object3D, SpotLight} from 'three';
+import {Direction} from '@/ts/enums/direction';
+import {Body, Quaternion, Vec3} from 'cannon-es';
+import {RotationHelper} from '@/ts/helpers/rotation.helper';
+import {ModelHandler} from '@/ts/handlers/model.handler';
+import {JackIntent} from '@/ts/entities/jack.intent';
+import {MathHelper} from '@/ts/helpers/math.helper';
 
 export class JackController extends ModelController<JackEntity> {
   protected head!: Object3D;
@@ -96,7 +96,7 @@ export class JackController extends ModelController<JackEntity> {
     super.move(delta);
 
     if (this.vehicle) {
-      const pov = this.vehicle.getPov()
+      const pov = this.vehicle.getPov();
       this.body.position.copy(pov.position);
       this.body.quaternion.copy(pov.quaternion);
       return;

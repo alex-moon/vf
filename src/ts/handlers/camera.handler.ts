@@ -1,7 +1,7 @@
-import {Handler} from "@/ts/handlers/handler";
-import {CameraController} from "@/ts/controllers/camera.controller";
-import {ModelHandler} from "@/ts/handlers/model.handler";
-import {Camera} from "three";
+import {Handler} from '@/ts/handlers/handler';
+import {CameraController} from '@/ts/controllers/camera.controller';
+import {ModelHandler} from '@/ts/handlers/model.handler';
+import {Camera} from 'three';
 
 export class CameraHandler extends Handler<CameraController> {
   public getObject(): Camera {
@@ -21,6 +21,6 @@ export class CameraHandler extends Handler<CameraController> {
   }
 
   getDescription(): string {
-    return "Camera";
+    return 'Camera';
   }
 }

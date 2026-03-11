@@ -1,18 +1,18 @@
-import {ModelEntity} from "@/ts/entities/model.entity";
-import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {CollisionBox} from "@/ts/entities/collision-box";
-import {DirectionKey} from "@/ts/enums/direction";
-import {DirectionHelper} from "@/ts/helpers/direction.helper";
-import {Quaternion, Vec3} from "cannon-es";
-import {DoorState, ShipIntent, ShipState} from "@/ts/entities/ship.intent";
+import {ModelEntity} from '@/ts/entities/model.entity';
+import {KeysChangedEvent} from '@/ts/events/keys-changed.event';
+import {CollisionBox} from '@/ts/entities/collision-box';
+import {DirectionKey} from '@/ts/enums/direction';
+import {DirectionHelper} from '@/ts/helpers/direction.helper';
+import {Quaternion, Vec3} from 'cannon-es';
+import {DoorState, ShipIntent, ShipState} from '@/ts/entities/ship.intent';
 
 export class ShipEntity extends ModelEntity {
   protected acceleration = {
     [ShipState.FLYING]: 10,
-  }
+  };
   protected roll = {
     [ShipState.FLYING]: 0.01,
-  }
+  };
 
   protected path = '/glb/ship.glb';
   protected animations = [

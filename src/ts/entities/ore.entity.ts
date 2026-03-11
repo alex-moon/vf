@@ -1,7 +1,7 @@
-import {Entity} from "@/ts/entities/entity";
-import {OreType} from "@/ts/enums/ore-type";
-import {OreRepresentation} from "@/ts/helpers/ore.helper";
-import {TextureHelper} from "@/ts/helpers/texture.helper";
+import {Entity} from '@/ts/entities/entity';
+import {OreType} from '@/ts/enums/ore-type';
+import {OreRepresentation} from '@/ts/helpers/ore.helper';
+import {TextureHelper} from '@/ts/helpers/texture.helper';
 
 export class OreEntity extends Entity {
   public texture: string;

@@ -1,4 +1,4 @@
-import {MathUtils} from "three";
+import {MathUtils} from 'three';
 
 export class MathHelper {
   private static c: {[key: string]: number} = {};
@@ -8,7 +8,7 @@ export class MathHelper {
   }
 
   public static clamp(value: number, min: number, max: number) {
-    return Math.min(Math.max(value, min), max)
+    return Math.min(Math.max(value, min), max);
   }
 
   public static random(min: number, max: number, seed ?: number) {

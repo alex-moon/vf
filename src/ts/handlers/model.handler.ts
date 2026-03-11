@@ -1,9 +1,9 @@
-import {Handler} from "@/ts/handlers/handler";
-import {ModelController} from "@/ts/controllers/model.controller";
-import {Model} from "@/ts/interfaces/model";
-import {AnimationMixer} from "three";
-import {Vec3, Body, Quaternion} from "cannon-es";
-import {World} from "@/ts/world";
+import {Handler} from '@/ts/handlers/handler';
+import {ModelController} from '@/ts/controllers/model.controller';
+import {Model} from '@/ts/interfaces/model';
+import {AnimationMixer} from 'three';
+import {Vec3, Body, Quaternion} from 'cannon-es';
+import {World} from '@/ts/world';
 
 export abstract class ModelHandler<C extends ModelController<any>> extends Handler<C> {
   public setModel(model: Model) {

@@ -1,14 +1,23 @@
-import {createRouter, createWebHistory} from 'vue-router';
-import GameCanvas from '@/components/GameCanvas.vue';
-import About from '@/components/About.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+
+const GameCanvas = () => import('@/components/GameCanvas.vue');
+const About = () => import('@/components/About.vue');
 
 const routes = [
-  { path: '/', component: GameCanvas },
-  { path: '/about', component: About },
+  {
+    path: '/',
+    name: 'play',
+    component: GameCanvas
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: About
+  },
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 

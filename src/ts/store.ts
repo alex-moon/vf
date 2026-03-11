@@ -1,5 +1,5 @@
-import {OreStore} from "@/ts/stores/ore.store";
-import {MessageStore} from "@/ts/stores/message.store";
+import {OreStore} from '@/ts/stores/ore.store';
+import {MessageStore} from '@/ts/stores/message.store';
 
 type StoreType = OreStore|MessageStore;
 type StoreField = 'ore'|'message';

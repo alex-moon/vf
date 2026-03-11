@@ -1,7 +1,7 @@
-import {Vec3} from "cannon-es";
-import {MathUtils} from "three";
-import {MathHelper} from "@/ts/helpers/math.helper";
-import {NameHelper} from "@/ts/helpers/name.helper";
+import {Vec3} from 'cannon-es';
+import {MathUtils} from 'three';
+import {MathHelper} from '@/ts/helpers/math.helper';
+import {NameHelper} from '@/ts/helpers/name.helper';
 
 export class BeltCube {
   static EDGE = 3e4;

@@ -1,5 +1,5 @@
-import {Ui} from "@/ts/ui/ui";
-import {World} from "@/ts/world";
+import {Ui} from '@/ts/ui/ui';
+import {World} from '@/ts/world';
 
 export class ReticleUi extends Ui {
   constructor($parent: HTMLDivElement) {

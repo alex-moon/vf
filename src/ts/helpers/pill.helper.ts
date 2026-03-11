@@ -1,4 +1,4 @@
-import qh from "quickhull3d";
+import qh from 'quickhull3d';
 
 export class PillHelper {
   static CAP_HEIGHT = 1 / 5;
@@ -29,6 +29,6 @@ export class PillHelper {
     return {
       vertices: points,
       faces: qh(points),
-    }
+    };
   }
 }

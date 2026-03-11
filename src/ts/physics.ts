@@ -1,19 +1,19 @@
-import {Handler} from "@/ts/handlers/handler";
-import {ModelHandler} from "@/ts/handlers/model.handler";
-import {BoxHandler} from "@/ts/handlers/box.handler";
-import {CameraHandler} from "@/ts/handlers/camera.handler";
-import {SphereHandler} from "@/ts/handlers/sphere.handler";
-import {Body, Box, ConvexPolyhedron, NaiveBroadphase, Sphere, Vec3, World} from "cannon-es";
-import {ConvexHandler} from "@/ts/handlers/convex.handler";
-import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
-import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
-import {MathHelper} from "@/ts/helpers/math.helper";
-import {BeltHelper} from "@/ts/helpers/belt.helper";
-import {Debug} from "@/ts/helpers/debug";
-import {SunHandler} from "@/ts/handlers/sun.handler";
-import {PillHelper} from "@/ts/helpers/pill.helper";
-import {OreEntity} from "@/ts/entities/ore.entity";
-import {OreHandler} from "@/ts/handlers/ore.handler";
+import {Handler} from '@/ts/handlers/handler';
+import {ModelHandler} from '@/ts/handlers/model.handler';
+import {BoxHandler} from '@/ts/handlers/box.handler';
+import {CameraHandler} from '@/ts/handlers/camera.handler';
+import {SphereHandler} from '@/ts/handlers/sphere.handler';
+import {Body, Box, ConvexPolyhedron, NaiveBroadphase, Sphere, Vec3, World} from 'cannon-es';
+import {ConvexHandler} from '@/ts/handlers/convex.handler';
+import {AsteroidHandler} from '@/ts/handlers/asteroid.handler';
+import {AsteroidEntity} from '@/ts/entities/asteroid.entity';
+import {MathHelper} from '@/ts/helpers/math.helper';
+import {BeltHelper} from '@/ts/helpers/belt.helper';
+import {Debug} from '@/ts/helpers/debug';
+import {SunHandler} from '@/ts/handlers/sun.handler';
+import {PillHelper} from '@/ts/helpers/pill.helper';
+import {OreEntity} from '@/ts/entities/ore.entity';
+import {OreHandler} from '@/ts/handlers/ore.handler';
 
 export class Physics {
   protected startingPosition!: Vec3;

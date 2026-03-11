@@ -1,4 +1,4 @@
-import {Euler, Quaternion} from "three";
+import {Euler, Quaternion} from 'three';
 
 export class RotationHelper {
   public static x(rotation: Quaternion, scalar: number) {

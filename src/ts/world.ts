@@ -1,39 +1,39 @@
-import {JackEntity} from "@/ts/entities/jack.entity";
-import {JackHandler} from "@/ts/handlers/jack.handler";
-import {View} from "@/ts/view";
-import {Handler} from "@/ts/handlers/handler";
-import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {CameraHandler} from "@/ts/handlers/camera.handler";
-import {CameraEntity} from "@/ts/entities/camera.entity";
-import {PointEvent} from "@/ts/events/point.event";
-import {Clock, Object3D, PerspectiveCamera, Raycaster, Vector3} from "three";
-import {Physics} from "@/ts/physics";
-import {KeysHelper} from "@/ts/helpers/keys.helper";
-import {JackController} from "@/ts/controllers/jack.controller";
-import {CameraController} from "@/ts/controllers/camera.controller";
+import {JackEntity} from '@/ts/entities/jack.entity';
+import {JackHandler} from '@/ts/handlers/jack.handler';
+import {View} from '@/ts/view';
+import {Handler} from '@/ts/handlers/handler';
+import {KeysChangedEvent} from '@/ts/events/keys-changed.event';
+import {CameraHandler} from '@/ts/handlers/camera.handler';
+import {CameraEntity} from '@/ts/entities/camera.entity';
+import {PointEvent} from '@/ts/events/point.event';
+import {Clock, Object3D, PerspectiveCamera, Raycaster, Vector2, Vector3} from 'three';
+import {Physics} from '@/ts/physics';
+import {KeysHelper} from '@/ts/helpers/keys.helper';
+import {JackController} from '@/ts/controllers/jack.controller';
+import {CameraController} from '@/ts/controllers/camera.controller';
 import CannonDebugger from 'cannon-es-debugger';
-import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
-import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
-import {AsteroidController} from "@/ts/controllers/asteroid.controller";
-import {ShipHandler} from "@/ts/handlers/ship.handler";
-import {ShipController} from "@/ts/controllers/ship.controller";
-import {ShipEntity} from "@/ts/entities/ship.entity";
-import {MouseHelper} from "@/ts/helpers/mouse.helper";
-import {BeltCube, BeltHelper} from "@/ts/helpers/belt.helper";
-import {Debug} from "@/ts/helpers/debug";
-import {SunHandler} from "@/ts/handlers/sun.handler";
-import {SunController} from "@/ts/controllers/sun.controller";
-import {SunEntity} from "@/ts/entities/sun.entity";
-import {HudUi} from "@/ts/ui/hud.ui";
-import {InventoryUi} from "@/ts/ui/inventory.ui";
-import {Vec3} from "cannon-es";
-import {Ui} from "@/ts/ui/ui";
-import {ReticleUi} from "@/ts/ui/reticle.ui";
-import {ContactsHelper} from "@/ts/helpers/contacts.helper";
-import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
-import {OreHandler} from "@/ts/handlers/ore.handler";
-import {Store} from "@/ts/store";
-import {MessagePriority} from "@/ts/stores/message.store";
+import {AsteroidHandler} from '@/ts/handlers/asteroid.handler';
+import {AsteroidEntity} from '@/ts/entities/asteroid.entity';
+import {AsteroidController} from '@/ts/controllers/asteroid.controller';
+import {ShipHandler} from '@/ts/handlers/ship.handler';
+import {ShipController} from '@/ts/controllers/ship.controller';
+import {ShipEntity} from '@/ts/entities/ship.entity';
+import {MouseHelper} from '@/ts/helpers/mouse.helper';
+import {BeltCube, BeltHelper} from '@/ts/helpers/belt.helper';
+import {Debug} from '@/ts/helpers/debug';
+import {SunHandler} from '@/ts/handlers/sun.handler';
+import {SunController} from '@/ts/controllers/sun.controller';
+import {SunEntity} from '@/ts/entities/sun.entity';
+import {HudUi} from '@/ts/ui/hud.ui';
+import {InventoryUi} from '@/ts/ui/inventory.ui';
+import {Vec3} from 'cannon-es';
+import {Ui} from '@/ts/ui/ui';
+import {ReticleUi} from '@/ts/ui/reticle.ui';
+import {ContactsHelper} from '@/ts/helpers/contacts.helper';
+import {ContactsChangedEvent} from '@/ts/events/contacts-changed.event';
+import {OreHandler} from '@/ts/handlers/ore.handler';
+import {Store} from '@/ts/store';
+import {MessagePriority} from '@/ts/stores/message.store';
 
 export class World {
   static UPDATE_NEAREST_PERIOD = 1 / 2;
@@ -91,8 +91,7 @@ export class World {
       this.loadCamera(),
     ]).then(() => {
       if (Debug.CANNON_DEBUGGER) {
-        // @ts-ignore
-        this.debugger = new CannonDebugger(
+        this.debugger = CannonDebugger(
           this.view.getScene(),
           this.physics.getWorld(),
           {}
@@ -151,6 +150,7 @@ export class World {
 
   protected loadSun() {
     this.sun = new SunHandler(new SunController(new SunEntity(7e4)));
+    this.sun.setTarget(this.jack);
     this.handlers.push(this.sun);
     return Promise.all([
       this.physics.load(this.sun),
@@ -177,10 +177,10 @@ export class World {
   }
 
   private bindEvents() {
-    document.addEventListener("keydown", this.onKeyDown.bind(this), false);
-    document.addEventListener("keyup", this.onKeyUp.bind(this), false);
-    document.addEventListener("mousemove", this.onPointerMove.bind(this), false);
-    document.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+    document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+    document.addEventListener('keyup', this.onKeyUp.bind(this), false);
+    document.addEventListener('mousemove', this.onPointerMove.bind(this), false);
+    document.addEventListener('mousedown', this.onMouseDown.bind(this), false);
     this.ship.getBody().addEventListener('collide', this.collide.bind(this));
   }
 
@@ -343,7 +343,10 @@ export class World {
   }
 
   private updateSelected() {
-    this.raycaster.setFromCamera({x: 0, y: 0}, this.camera.getObject());
+    this.raycaster.setFromCamera(
+      new Vector2(0, 0),
+      this.camera.getObject()
+    );
     const objects = this.handlers.map(candidate => candidate.getObject());
     const intersections = this.raycaster.intersectObjects(objects);
     for (const intersection of intersections) {

@@ -1,8 +1,8 @@
 import qh from 'quickhull3d';
 import {Euler, Vector3} from 'three';
-import {MathHelper} from "@/ts/helpers/math.helper";
-import {AsteroidType} from "@/ts/enums/asteroid-type";
-import {OreType} from "@/ts/enums/ore-type";
+import {MathHelper} from '@/ts/helpers/math.helper';
+import {AsteroidType} from '@/ts/enums/asteroid-type';
+import {OreType} from '@/ts/enums/ore-type';
 
 export interface OreRepresentation {
   type: OreType,
@@ -28,7 +28,7 @@ export class OreHelper {
     [AsteroidType.M]: {
       [OreType.METAL]: 1,
     },
-  }
+  };
 
   public static get(seed: number, vertices: [number, number, number][], type: AsteroidType) {
     const result = [];

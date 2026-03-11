@@ -1,9 +1,11 @@
 import {
+  AmbientLight,
   AnimationMixer,
   AxesHelper,
   BoxGeometry,
   Camera,
   Color,
+  DirectionalLight,
   Group,
   Mesh,
   MeshBasicMaterial,
@@ -12,10 +14,9 @@ import {
   Object3D,
   PerspectiveCamera,
   PMREMGenerator,
-  PointLight,
   Scene,
   SphereGeometry,
-  sRGBEncoding,
+  SRGBColorSpace,
   TextureLoader,
   Vector2,
   Vector3,
@@ -23,37 +24,37 @@ import {
   WebGLRenderer,
 } from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import {Lensflare, LensflareElement} from "three/examples/jsm/objects/Lensflare";
+import {Lensflare, LensflareElement} from 'three/examples/jsm/objects/Lensflare';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
-import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
-import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
-import {Handler} from "@/ts/handlers/handler";
-import {ModelHandler} from "@/ts/handlers/model.handler";
-import {BoxHandler} from "@/ts/handlers/box.handler";
-import {CameraHandler} from "@/ts/handlers/camera.handler";
-import {SphereHandler} from "@/ts/handlers/sphere.handler";
-import {ConvexHandler} from "@/ts/handlers/convex.handler";
-import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
-import {ConvexHelper} from "@/ts/helpers/convex.helper";
-import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
-import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
-import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
-import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
-import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
-import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
-import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass";
-import {BeltHelper} from "@/ts/helpers/belt.helper";
-import {Debug} from "@/ts/helpers/debug";
-import {SunHandler} from "@/ts/handlers/sun.handler";
-import {ModelEntity} from "@/ts/entities/model.entity";
-import {TextureHelper} from "@/ts/helpers/texture.helper";
-import {OreHandler} from "@/ts/handlers/ore.handler";
-import {OreHelper} from "@/ts/helpers/ore.helper";
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import {Handler} from '@/ts/handlers/handler';
+import {ModelHandler} from '@/ts/handlers/model.handler';
+import {BoxHandler} from '@/ts/handlers/box.handler';
+import {CameraHandler} from '@/ts/handlers/camera.handler';
+import {SphereHandler} from '@/ts/handlers/sphere.handler';
+import {ConvexHandler} from '@/ts/handlers/convex.handler';
+import {ConvexGeometry} from 'three/examples/jsm/geometries/ConvexGeometry';
+import {ConvexHelper} from '@/ts/helpers/convex.helper';
+import {AsteroidHandler} from '@/ts/handlers/asteroid.handler';
+import {AsteroidEntity} from '@/ts/entities/asteroid.entity';
+import {AsteroidHelper} from '@/ts/helpers/asteroid.helper';
+import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer';
+import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass';
+import {OutlinePass} from 'three/examples/jsm/postprocessing/OutlinePass';
+import {UnrealBloomPass} from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import {BeltHelper} from '@/ts/helpers/belt.helper';
+import {Debug} from '@/ts/helpers/debug';
+import {SunHandler} from '@/ts/handlers/sun.handler';
+import {ModelEntity} from '@/ts/entities/model.entity';
+import {TextureHelper} from '@/ts/helpers/texture.helper';
+import {OreHandler} from '@/ts/handlers/ore.handler';
+import {OreHelper} from '@/ts/helpers/ore.helper';
 
 export class View {
   protected texture: TextureLoader;
-  protected draco: DRACOLoader;
-  protected gltf: GLTFLoader;
+  protected draco: any;
+  protected gltf: any;
   protected stats?: any;
   protected axes?: AxesHelper;
   protected renderer!: WebGLRenderer;
@@ -61,17 +62,22 @@ export class View {
   protected scene: Scene;
   protected $element!: HTMLDivElement;
   protected controls!: OrbitControls;
-  protected composer!: EffectComposer;
-  protected outlinePass!: OutlinePass;
-  protected bloomPass!: UnrealBloomPass;
+  protected composer!: any;
+  protected outlinePass!: any;
+  protected bloomPass!: any;
 
   constructor() {
-    this.renderer = new WebGLRenderer({ antialias: true });
+    this.renderer = new WebGLRenderer({
+      antialias: true,
+      logarithmicDepthBuffer: true,
+    });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.outputColorSpace = SRGBColorSpace;
     this.pmremGenerator = new PMREMGenerator(this.renderer);
 
     this.scene = new Scene();
+    const ambient = new AmbientLight(0xffffff, 0.5);
+    this.scene.add(ambient);
     this.scene.background = new Color(0x0);
     // this.scene.environment = this.pmremGenerator.fromScene(
     //   new RoomEnvironment(),
@@ -79,7 +85,6 @@ export class View {
     // ).texture;
 
     if (Debug.STATS) {
-      // @ts-ignore
       this.stats = new Stats();
       this.stats.domElement.style.position = 'absolute';
     }
@@ -94,10 +99,10 @@ export class View {
     const skyboxTexture = this.texture.load(
       '/skybox.png',
       () => {
-          const rt = new WebGLCubeRenderTarget(skyboxTexture.image.height);
-          rt.fromEquirectangularTexture(this.renderer, skyboxTexture);
-          this.scene.background = rt.texture;
-        });
+        const rt = new WebGLCubeRenderTarget(skyboxTexture.image.height);
+        rt.fromEquirectangularTexture(this.renderer, skyboxTexture);
+        this.scene.background = rt.texture;
+      });
     skyboxTexture.minFilter = NearestFilter;
     skyboxTexture.magFilter = NearestFilter;
 
@@ -176,15 +181,14 @@ export class View {
       handler.setObject(sun);
 
       // light
-      const sunlight = new PointLight(
+      const sunlight = new DirectionalLight(
         0xffffff,
-        2,
-        BeltHelper.OUTER_RADIUS,
-        0
+        5
       );
       sunlight.castShadow = true;
       sunlight.position.set(0, 0, 0);
       sun.add(sunlight);
+      handler.setLight(sunlight);
 
       // lens flare
       const lensflareTexture = this.texture.load('/lensflare.png');
@@ -384,6 +388,7 @@ export class View {
     const viewport = new Vector2(this.$element.offsetWidth, this.$element.offsetHeight);
 
     this.composer = new EffectComposer(this.renderer);
+    this.composer.setSize(window.innerWidth, window.innerHeight);
 
     const renderPass = new RenderPass(this.scene, camera);
     this.composer.addPass(renderPass);

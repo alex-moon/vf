@@ -1,9 +1,9 @@
-import {Controller} from "@/ts/controllers/controller";
-import {ModelEntity} from "@/ts/entities/model.entity";
-import {AnimationMixer, LoopOnce, Object3D} from "three";
-import {Model} from "@/ts/interfaces/model";
-import {Quaternion, Vec3} from "cannon-es";
-import {EntityPov} from "@/ts/entities/intent";
+import {Controller} from '@/ts/controllers/controller';
+import {ModelEntity} from '@/ts/entities/model.entity';
+import {AnimationMixer, LoopOnce, Object3D} from 'three';
+import {Model} from '@/ts/interfaces/model';
+import {Quaternion, Vec3} from 'cannon-es';
+import {EntityPov} from '@/ts/entities/intent';
 
 export abstract class ModelController<M extends ModelEntity> extends Controller<M> {
   protected model!: Model;
@@ -60,11 +60,10 @@ export abstract class ModelController<M extends ModelEntity> extends Controller<
   }
 
   public onAnimationFinished(callback: () => void) {
-    let fn: (e: any) => void;
-    fn = (e: any) => {
+    const fn = (e: any) => {
       callback();
       this.mixer.removeEventListener('finished', fn);
-    }
+    };
     this.mixer.addEventListener('finished', fn);
     const mixer = this.getMixer();
 

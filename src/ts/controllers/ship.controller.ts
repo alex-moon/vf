@@ -1,7 +1,7 @@
-import {ShipEntity} from "@/ts/entities/ship.entity";
-import {ModelController} from "@/ts/controllers/model.controller";
-import {Model} from "@/ts/interfaces/model";
-import {Body, Quaternion} from "cannon-es";
+import {ShipEntity} from '@/ts/entities/ship.entity';
+import {ModelController} from '@/ts/controllers/model.controller';
+import {Model} from '@/ts/interfaces/model';
+import {Body, Quaternion} from 'cannon-es';
 import {
   EquirectangularReflectionMapping,
   MeshPhysicalMaterial,
@@ -9,12 +9,12 @@ import {
   PointLight,
   SkinnedMesh,
   TextureLoader
-} from "three";
-import {ShipIntent} from "@/ts/entities/ship.intent";
-import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
-import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {DirectionHelper} from "@/ts/helpers/direction.helper";
-import {DirectionKey} from "@/ts/enums/direction";
+} from 'three';
+import {ShipIntent} from '@/ts/entities/ship.intent';
+import {AsteroidHandler} from '@/ts/handlers/asteroid.handler';
+import {KeysChangedEvent} from '@/ts/events/keys-changed.event';
+import {DirectionHelper} from '@/ts/helpers/direction.helper';
+import {DirectionKey} from '@/ts/enums/direction';
 
 export class ShipController extends ModelController<ShipEntity> {
   static MAX_SPEED = 6e3; //1e5;

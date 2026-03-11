@@ -1,11 +1,11 @@
-import {AsteroidHelper} from "@/ts/helpers/asteroid.helper";
-import {Entity} from "@/ts/entities/entity";
-import {AsteroidType} from "@/ts/enums/asteroid-type";
-import {OreHelper} from "@/ts/helpers/ore.helper";
-import {TextureHelper} from "@/ts/helpers/texture.helper";
-import {OreHandler} from "@/ts/handlers/ore.handler";
-import {OreEntity} from "@/ts/entities/ore.entity";
-import {OreController} from "@/ts/controllers/ore.controller";
+import {AsteroidHelper} from '@/ts/helpers/asteroid.helper';
+import {Entity} from '@/ts/entities/entity';
+import {AsteroidType} from '@/ts/enums/asteroid-type';
+import {OreHelper} from '@/ts/helpers/ore.helper';
+import {TextureHelper} from '@/ts/helpers/texture.helper';
+import {OreHandler} from '@/ts/handlers/ore.handler';
+import {OreEntity} from '@/ts/entities/ore.entity';
+import {OreController} from '@/ts/controllers/ore.controller';
 
 export class AsteroidEntity extends Entity {
   public texture: string = TextureHelper.get('asteroid');

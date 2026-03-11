@@ -1,4 +1,4 @@
-import {OreType} from "@/ts/enums/ore-type";
+import {OreType} from '@/ts/enums/ore-type';
 
 export class OreStore {
   private store = {

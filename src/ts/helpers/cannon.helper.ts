@@ -1,5 +1,5 @@
-import {Body, Vec3} from "cannon-es";
-import {Object3D, Vector3} from "three";
+import {Body, Vec3} from 'cannon-es';
+import {Object3D, Vector3} from 'three';
 
 export class CannonHelper {
   public static lookAt(body: Body, position: Vec3) {

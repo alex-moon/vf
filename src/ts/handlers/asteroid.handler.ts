@@ -1,8 +1,8 @@
-import {AsteroidController} from "@/ts/controllers/asteroid.controller";
-import {Handler} from "@/ts/handlers/handler";
-import {BeltCube} from "@/ts/helpers/belt.helper";
-import {World} from "@/ts/world";
-import {StringHelper} from "@/ts/helpers/string.helper";
+import {AsteroidController} from '@/ts/controllers/asteroid.controller';
+import {Handler} from '@/ts/handlers/handler';
+import {BeltCube} from '@/ts/helpers/belt.helper';
+import {World} from '@/ts/world';
+import {StringHelper} from '@/ts/helpers/string.helper';
 
 export class AsteroidHandler extends Handler<AsteroidController> {
   protected cube?: BeltCube;
@@ -30,6 +30,6 @@ export class AsteroidHandler extends Handler<AsteroidController> {
   }
 
   getDescription(): string {
-    return this.getCube()?.name + "\n" + StringHelper.ucwords(this.getEntity().type + "-type asteroid");
+    return this.getCube()?.name + '\n' + StringHelper.ucwords(this.getEntity().type + '-type asteroid');
   }
 }

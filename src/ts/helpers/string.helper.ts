@@ -1,6 +1,6 @@
 export class StringHelper {
   public static ucwords(str: string): string {
-    return str.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())
+    return str.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase());
   }
 
   public static formatNumber(value: number): string {

@@ -1,17 +1,17 @@
 import qh from 'quickhull3d';
 import {Euler, Vector3} from 'three';
-import {MathHelper} from "@/ts/helpers/math.helper";
-import {AsteroidType} from "@/ts/enums/asteroid-type";
+import {MathHelper} from '@/ts/helpers/math.helper';
+import {AsteroidType} from '@/ts/enums/asteroid-type';
 
 export class AsteroidHelper {
-  static RESOLUTION = 10;
+  static RESOLUTION = 5;
   static SMOOTHNESS = 0.5;
   static VARIANCE = 0.5;
   static TYPES = {
     [AsteroidType.C]: 0.75, // carbonaceous
     [AsteroidType.S]: 0.15, // silicaceous
     [AsteroidType.M]: 0.1, // metallic
-  }
+  };
 
   public static type(seed: number) {
     const rand = MathHelper.seededRandom(seed);
@@ -120,7 +120,7 @@ export class AsteroidHelper {
         + AsteroidHelper.SMOOTHNESS
       );
     }
-    let previous = nearby.reduce((a, b) => a + b, 0) / nearby.length;
+    const previous = nearby.reduce((a, b) => a + b, 0) / nearby.length;
     const next = previous + (2 * MathHelper.seededRandom(seed) - 1) * AsteroidHelper.VARIANCE * radius;
     if (next > radius) {
       return radius;

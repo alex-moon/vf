@@ -1,20 +1,19 @@
-import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
-import {Vector2, Vector3, Float32BufferAttribute, Matrix4, Box3} from "three";
+import {Box3, Float32BufferAttribute, Matrix4, Vector2, Vector3} from 'three';
 
 // yoinked from https://stackoverflow.com/questions/20774648/three-js-generate-uv-coordinate
 export class ConvexHelper {
-  public static assignUVs(geometry: ConvexGeometry) {
+  public static assignUVs(geometry: any) {
     geometry.computeBoundingBox();
     if (geometry.boundingBox) {
       const bboxSize = new Vector3();
       geometry.boundingBox.getSize(bboxSize);
-      let uvMapSize = Math.min(bboxSize.x, bboxSize.y, bboxSize.z);
+      const uvMapSize = Math.min(bboxSize.x, bboxSize.y, bboxSize.z);
       this.applyBoxUV(geometry, undefined, uvMapSize);
       geometry.attributes.uv.needsUpdate = true;
     }
   }
 
-  private static _applyBoxUV(geom: ConvexGeometry, transformMatrix: Matrix4, bbox: any, bbox_max_size: any) {
+  private static _applyBoxUV(geom: any, transformMatrix: Matrix4, bbox: any, bbox_max_size: any) {
     const coords: any[] = [];
     coords.length = 2 * geom.attributes.position.array.length / 3;
 
@@ -25,7 +24,7 @@ export class ConvexHelper {
 
     //maps 3 verts of 1 face on the better side of the cube
     //side of the cube can be XY, XZ or YZ
-    let makeUVs = (v0: Vector3, v1: Vector3, v2: Vector3) => {
+    const makeUVs = (v0: Vector3, v1: Vector3, v2: Vector3) => {
 
       //pre-rotate the model so that cube sides match world axis
       v0.applyMatrix4(transformMatrix);
@@ -33,16 +32,16 @@ export class ConvexHelper {
       v2.applyMatrix4(transformMatrix);
 
       //get normal of the face, to know into which cube side it maps better
-      let n = new Vector3();
+      const n = new Vector3();
       n.crossVectors(v1.clone().sub(v0), v1.clone().sub(v2)).normalize();
 
       n.x = Math.abs(n.x);
       n.y = Math.abs(n.y);
       n.z = Math.abs(n.z);
 
-      let uv0 = new Vector2();
-      let uv1 = new Vector2();
-      let uv2 = new Vector2();
+      const uv0 = new Vector2();
+      const uv1 = new Vector2();
+      const uv2 = new Vector2();
       // xz mapping
       if (n.y > n.x && n.y > n.z) {
         uv0.x = (v0.x - bbox.min.x) / bbox_max_size;
@@ -84,27 +83,27 @@ export class ConvexHelper {
 
     if (geom.index) { // is it indexed buffer geometry?
       for (let vi = 0; vi < geom.index.array.length; vi += 3) {
-        let idx0 = geom.index.array[vi];
-        let idx1 = geom.index.array[vi + 1];
-        let idx2 = geom.index.array[vi + 2];
+        const idx0 = geom.index.array[vi];
+        const idx1 = geom.index.array[vi + 1];
+        const idx2 = geom.index.array[vi + 2];
 
-        let vx0 = geom.attributes.position.array[3 * idx0];
-        let vy0 = geom.attributes.position.array[3 * idx0 + 1];
-        let vz0 = geom.attributes.position.array[3 * idx0 + 2];
+        const vx0 = geom.attributes.position.array[3 * idx0];
+        const vy0 = geom.attributes.position.array[3 * idx0 + 1];
+        const vz0 = geom.attributes.position.array[3 * idx0 + 2];
 
-        let vx1 = geom.attributes.position.array[3 * idx1];
-        let vy1 = geom.attributes.position.array[3 * idx1 + 1];
-        let vz1 = geom.attributes.position.array[3 * idx1 + 2];
+        const vx1 = geom.attributes.position.array[3 * idx1];
+        const vy1 = geom.attributes.position.array[3 * idx1 + 1];
+        const vz1 = geom.attributes.position.array[3 * idx1 + 2];
 
-        let vx2 = geom.attributes.position.array[3 * idx2];
-        let vy2 = geom.attributes.position.array[3 * idx2 + 1];
-        let vz2 = geom.attributes.position.array[3 * idx2 + 2];
+        const vx2 = geom.attributes.position.array[3 * idx2];
+        const vy2 = geom.attributes.position.array[3 * idx2 + 1];
+        const vz2 = geom.attributes.position.array[3 * idx2 + 2];
 
-        let v0 = new Vector3(vx0, vy0, vz0);
-        let v1 = new Vector3(vx1, vy1, vz1);
-        let v2 = new Vector3(vx2, vy2, vz2);
+        const v0 = new Vector3(vx0, vy0, vz0);
+        const v1 = new Vector3(vx1, vy1, vz1);
+        const v2 = new Vector3(vx2, vy2, vz2);
 
-        let uvs = makeUVs(v0, v1, v2);
+        const uvs = makeUVs(v0, v1, v2);
 
         coords[2 * idx0] = uvs.uv0.x;
         coords[2 * idx0 + 1] = uvs.uv0.y;
@@ -117,27 +116,27 @@ export class ConvexHelper {
       }
     } else {
       for (let vi = 0; vi < geom.attributes.position.array.length; vi += 9) {
-        let vx0 = geom.attributes.position.array[vi];
-        let vy0 = geom.attributes.position.array[vi + 1];
-        let vz0 = geom.attributes.position.array[vi + 2];
+        const vx0 = geom.attributes.position.array[vi];
+        const vy0 = geom.attributes.position.array[vi + 1];
+        const vz0 = geom.attributes.position.array[vi + 2];
 
-        let vx1 = geom.attributes.position.array[vi + 3];
-        let vy1 = geom.attributes.position.array[vi + 4];
-        let vz1 = geom.attributes.position.array[vi + 5];
+        const vx1 = geom.attributes.position.array[vi + 3];
+        const vy1 = geom.attributes.position.array[vi + 4];
+        const vz1 = geom.attributes.position.array[vi + 5];
 
-        let vx2 = geom.attributes.position.array[vi + 6];
-        let vy2 = geom.attributes.position.array[vi + 7];
-        let vz2 = geom.attributes.position.array[vi + 8];
+        const vx2 = geom.attributes.position.array[vi + 6];
+        const vy2 = geom.attributes.position.array[vi + 7];
+        const vz2 = geom.attributes.position.array[vi + 8];
 
-        let v0 = new Vector3(vx0, vy0, vz0);
-        let v1 = new Vector3(vx1, vy1, vz1);
-        let v2 = new Vector3(vx2, vy2, vz2);
+        const v0 = new Vector3(vx0, vy0, vz0);
+        const v1 = new Vector3(vx1, vy1, vz1);
+        const v2 = new Vector3(vx2, vy2, vz2);
 
-        let uvs = makeUVs(v0, v1, v2);
+        const uvs = makeUVs(v0, v1, v2);
 
-        let idx0 = vi / 3;
-        let idx1 = idx0 + 1;
-        let idx2 = idx0 + 2;
+        const idx0 = vi / 3;
+        const idx1 = idx0 + 1;
+        const idx2 = idx0 + 2;
 
         coords[2 * idx0] = uvs.uv0.x;
         coords[2 * idx0 + 1] = uvs.uv0.y;
@@ -153,26 +152,26 @@ export class ConvexHelper {
     (geom.attributes.uv as any).array = new Float32Array(coords);
   }
 
-  private static applyBoxUV(geometry: ConvexGeometry, transformMatrix ?: Matrix4, boxSize ?: any) {
+  private static applyBoxUV(geometry: any, transformMatrix ?: Matrix4, boxSize ?: any) {
     if (transformMatrix === undefined) {
       transformMatrix = new Matrix4();
     }
 
     if (boxSize === undefined) {
-      let geom = geometry;
+      const geom = geometry;
       geom.computeBoundingBox();
-      let bbox = geom.boundingBox;
+      const bbox = geom.boundingBox;
 
       if (bbox) {
-        let bbox_size_x = bbox.max.x - bbox.min.x;
-        let bbox_size_z = bbox.max.z - bbox.min.z;
-        let bbox_size_y = bbox.max.y - bbox.min.y;
+        const bbox_size_x = bbox.max.x - bbox.min.x;
+        const bbox_size_z = bbox.max.z - bbox.min.z;
+        const bbox_size_y = bbox.max.y - bbox.min.y;
 
         boxSize = Math.max(bbox_size_x, bbox_size_y, bbox_size_z);
       }
     }
 
-    let uvBbox = new Box3(new Vector3(-boxSize / 2, -boxSize / 2, -boxSize / 2), new Vector3(boxSize / 2, boxSize / 2, boxSize / 2));
+    const uvBbox = new Box3(new Vector3(-boxSize / 2, -boxSize / 2, -boxSize / 2), new Vector3(boxSize / 2, boxSize / 2, boxSize / 2));
 
     this._applyBoxUV(geometry, transformMatrix, uvBbox, boxSize);
   }

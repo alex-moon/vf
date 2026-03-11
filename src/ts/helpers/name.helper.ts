@@ -1,4 +1,4 @@
-import {StringHelper} from "@/ts/helpers/string.helper";
+import {StringHelper} from '@/ts/helpers/string.helper';
 
 export class NameHelper {
   public static get(hash: number) {

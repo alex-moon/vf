@@ -1,6 +1,6 @@
-import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {PointEvent} from "@/ts/events/point.event";
-import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
+import {KeysChangedEvent} from '@/ts/events/keys-changed.event';
+import {PointEvent} from '@/ts/events/point.event';
+import {ContactsChangedEvent} from '@/ts/events/contacts-changed.event';
 
 /**
  * Rationale: an entity controls things like movement at the scale of local space

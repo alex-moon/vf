@@ -1,17 +1,17 @@
-import {ModelEntity} from "@/ts/entities/model.entity";
-import {DirectionHelper} from "@/ts/helpers/direction.helper";
-import {Direction} from "@/ts/enums/direction";
-import {CollisionBox} from "@/ts/entities/collision-box";
-import {Vec3} from "cannon-es";
-import {MathHelper} from "@/ts/helpers/math.helper";
-import {JackIntent, JackState} from "@/ts/entities/jack.intent";
-import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
-import {KeysHelper} from "@/ts/helpers/keys.helper";
+import {ModelEntity} from '@/ts/entities/model.entity';
+import {DirectionHelper} from '@/ts/helpers/direction.helper';
+import {Direction} from '@/ts/enums/direction';
+import {CollisionBox} from '@/ts/entities/collision-box';
+import {Vec3} from 'cannon-es';
+import {MathHelper} from '@/ts/helpers/math.helper';
+import {JackIntent, JackState} from '@/ts/entities/jack.intent';
+import {ContactsChangedEvent} from '@/ts/events/contacts-changed.event';
+import {KeysHelper} from '@/ts/helpers/keys.helper';
 
 export class JackEntity extends ModelEntity {
   protected speed = {
     [JackState.RUNNING]: 8,
-  }
+  };
 
   protected path = '/glb/jack.glb';
   protected animations = [

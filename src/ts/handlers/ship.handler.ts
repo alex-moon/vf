@@ -1,11 +1,11 @@
-import {ModelHandler} from "@/ts/handlers/model.handler";
-import {ShipController} from "@/ts/controllers/ship.controller";
-import {ShipEntity} from "@/ts/entities/ship.entity";
-import {World} from "@/ts/world";
-import {AsteroidHandler} from "@/ts/handlers/asteroid.handler";
-import {AsteroidEntity} from "@/ts/entities/asteroid.entity";
-import {Vec3} from "cannon-es";
-import {DoorState} from "@/ts/entities/ship.intent";
+import {ModelHandler} from '@/ts/handlers/model.handler';
+import {ShipController} from '@/ts/controllers/ship.controller';
+import {ShipEntity} from '@/ts/entities/ship.entity';
+import {World} from '@/ts/world';
+import {AsteroidHandler} from '@/ts/handlers/asteroid.handler';
+import {AsteroidEntity} from '@/ts/entities/asteroid.entity';
+import {Vec3} from 'cannon-es';
+import {DoorState} from '@/ts/entities/ship.intent';
 
 export class ShipHandler extends ModelHandler<ShipController> {
   static LANDING_ALTITUDE = 18;
@@ -65,23 +65,23 @@ export class ShipHandler extends ModelHandler<ShipController> {
   }
 
   public openDoor() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.getEntity().getIntent().doorState = DoorState.OPENING;
       this.onAnimationFinished(() => {
         this.getEntity().getIntent().doorState = DoorState.OPEN;
         resolve();
       });
-    })
+    });
   }
 
   public closeDoor() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.getEntity().getIntent().doorState = DoorState.CLOSING;
       this.onAnimationFinished(() => {
         this.getEntity().getIntent().doorState = DoorState.CLOSED;
         resolve();
       });
-    })
+    });
   }
 
   public move(delta: number, world: World) {
@@ -126,6 +126,6 @@ export class ShipHandler extends ModelHandler<ShipController> {
   }
 
   public getDescription(): string {
-    return "Ship";
+    return 'Ship';
   }
 }

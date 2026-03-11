@@ -1,4 +1,4 @@
-import {Quaternion, Vec3} from "cannon-es";
+import {Quaternion, Vec3} from 'cannon-es';
 
 export interface EntityPov {
   position: Vec3;

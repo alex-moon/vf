@@ -1,6 +1,6 @@
-import {Handler} from "@/ts/handlers/handler";
-import {ContactEquation} from "equations/ContactEquation";
-import {Body} from "cannon-es";
+import {Handler} from '@/ts/handlers/handler';
+import {ContactEquation} from 'equations/ContactEquation';
+import {Body} from 'cannon-es';
 
 export class Contact {
   readonly i: Handler<any>;

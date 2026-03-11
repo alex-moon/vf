@@ -1,5 +1,5 @@
-import {Quaternion, Vec3} from "cannon-es";
-import {Intent} from "@/ts/entities/intent";
+import {Quaternion, Vec3} from 'cannon-es';
+import {Intent} from '@/ts/entities/intent';
 
 export enum ShipState {
   DEFAULT = 'default',

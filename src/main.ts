@@ -1,25 +1,27 @@
-import {createApp} from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
 import vuetify from './plugins/vuetify';
 import router from './routing';
-import {loadFonts} from './plugins/webfontloader';
-import {Vf} from "@/ts/vf";
-import {Dev} from "@/ts/dev";
+import { loadFonts } from './plugins/webfontloader';
 
-loadFonts();
+import { Vf } from '@/ts/vf';
 
-const vf = new Vf();
-const dev = new Dev();
+const initApp = async () => {
+  await loadFonts();
 
-// bootstrap our app
-createApp(App)
-  // plugins
-  .use(vuetify)
-  .use(router)
+  const app = createApp(App);
 
-  // services
-  .provide('vf', vf)
-  .provide('dev', dev)
+  const vf = new Vf();
 
-  // let's go!
-  .mount('#app');
+  app.use(vuetify);
+  app.use(router);
+
+  app.provide('vf', vf);
+
+  app.mount('#app');
+};
+
+// Execute the startup
+initApp().catch((err) => {
+  console.error('Failed to bootstrap the app:', err);
+});

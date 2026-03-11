@@ -1,4 +1,4 @@
-import {ArrayHelper} from "@/ts/helpers/array.helper";
+import {ArrayHelper} from '@/ts/helpers/array.helper';
 
 export class KeysHelper {
   static keys: string[] = [];

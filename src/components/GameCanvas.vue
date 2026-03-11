@@ -1,20 +1,19 @@
 <template>
-  <div ref="canvas"></div>
+  <div ref="canvas" />
 </template>
 
-<script lang='ts'>
-import {Options, Vue} from 'vue-class-component';
-import {Vf} from "@/ts/vf";
+<script setup lang='ts'>
+import { ref, onMounted, inject } from 'vue';
+import type { Vf } from '@/ts/vf';
 
-@Options({
-  inject: ['vf'],
-})
-export default class GameCanvas extends Vue {
-  vf!: Vf;
-  mounted() {
-    this.vf.init(this.$refs.canvas);
+const vf = inject<Vf>('vf');
+const canvas = ref<HTMLDivElement | null>(null);
+
+onMounted(() => {
+  if (canvas.value && vf) {
+    vf.init(canvas.value);
   }
-}
+});
 </script>
 
 <style scoped lang="scss">

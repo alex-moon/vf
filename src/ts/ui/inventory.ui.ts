@@ -1,9 +1,9 @@
-import {Ui} from "@/ts/ui/ui";
-import {World} from "@/ts/world";
-import {OreStore} from "@/ts/stores/ore.store";
-import {TextureHelper} from "@/ts/helpers/texture.helper";
-import {StringHelper} from "@/ts/helpers/string.helper";
-import {OreType} from "@/ts/enums/ore-type";
+import {Ui} from '@/ts/ui/ui';
+import {World} from '@/ts/world';
+import {OreStore} from '@/ts/stores/ore.store';
+import {TextureHelper} from '@/ts/helpers/texture.helper';
+import {StringHelper} from '@/ts/helpers/string.helper';
+import {OreType} from '@/ts/enums/ore-type';
 
 export class InventoryUi extends Ui {
   protected $items!: HTMLDivElement;

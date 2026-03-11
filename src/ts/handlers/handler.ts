@@ -6,14 +6,14 @@
  * will behave differently when subject to forces - the primary example is cameras,
  * which are not subject to gravity or friction and don't collide the same way as others
  */
-import {World} from "@/ts/world";
-import {Controller} from "@/ts/controllers/controller";
-import {Body, Vec3} from "cannon-es";
-import {Object3D} from "three";
-import {KeysChangedEvent} from "@/ts/events/keys-changed.event";
-import {PointEvent} from "@/ts/events/point.event";
-import {ContactsChangedEvent} from "@/ts/events/contacts-changed.event";
-import {Contact} from "@/ts/helpers/contacts.helper";
+import {World} from '@/ts/world';
+import {Controller} from '@/ts/controllers/controller';
+import {Body, Vec3} from 'cannon-es';
+import {Object3D} from 'three';
+import {KeysChangedEvent} from '@/ts/events/keys-changed.event';
+import {PointEvent} from '@/ts/events/point.event';
+import {ContactsChangedEvent} from '@/ts/events/contacts-changed.event';
+import {Contact} from '@/ts/helpers/contacts.helper';
 
 export abstract class Handler<C extends Controller<any>> {
   protected controller: C;

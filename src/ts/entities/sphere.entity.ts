@@ -1,4 +1,4 @@
-import {Entity} from "@/ts/entities/entity";
+import {Entity} from '@/ts/entities/entity';
 
 export class SphereEntity extends Entity {
   public texture: string;
